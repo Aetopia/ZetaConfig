@@ -61,8 +61,7 @@ class menu():
 1. Display Resolution > {re['Profiles']['HaloInfinite.exe']}
 2. Framerate Limit > {dxgi['Render.FrameRate']['TargetFPS'].strip('-')}
 3. Performance Mode > {sync}
-4. Spoof CPU Core Count > {True if dxgi['FrameRate.Control']['OverrideCPUCoreCount'] == '4' else False}
-5. Exit''')
+4. Exit''')
             match input('> '):
                 case '1':
                     dm = re['Profiles']['HaloInfinite.exe'] = dxgi['Window.System']['OverrideRes'] = input(
@@ -97,18 +96,10 @@ class menu():
                         with open(self.halo.config, 'w') as f:
                             json.dump(spec, f, indent=4)
                 case '4':
-                    val = dxgi['FrameRate.Control']['OverrideCPUCoreCount']
-                    if val == '4':
-                        dxgi['FrameRate.Control']['OverrideCPUCoreCount'] = '-1'
-                    else:
-                        dxgi['FrameRate.Control']['OverrideCPUCoreCount'] = '4'
-                    with open(dxgi_ini, 'w') as f:
-                        dxgi.write(f, space_around_delimiters=False)
-                case '5':
                     print('Uninstall everything installed by ZetaConfig?')
                     if input('(Y)es/(N)o > ').lower() == 'y':
                         uninstall()
-                case '6':
+                case '5':
                     altbuffer.destroy()
                     return
                 case _:
