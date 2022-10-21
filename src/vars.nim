@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="UTF-16"?>
+import steam
+import os
+
+var gamedir* = getSteamGameInstallDir("Halo Infinite")
+var gameconfig* = getEnv("LOCALAPPDATA")/"HaloInfinite/Settings/SpecControlSettings.json"
+var steamclient* = getSteamPath()/"steam.exe"
+var documents* = getEnv("USERPROFILE")/"Documents"
+var temp* = getEnv("TEMP")
+var xml* = """<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Date>2022-09-28T17:40:33.9968206</Date>
@@ -43,4 +51,4 @@
       <Command>"$2"</Command>
     </Exec>
   </Actions>
-</Task>
+</Task>"""
