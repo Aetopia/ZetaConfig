@@ -93,13 +93,13 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 5. `FPS Limit` (Provided by Special K.):                          
     Set a framelimit for the game.
 
-
+Click on the `Save` to apply your settings.
 
 # Installation
 1. Download the latest release.
 2. Run `ZetaConfig.exe`.
 3. You will be prompted to install the Special K & Resolution Enforcer in order for ZetaConfig to work.
-4. ZetaConfig will prompt you to add the Resolution Enforcer task to Task Schduler.
+4. ZetaConfig will prompt you to add the Resolution Enforcer task to Task Scheduler.
     This will allow for Resolution Enforcer to run when you startup Windows.
     Adminstrator privileges are required for this step.
 5. Once the ZetaConfig UI pops up, you are good to go!
