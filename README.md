@@ -45,7 +45,7 @@ ZetaConfig utilizes the following features from the specified projects:
 3. NVIDIA Reflex:                      
     Special K can allow compatible DX11/12 games to utlize NVIDIA Reflex.
 
-4. Framelimiter: 
+4. Framelimiter:                               
     Special K offers a superior framelimiter as compared to the ingame framelimiter.      
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
