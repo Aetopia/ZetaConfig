@@ -118,3 +118,22 @@ Click on the `Save` to apply your settings.
     ```
 
 3. Go to your documents folder and delete the `My Mods` folder. (This removes Resolution Enforcer.)
+
+# FAQ
+1. Q. Halo Infinite's launch after installing Special K + Resolution Enforcer seems slow?      
+  A. The game is compiling shaders since Special K is loaded into the game.            
+     Once they compile, launches should be snappy and fast.
+
+2. How to do I fix texture quality loss when using a lower display mode/render resolution?
+    If you are on an NVIDIA card, you are in luck!
+    1. Download [NVIDIA Profile Inspector](https://github.com/FoulPlay/nvidiaProfileInspector).     
+        **Note: The original NVPI hasn't been updated in years that's why I am linking fork which is update to date.**
+    
+    2. Open it and search for the Halo Infinite profile.
+
+    3. Find the following option:     
+        \> `Antialiasing - Transparency Supersampling`
+        and set its value to: `0x00000008 AA_MODE_REPLAY_MODE_ALL`
+    
+    4. Then look for `Texture filtering - LOD Bias (DX)` and set to a negative value of your choice.
+        **Recommended: `-1.00 ~ -2.00`**
