@@ -1,6 +1,7 @@
 # Steam related Functions
 import os, osproc
 import strutils
+import winim/lean
 
 proc getSteamPath* : string =
     # Fetches the Steam installation directory.
@@ -32,3 +33,5 @@ proc getSteamGameInstallDir*(game: string): string =
     for folder in folders:
         var installdir = folder/"steamapps/common"/game.strip()
         if dirExists(installdir): return installdir
+    discard MessageBox(0, "Failed to find Game Directory!", "ZetaConfig", 0x00000010)
+    quit()
