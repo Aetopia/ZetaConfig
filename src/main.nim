@@ -73,6 +73,7 @@ if isMainModule:
             sk = [dm.getValue(), nvr.getValue(), scc.getValue(), fpslimit.getText()]     
         if game.parseInt <= 50: game = "50"; rs.setText(game)
         if sk[3].parseInt in 1..29: sk[3] = "30"; fpslimit.setText(sk[3])
+        if sk[0] == dms[dms.len-1]: sk[0] = "0x0" 
         setSKSettings(sk[0], sk[1], sk[2], sk[3])
         setGameSettings(game)
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()

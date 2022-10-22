@@ -16,6 +16,7 @@ proc installSpecialK*: void =
         (specialk, archiver, dll) =  (temp/"SpecialK.7z", temp/"7zr.exe", temp/"SpecialK/SpecialK64.dll")
         osdf = documents/"My Mods/SpecialK/Global/osd.ini"
         cfgf = gamedir/"dxgi.ini"
+        re = documents/"My Mods/ResEnforce/ResEnforce.exe"
     client.downloadFile(r["assets"][0]["browser_download_url"].getStr(), specialk)
     client.downloadFile("https://www.7-zip.org/a/7zr.exe", archiver)
 
@@ -47,7 +48,8 @@ proc installSpecialK*: void =
         elif key in ["XOffset", "YOffset"]: cfgc[i] = "$1=0.0001%" % [key]
         elif key == "AlwaysOnTop": cfgc[i] = "AlwaysOnTop=1"
     writeFile(cfgf, cfgc.join("\n"))
-    discard startProcess(documents/"My Mods/ResEnforce/ResEnforce.exe")
+    if fileExists(re):
+        discard startProcess(documents/"My Mods/ResEnforce/ResEnforce.exe")
 
 proc installResEnforce: void =
     discard execCmdEx("taskkill /im /f ResEnforce.exe")
