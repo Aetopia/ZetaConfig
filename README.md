@@ -62,7 +62,7 @@ ZetaConfig alters a few ingame options:
 
 2. Ingame Sharpeness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
 
-3. Borderless Fullscreen is disabled. This is intentionally done to allow Special K to handle window scaling when in borderless mode.
+3. Borderless Fullscreen is disabled. This is intentionally done to allow Special K to handle window scaling when in borderless fullscreen mode.
 
 >You see the Pros and Cons of the Minimium Framerate setting here:     
 > https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
@@ -98,4 +98,23 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 # Installation
 1. Download the latest release.
 2. Run `ZetaConfig.exe`.
-3. You will be prompted to install the following for ZetaConfig to work.
+3. You will be prompted to install the Special K & Resolution Enforcer in order for ZetaConfig to work.
+4. ZetaConfig will prompt you to add the Resolution Enforcer task to Task Schduler.
+    This will allow for Resolution Enforcer to run when you startup Windows.
+    Adminstrator privileges are required for this step.
+5. Once the ZetaConfig UI pops up, you are good to go!
+
+# Uninstallation
+1. Navigate to Halo Infinite's installation directory on your system.      
+    Example:       
+    ```
+    C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
+    ```
+2. Delete `dxgi.dll` and `dxgi.ini`. (This removes Special K.)  
+
+3. Run the following command in Command Prompt or PowerShell:    
+    ```
+    taskkill /f /im ResEnforce.exe     
+    ```
+
+3. Go to your documents folder and delete the `My Mods` folder. (This removes Resolution Enforcer.)
