@@ -18,13 +18,11 @@ proc getDisplayModes*: seq[string] =
         inc(i)
 
 proc setGameSettings*(resscale: string): void =
-    var 
-        cfg = parseFile(gameconfig)
-        val = resscale.parseInt
-    if val notin 50..100: val = 100
+    var cfg = parseFile(gameconfig)
     for k in ["spec_control_minimum_framerate", "spec_control_target_framerate"]: cfg[k].add("value", newJInt(960))
     for k in ["spec_control_vsync", "spec_control_window_mode"]: cfg[k].add("value", newJInt(0))
-    cfg["spec_control_resolution_scale"].add("value", newJInt(val))
+    cfg["spec_control_resolution_scale"].add("value", newJInt(resscale.parseInt))
+    cfg["spec_control_sharpening"].add("value", newJInt(100))
     writeFile(gameconfig, cfg.pretty(indent=4))      
 
 proc getGameSettings*: string =
