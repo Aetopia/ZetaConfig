@@ -21,7 +21,7 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
     Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
 
 # Options
-![ZetaConfig](images/ZetaConfig.png)
+![ZetaConfig](./images/ZetaConfig.png)
 ZetaConfig offers the user with a multitude of options to configure, each of them are explained here.
 
 
