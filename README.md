@@ -50,7 +50,7 @@ ZetaConfig utilizes the following features from the specified projects:
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
 ### From Resolution Enforcer
-1. Ability to enforce specific resolution upon specific application being is utilized.     
+1. Ability to enforce a specific resolution upon a specific application when being it is utilized.     
 2. UWP & Win32 app support.     
 
 # Does ZetaConfig alter any Halo Infinite settings?
