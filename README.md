@@ -27,7 +27,7 @@ ZetaConfig utilizes the following features from the specified projects:
     This is used to fix scaling issues with the game at low display resolutions like `1280x720`, `1366x768`.
 
 2. Spoof CPU Core Count:     
-    This option is used to fools the game into thinking that the CPU core count is lower than usual.
+    This option is used to fool the game into thinking that the CPU core count is lower than usual.
 
     ### Examples
 
