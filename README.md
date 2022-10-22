@@ -78,11 +78,11 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 2. `Display Mode` (Provided by Resolution Enforcer.):        
     Configure the display resolution, the game will run at.
 
-3. `Spoof CPU Cores` (Provided by Special K.):      
+3. `Spoof CPU Cores` (Provided by Special K.):                  
     This option allows one to make their CPU core count to appear lower than actual.
     Lower values can reduce CPU usage by a significant amount.   
 
-4. `NVIDIA Reflex` (Provided by Special K.):
+4. `NVIDIA Reflex` (Provided by Special K.):                       
     Configure NVIDIA Reflex with this option.
 
     1. Off: NVIDIA Reflex is disabled.
@@ -90,7 +90,7 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
     3. On + Boost: Low Latency + Boost is enabled.
     4. Boost: Only Boost is enabled.
 
-5. `FPS Limit` (Provided by Special K.):
+5. `FPS Limit` (Provided by Special K.):                          
     Set a framelimit for the game.
 
 
