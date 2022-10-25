@@ -87,13 +87,21 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 
     1. Off: NVIDIA Reflex is disabled.
     2. On: Only Low Latency is enabled.
-    3. On + Boost: Low Latency + Boost is enabled.
-    4. Boost: Only Boost is enabled.
-
+    3. Boost: Only Boost is enabled.
+    4. On + Boost: Low Latency + Boost is enabled.
+   
 5. `FPS Limit` (Provided by Special K.):                          
-    Set a framelimit for the game.
+    Set a framelimit for the game.                              
+    (Due ZetaConfig setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.)
 
 Click on the `Save` to apply your settings.
+
+## Accessing Special K & Resolution Enforcer Settings
+You can access the Special K Control Panel, by pressing Ctrl + Shift + Backspace ingame.
+Check out the wiki for the all of the features of Special K: https://wiki.special-k.info
+
+Resolution Enforcer's configuration file can be accessed here: "%USERPROFILE%\My Mods\ResEnforce\Options.ini"
+
 
 # Installation
 1. Download the latest release.
@@ -119,10 +127,31 @@ Click on the `Save` to apply your settings.
 
 3. Go to your documents folder and delete the `My Mods` folder. (This removes Resolution Enforcer.)
 
+# Building
+1. Install Nim: https://github.com/dom96/choosenim
+    > Run the tool 2~3 times to ensure Nim installs properly.
+    > If Nim isn't in your `SYSTEM` path, then reboot.
+
+2. Install the following dependencies:
+    ```
+    nimble install winim, wNim
+    ```
+
+3. Run the following command to compile:
+    ```ps
+    nim c -d:strip -d:release --opt:size --app:gui -o:ZetaConfig src/main.nim
+    ```
+    > Optional: Compress using UPX.         
+        ```
+        upx -9 ZetaConfig.exe
+        ```
+
+4. Run `ZetaConfig.exe`.
+
 # FAQ
 1. Q. Halo Infinite's launch after installing Special K + Resolution Enforcer seems slow?      
-  A. The game is compiling shaders since Special K is loaded into the game.            
-     Once they compile, launches should be snappy and fast.
+  A. The game is compiling shaders since Special K is loaded into the game.
+  Once they compile, launches should be snappy and fast.
 
 2. How to do I fix texture quality loss when using a lower display mode/render resolution?
     > This might lower framerate by a slight amount!
