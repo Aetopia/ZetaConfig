@@ -125,6 +125,8 @@ Click on the `Save` to apply your settings.
      Once they compile, launches should be snappy and fast.
 
 2. How to do I fix texture quality loss when using a lower display mode/render resolution?
+    > This might lower framerate by a slight amount!
+    
     If you are on an NVIDIA card, you are in luck!
     1. Download [NVIDIA Profile Inspector](https://github.com/FoulPlay/nvidiaProfileInspector).     
         **Note: The original NVPI hasn't been updated in years that's why I am linking fork which is update to date.**
