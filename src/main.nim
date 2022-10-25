@@ -76,7 +76,7 @@ if isMainModule:
         if sk[2] == cpusopts[cpusopts.len-1]: sk[2] = "-1"
         if sk[3].parseInt in 1..29: sk[3] = "30"; fpslimit.setText(sk[3])
         setSKSettings(sk[0], sk[1], sk[2], sk[3])
-        setGameSettings(game)
+        setGameSettings(game, sk[0])
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
         
     frame.center()
