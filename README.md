@@ -107,7 +107,7 @@ Resolution Enforcer's configuration file can be accessed here:
 
 
 # Installation
-1. Download the latest release.
+1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
 2. Run `ZetaConfig.exe`.
 3. You will be prompted to install the Special K & Resolution Enforcer in order for ZetaConfig to work.
 4. ZetaConfig will prompt you to add the Resolution Enforcer task to Task Scheduler.
