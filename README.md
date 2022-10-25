@@ -97,10 +97,13 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 Click on the `Save` to apply your settings.
 
 ## Accessing Special K & Resolution Enforcer Settings
-You can access the Special K Control Panel, by pressing Ctrl + Shift + Backspace ingame.
+You can access the Special K Control Panel, by pressing Ctrl + Shift + Backspace ingame.               
 Check out the wiki for the all of the features of Special K: https://wiki.special-k.info
 
-Resolution Enforcer's configuration file can be accessed here: "%USERPROFILE%\My Mods\ResEnforce\Options.ini"
+Resolution Enforcer's configuration file can be accessed here: 
+```
+"%USERPROFILE%\My Mods\ResEnforce\Options.ini"
+```
 
 
 # Installation
