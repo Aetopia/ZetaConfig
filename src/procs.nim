@@ -1,6 +1,6 @@
 import os
 import json
-import strutils
+import strutils, strformat
 import parsecfg
 import winim/lean
 import vars
@@ -9,11 +9,12 @@ proc getDisplayModes*: seq[string] =
     var 
         i: int32 = 0
         dms: seq[string]
+        dm: string
+        devmode: DEVMODE
+    devmode.dmSize = sizeof(DEVMODE).WORD
     while true:
-        var devmode: DEVMODEW    
-        devmode.dmSize = sizeof(DEVMODEW).WORD
-        if EnumDisplaySettings(nil, i, addr devmode) == 0: return dms
-        var dm = "$1x$2" % [$devmode.dmPelsWidth, $devmode.dmPelsHeight]
+        if EnumDisplaySettings(nil, i, &devmode) == 0: return dms
+        dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
         if not dms.contains(dm): dms.add(dm)
         inc(i)
 
@@ -66,7 +67,7 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): voi
     var 
         cfg = documents/"My Mods/ResEnforce/Options.ini"
         c = readFile(gamedir/"dxgi.ini").splitLines()
-        k, v: string
+        k, v, l: string
         lowlatency, boost: string
         enable = "true"
         str: bool
@@ -83,21 +84,23 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): voi
         of "Boost": (lowlatency, boost) = ("false", "true")
 
     for i in 0..c.len-1:
-        var l = c[i].strip()
+        l = c[i].strip()
         if str:
             try: (k, v) = l.split("=")
             except IndexDefect: discard
             (k, v) = (k.strip(), v.strip().toLower())
             case k:
-                of "Enable": c[i] = "Enable=$1" % [enable]
-                of "LowLatency": c[i] = "LowLatency=$1" % [lowlatency]
-                of "LowLatencyBoost": c[i] = "LowLatencyBoost=$1" % [boost]
+                of "Enable": c[i] = fmt"Enable={enable}"
+                of "LowLatency": c[i] = fmt"LowLatency={lowlatency}"
+                of "LowLatencyBoost": c[i] = fmt"LowLatencyBoost={boost}"
         if l == "[NVIDIA.Reflex]": str = true
 
         if l.startsWith("OverrideRes"): 
-            c[i] = "OverrideRes=$1" % res
-        elif l.strip().startsWith("OverrideCPUCoreCount"): 
-            c[i] = "OverrideCPUCoreCount=$1" % cpus
-        elif l.strip().startsWith("TargetFPS"): 
-            c[i] = "TargetFPS=$1" % fps
+            c[i] = fmt"OverrideRes={res}"
+        elif l.startsWith("OverrideCPUCoreCount"): 
+            c[i] = fmt"OverrideCPUCoreCount={cpus}"
+        elif l.startsWith("TargetFPS"): 
+            c[i] = fmt"TargetFPS={fps}"
+        elif l.startsWith("Fullscreen") and res == "0x0": 
+            c[i] = fmt"Fullscreen=true"
     writeFile(gamedir/"dxgi.ini", c.join("\n"))

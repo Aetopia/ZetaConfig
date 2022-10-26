@@ -1,6 +1,6 @@
 import wNim/[wApp, wFrame, wPanel, wStaticBox, wStaticText, wSpinCtrl, wComboBox, wButton, wMessageDialog]
 import strutils, sequtils
-import cpuinfo
+import osproc
 import mods, procs
 
 if isMainModule:
@@ -53,7 +53,9 @@ if isMainModule:
     var nvr = box.ComboBox(size=(120, 23), pos=(100, 102), 
                                 style=wCbDropDown or wCbReadOnly or wCbNeededScroll, 
                                 choices=reflexopts, value=reflex)
-    
+    if execCmdEx("reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}_Display.Driver\"", options={poDaemon}).exitCode != 0:
+        nvr.clear(); nvr.append("Off"); nvr.setSelection(0)
+
     box.StaticText(label="FPS Limit", pos=(0, 139))
     var fpslimit = box.SpinCtrl(pos=(100, 137), 
                                 style=wSpCenter or wSpArrowKeys)

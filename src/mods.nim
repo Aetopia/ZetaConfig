@@ -1,14 +1,14 @@
 import os, osproc
 import httpclient
 import json
-import strutils
+import strutils, strformat
 import winlean
 import winim/lean
 import vars
 
 proc installSpecialK*: void =
     for file in [gamedir/"dxgi.dll", gamedir/"dxgi.ini"]: removeFile(file)
-    discard execCmdEx("taskkill /f /im ResEnforce.exe")
+    discard execCmdEx("taskkill /f /im ResEnforce.exe", options={poDaemon})
     # Download Files.
     var 
         client = newHttpClient()
@@ -17,47 +17,49 @@ proc installSpecialK*: void =
         osdf = documents/"My Mods/SpecialK/Global/osd.ini"
         cfgf = gamedir/"dxgi.ini"
         re = documents/"My Mods/ResEnforce/ResEnforce.exe"
+        osdc = readFile(osdf).splitLines()
+        cfgc = readFile(cfgf).splitLines()
+        l, k: string
+
     client.downloadFile(r["assets"][0]["browser_download_url"].getStr(), specialk)
     client.downloadFile("https://www.7-zip.org/a/7zr.exe", archiver)
 
-    discard execCmdEx("$1 x $2 -o\"$3\\SpecialK\" -y" % [archiver, specialk, temp])
+    discard execCmdEx("$1 x $2 -o\"$3\\SpecialK\" -y" % [archiver, specialk, temp], options={poDaemon})
     copyFile(dll, gamedir/"dxgi.dll")
 
     # Setup Special K.
-    discard execCmd("\"$1\" steam://rungameid/1240440" % [steamclient])
+    discard execCmdEx("\"$1\" steam://rungameid/1240440" % [steamclient], options={poDaemon})
     while true:
         if fileExists(cfgf):
-            discard execCmdEx("taskkill /f /im HaloInfinite.exe")
+            discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
             break
     
     # Remove Version Banner.
-    var osdc = readFile(osdf).splitLines()
     for i in 0..len(osdc)-1:
-        var l = osdc[i].strip()
-        if l.startsWith("Duration"):
-            osdc[i] = "Duration=0.0"; break
+        l = osdc[i].strip()
+        if l.startsWith("Duration"): osdc[i] = "Duration=0.0"; break
     writeFile(osdf, osdc.join("\n"))
 
 
     # Setup Config.
-    var cfgc = readFile(cfgf).splitLines()
     for i in 0..len(cfgc)-1:
-        var l = cfgc[i].strip()
-        var key = l.split("=")[0].strip()
-        if key in ["Borderless", "Center", "RenderInBackground"]: cfgc[i] = "$1=true" % [key]
-        elif key in ["XOffset", "YOffset"]: cfgc[i] = "$1=0.0001%" % [key]
-        elif key == "AlwaysOnTop": cfgc[i] = "AlwaysOnTop=1"
+        l = cfgc[i].strip()
+        k = l.split("=")[0].strip()
+        if k in ["Borderless", "Center", "RenderInBackground"]: cfgc[i] = &"{k}=true"
+        elif k in ["XOffset", "YOffset"]: cfgc[i] = &"{k}=0.0001%"
+        elif k == "AlwaysOnTop": cfgc[i] = "AlwaysOnTop=1"
     writeFile(cfgf, cfgc.join("\n"))
     if fileExists(re):
         discard startProcess(documents/"My Mods/ResEnforce/ResEnforce.exe")
 
 proc installResEnforce: void =
-    discard execCmdEx("taskkill /im /f ResEnforce.exe")
     var 
         sid = execCmdEx("whoami.exe /user /fo csv").output.splitLines()[1].split("\",")[1].strip(chars={'"'}).strip()
         dir = documents/"My Mods/ResEnforce"
         client = newHttpClient()
         r = parseJson(client.getContent("https://api.github.com/repos/Aetopia/ResEnforce/releases/latest"))
+        
+    discard execCmdEx("taskkill /im /f ResEnforce.exe")
     if not dirExists(dir): createDir(dir)
     client.downloadFile(r["assets"][0]["browser_download_url"].getStr().strip(), dir/"ResEnforce.exe")
     writeFile(temp/"ResEnforce.xml", xml % [sid, dir/"ResEnforce.exe"])
