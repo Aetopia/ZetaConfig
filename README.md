@@ -64,7 +64,7 @@ ZetaConfig alters a few ingame options:
 
 3. Borderless Fullscreen is disabled. This is intentionally done to allow Special K to handle window scaling when in borderless fullscreen mode.
 
->You see the Pros and Cons of the Minimium Framerate setting here:     
+>You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
 > https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
 
 
