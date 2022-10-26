@@ -137,7 +137,7 @@ Resolution Enforcer's configuration file can be accessed here:
 
 2. Install the following dependencies:
     ```
-    nimble install winim, wNim
+    nimble install winim wNim
     ```
 
 3. Run the following command to compile:
