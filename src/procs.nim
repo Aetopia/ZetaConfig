@@ -18,11 +18,10 @@ proc getDisplayModes*: seq[string] =
         if not dms.contains(dm): dms.add(dm)
         inc(i)
 
-proc setGameSettings*(resscale: string, dm: string): void =
+proc setGameSettings*(resscale: string): void =
     var cfg = parseFile(gameconfig)
     for k in ["spec_control_minimum_framerate", "spec_control_target_framerate"]: cfg[k].add("value", newJInt(960))
     for k in ["spec_control_vsync", "spec_control_window_mode"]: cfg[k].add("value", newJInt(0))
-    if dm == "0x0": cfg["spec_control_window_mode"].add("value", newJInt(1))
     cfg["spec_control_resolution_scale"].add("value", newJInt(resscale.parseInt))
     cfg["spec_control_sharpening"].add("value", newJInt(100))
     writeFile(gameconfig, cfg.pretty(indent=4))      
@@ -101,6 +100,10 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): voi
             c[i] = fmt"OverrideCPUCoreCount={cpus}"
         elif l.startsWith("TargetFPS"): 
             c[i] = fmt"TargetFPS={fps}"
-        elif l.startsWith("Fullscreen") and res == "0x0": 
-            c[i] = fmt"Fullscreen=true"
+        elif l.startsWith("Fullscreen"): 
+            c[i] = "Fullscreen=false"
+        elif l.startsWith("RememberResolution"):
+            c[i] = "RememberResolution=false"
+        elif l.startsWith("ResolutionForMonitor"):
+            c[i] = "ResolutionForMonitor=0x0"
     writeFile(gamedir/"dxgi.ini", c.join("\n"))
