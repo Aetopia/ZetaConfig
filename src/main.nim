@@ -1,9 +1,13 @@
 import wNim/[wApp, wFrame, wPanel, wStaticBox, wStaticText, wSpinCtrl, wComboBox, wButton, wMessageDialog]
+import winim/lean
 import strutils, sequtils
-import osproc
+import os, osproc
 import mods, settings
 
 if isMainModule:
+    if fileExists(getEnv("LOCALAPPDATA")/"Packages\\Microsoft.254428597CFE2_8wekyb3d8bbwe\\LocalCache\\Local\\HaloInfinite\\Settings\\SpecControlSettings.json"):
+        MessageBox(0, "Halo Infinite has been installed via the Microsoft Store.\nZetaConfig only supports the Steam version of the game.", "ZetaConfig", MB_ICONERROR)
+        quit(1)
     echo "[Main] Initializing..."
     installMods()
     var 

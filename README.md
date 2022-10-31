@@ -1,5 +1,6 @@
 # ZetaConfig 
 A simple tool to optimize and fix performance issues with Halo Infinite.
+**Note: ZetaConfig only supports the Steam release of Halo Infinite!**
 
 ## What's ZetaConfig?
 ZetaConfig aims to fix the glaring issues with the Halo Infinite PC experience.               
