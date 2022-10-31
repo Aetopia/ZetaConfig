@@ -1,9 +1,10 @@
 import wNim/[wApp, wFrame, wPanel, wStaticBox, wStaticText, wSpinCtrl, wComboBox, wButton, wMessageDialog]
 import strutils, sequtils
 import osproc
-import mods, procs
+import mods, settings
 
 if isMainModule:
+    echo "[Main] Initializing..."
     installMods()
     var 
         # GUI 
@@ -15,6 +16,7 @@ if isMainModule:
         dms = getDisplayModes()
         cpusopts: seq[string]
         reflexopts = ["Off", "On", "Boost", "On + Boost"]
+        reflexstatus: string
     for cpu in toSeq(0..countProcessors()):
         if cpu mod 2 == 0 and cpu >= 4: cpusopts.add(intToStr(cpu))
     
@@ -54,7 +56,10 @@ if isMainModule:
                                 style=wCbDropDown or wCbReadOnly or wCbNeededScroll, 
                                 choices=reflexopts, value=reflex)
     if execCmdEx("reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}_Display.Driver\"", options={poDaemon}).exitCode != 0:
+        reflexstatus = "NVIDIA GPU not detected, disabling NVIDIA Reflex..."
         nvr.clear(); nvr.append("Off"); nvr.setSelection(0)
+    else: reflexstatus = "NVIDIA GPU detected, enabling NVIDIA Reflex..."
+    echo "[Main] " & reflexstatus
 
     box.StaticText(label="FPS Limit", pos=(0, 139))
     var fpslimit = box.SpinCtrl(pos=(100, 137), 
@@ -83,3 +88,4 @@ if isMainModule:
     frame.center()
     frame.show()
     app.mainLoop()
+    echo "[Main] Exiting..."

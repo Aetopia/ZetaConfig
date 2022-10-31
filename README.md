@@ -142,7 +142,7 @@ Resolution Enforcer's configuration file can be accessed here:
 
 3. Run the following command to compile:
     ```ps
-    nim c -d:strip -d:release --opt:size --app:gui -o:ZetaConfig src/main.nim
+    nim c -d:ssl -d:strip -d:release --opt:size --app:gui -o:ZetaConfig src/main.nim
     ```
     > Optional: Compress using UPX.         
         ```
@@ -157,7 +157,6 @@ Resolution Enforcer's configuration file can be accessed here:
   Once they compile, launches should be snappy and fast.
 
 2. How to do I fix texture quality loss when using a lower display mode/render resolution?
-    > This might lower framerate by a slight amount!
     
     If you are on an NVIDIA card, you are in luck!
     1. Download [NVIDIA Profile Inspector](https://github.com/FoulPlay/nvidiaProfileInspector).     

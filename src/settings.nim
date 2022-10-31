@@ -13,7 +13,7 @@ proc getDisplayModes*: seq[string] =
         devmode: DEVMODE
     devmode.dmSize = sizeof(DEVMODE).WORD
     while true:
-        if EnumDisplaySettings(nil, i, &devmode) == 0: return dms
+        if EnumDisplaySettings(nil, i, &devmode) == 0: echo "[Settings] Display Modes: ", dms; return dms
         dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
         if not dms.contains(dm): dms.add(dm)
         inc(i)
@@ -24,14 +24,20 @@ proc setGameSettings*(resscale: string): void =
     for k in ["spec_control_vsync", "spec_control_window_mode"]: cfg[k].add("value", newJInt(0))
     cfg["spec_control_resolution_scale"].add("value", newJInt(resscale.parseInt))
     cfg["spec_control_sharpening"].add("value", newJInt(100))
+    echo "[Settings] Saved Setting: spec_control_resolution_scale=", resscale
     writeFile(gameconfig, cfg.pretty(indent=4))      
 
 proc getGameSettings*: string =
-    var cfg = parseFile(gameconfig)
-    return $(cfg["spec_control_resolution_scale"]["value"].getInt())
+    var 
+        cfg = parseFile(gameconfig)
+        r: string
+    r = $(cfg["spec_control_resolution_scale"]["value"].getInt())
+    echo "[Settings] Current Game Setting: spec_control_resolution_scale=", r
+    return r
 
 proc getSKSettings*: (string, string, string, string) =   
     var 
+        r: (string, string, string, string)
         c = readFile(gamedir/"dxgi.ini").splitLines()
         k, v, reflex, cpus, fps: string
         res: string
@@ -60,7 +66,9 @@ proc getSKSettings*: (string, string, string, string) =
         elif lowlatency: reflex = "On"
         elif boost: reflex = "Boost"
     else: reflex = "Off"
-    return (res, cpus, reflex, fps)
+    r = (res, cpus, reflex, fps)
+    echo "[Settings] Current Special K/Resolution Enforcer Settings: ", r
+    return r
 
 proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): void =
     var 
@@ -69,6 +77,7 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): voi
         k, v, l: string
         lowlatency, boost: string
         enable = "true"
+        verbose: bool
         str: bool
 
     if not fileExists(cfg): writeFile(cfg, "") 
@@ -84,26 +93,28 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): voi
 
     for i in 0..c.len-1:
         l = c[i].strip()
+        try: (k, v) = l.split("=")
+        except IndexDefect: discard
+        (k, v) = (k.strip(), v.strip().toLower())
         if str:
-            try: (k, v) = l.split("=")
-            except IndexDefect: discard
-            (k, v) = (k.strip(), v.strip().toLower())
             case k:
-                of "Enable": c[i] = fmt"Enable={enable}"
-                of "LowLatency": c[i] = fmt"LowLatency={lowlatency}"
-                of "LowLatencyBoost": c[i] = fmt"LowLatencyBoost={boost}"
+                of "Enable": c[i] = fmt"Enable={enable}"; verbose = true
+                of "LowLatency": c[i] = fmt"LowLatency={lowlatency}"; verbose = true
+                of "LowLatencyBoost": c[i] = fmt"LowLatencyBoost={boost}"; verbose = true
         if l == "[NVIDIA.Reflex]": str = true
 
         if l.startsWith("OverrideRes"): 
-            c[i] = fmt"OverrideRes={res}"
+            c[i] = fmt"OverrideRes={res}"; verbose = true
         elif l.startsWith("OverrideCPUCoreCount"): 
-            c[i] = fmt"OverrideCPUCoreCount={cpus}"
+            c[i] = fmt"OverrideCPUCoreCount={cpus}"; verbose = true
         elif l.startsWith("TargetFPS"): 
-            c[i] = fmt"TargetFPS={fps}"
-        elif l.startsWith("Fullscreen"): 
-            c[i] = "Fullscreen=false"
-        elif l.startsWith("RememberResolution"):
-            c[i] = "RememberResolution=false"
+            c[i] = fmt"TargetFPS={fps}"; verbose = true
         elif l.startsWith("ResolutionForMonitor"):
             c[i] = "ResolutionForMonitor=0x0"
+        elif k in ["Borderless", "Center", "RenderInBackground"]: c[i] = &"{k}=true"
+        elif k in ["RememberResolution", "Fullscreen"]: c[i] = &"{k}=false"
+        elif k in ["XOffset", "YOffset"]: c[i] = &"{k}=0.0001%"
+        elif k == "AlwaysOnTop": c[i] = "AlwaysOnTop=1"
+        elif k == "PresentationInterval": c[i] = "PresentationInterval=-1"
+        if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
     writeFile(gamedir/"dxgi.ini", c.join("\n"))
