@@ -5,9 +5,11 @@ A simple tool to optimize and fix performance issues with Halo Infinite.
 ZetaConfig aims to fix the glaring issues with the Halo Infinite PC experience.               
 ZetaConfig doesn't touch upon every single issue but focuses on the following:
 
-1. High CPU Usage
-2. Performance
-3. NVIDIA Reflex Support
+1. High CPU Usage.
+2. Window Scaling.
+3. Ability to play at low display resolutions/modes.
+2. Performance.
+3. NVIDIA Reflex Support.
 
 These are some of the core issues, you might have encountered while playing Halo Infinite on PC.
 
