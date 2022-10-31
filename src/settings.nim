@@ -32,7 +32,7 @@ proc getGameSettings*: string =
         cfg = parseFile(gameconfig)
         r: string
     r = $(cfg["spec_control_resolution_scale"]["value"].getInt())
-    echo "[Settings] Current Game Setting: spec_control_resolution_scale=", r
+    echo "[Settings] Current Game Settings: spec_control_resolution_scale=", r
     return r
 
 proc getSKSettings*: (string, string, string, string) =   

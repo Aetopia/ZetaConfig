@@ -1,10 +1,11 @@
 import steam
 import os
 
-var 
-  gamedir* = getSteamGameInstallDir("Halo Infinite")
+var
+  steampath = getSteamPath() 
+  gamedir* = getSteamGameInstallDir("Halo Infinite", steampath)
   gameconfig* = getEnv("LOCALAPPDATA")/"HaloInfinite/Settings/SpecControlSettings.json"
-  steamclient* = getSteamPath()/"steam.exe"
+  steamclient* = steampath/"steam.exe"
   documents* = getEnv("USERPROFILE")/"Documents"
   temp* = getEnv("TEMP")
   xml* = """<?xml version="1.0" encoding="UTF-16"?>
