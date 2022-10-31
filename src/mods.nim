@@ -18,7 +18,7 @@ proc installSpecialK*: void =
         cfgf = gamedir/"dxgi.ini"
         re = documents/"My Mods/ResEnforce/ResEnforce.exe"
         l: string
-    echo "[Mods] Fetching latest Special K GitHub release..."
+    echo "[Mods] Fetching the latest Special K GitHub release..."
 
     client.downloadFile(r["assets"][0]["browser_download_url"].getStr(), specialk)
     echo "[Mods] Fetching 7-Zip console executable..."
@@ -54,11 +54,11 @@ proc installResEnforce: void =
         
     discard execCmdEx("taskkill /im /f ResEnforce.exe")
     if not dirExists(dir): createDir(dir)
-    echo "[Mods] Fetching latest Resolution Enforcer GitHub release..."
+    echo "[Mods] Fetching the latest Resolution Enforcer GitHub release..."
     client.downloadFile(r["assets"][0]["browser_download_url"].getStr().strip(), dir/"ResEnforce.exe")
     writeFile(temp/"ResEnforce.xml", xml % [sid, dir/"ResEnforce.exe"])
     MessageBox(0, "ZetaConfig will add Resolution Enforcer to startup via Task Scheduler.\nPress OK to add the task.", "ZetaConfig", 0x00000040)
-    echo "Attempting to prompt and add Resolution Enforcer to Task Scheduler..."
+    echo "[Mods] Attempting to prompt and add Resolution Enforcer to Task Scheduler..."
     discard shellExecutew(0, newWideCString("runas"), newWideCString("schtasks.exe"), newWideCString("/Create /XML \"$1\" /tn ResEnforce /f" % [temp / "ResEnforce.xml"]), nil, 0)
     echo "[Mods] Starting Resolution Enforcer..."
     discard startProcess(dir/"ResEnforce.exe")

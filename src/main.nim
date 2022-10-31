@@ -33,6 +33,9 @@ if isMainModule:
     if cpus notin cpusopts: cpus = cpusopts[cpusopts.len-1]
     if fps.parseInt notin 0..960: fps = "0"
 
+    # GUI
+    box.StaticText().setFocus()
+
     box.StaticText(label="Resolution Scale", pos=(0, 3))
     var rs = box.SpinCtrl(pos=(100, 0), 
                     style=wSpCenter or wSpArrowKeys)
@@ -89,6 +92,9 @@ if isMainModule:
         setGameSettings(game)
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
         
+    var about = box.Button(label="?", pos=(0, 208), size=(26, 26))
+    about.wEvent_Button do ():
+        frame.MessageDialog("Created by Aetopia\n\nhttps://github.com/Aetopia/ZetaConfig", "About", wOk or wIconInformation).display()
     frame.center()
     frame.show()
     app.mainLoop()
