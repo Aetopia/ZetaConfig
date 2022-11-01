@@ -72,12 +72,12 @@ proc installMods*: void =
     if not fileExists(gamedir/"dxgi.dll") and not fileExists(gamedir/"dxgi.ini"): 
         echo "[Mods] Special K is not installed."
         sk = true
-    else: echo "[Mods] Special K is already installed."
+    else: echo "[Mods] Special K is installed."
 
     if not fileExists(documents/"My Mods/ResEnforce/ResEnforce.exe"): 
         echo "[Mods] ResEnforce is not installed."
         re = true
-    else: echo "[Mods] ResEnforce is already installed."
+    else: echo "[Mods] ResEnforce is installed."
     
     if sk and re: 
         if consent("Special K and Resolution Enforcer not are installed."):

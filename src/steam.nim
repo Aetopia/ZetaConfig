@@ -58,6 +58,6 @@ proc getSteamGameInstallDir*(game: string, steampath: string = getSteamPath()): 
         installdir: string
     for folder in folders:
         installdir = folder/"steamapps/common"/game.strip()
-        if dirExists(installdir): echo "[Steam] Found Game Install Directory: " & installdir; return installdir
+        if dirExists(installdir): echo "[Steam] Found Game Installation Directory: " & installdir; return installdir
     MessageBox(0, "Failed to find Game Directory!", "ZetaConfig", 0x00000010)
     quit(1)

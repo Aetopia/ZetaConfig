@@ -8,33 +8,30 @@ if isMainModule:
     if fileExists(getEnv("LOCALAPPDATA")/"Packages\\Microsoft.254428597CFE2_8wekyb3d8bbwe\\LocalCache\\Local\\HaloInfinite\\Settings\\SpecControlSettings.json"):
         MessageBox(0, "Halo Infinite has been installed via the Microsoft Store.\nZetaConfig only supports the Steam version of the game.", "ZetaConfig", MB_ICONERROR)
         quit(1)
-    echo "[Main] Initializing..."
     installMods()
     var 
+        # Settings
+        (res, cpus, reflex, fps) = getSKSettings()
+        resscale = getGameSettings()
+        dms = getDisplayModes()
+        cpusopts: seq[string]
+        reflexopts = ["Off", "On", "Boost", "On + Boost"]
+
         # GUI 
         app = App(wPerMonitorDpiAware)
         frame = Frame(title="ZetaConfig", style=wSystemMenu, size=(400, 300))
         box = frame.Panel().StaticBox(label="Settings", pos=(7, 0), size=(380, 265))
 
-        # Data
-        dms = getDisplayModes()
-        cpusopts: seq[string]
-        reflexopts = ["Off", "On", "Boost", "On + Boost"]
-        reflexstatus: string
+
     for cpu in toSeq(0..countProcessors()):
         if cpu mod 2 == 0 and cpu >= 4: cpusopts.add(intToStr(cpu))
-    
-    # Settings
-    var 
-        (res, cpus, reflex, fps) = getSKSettings()
-        resscale = getGameSettings()
     if resscale.parseInt notin 50..100: resscale = "100" 
     if res notin dms: res = dms[dms.len-1]
     if cpus notin cpusopts: cpus = cpusopts[cpusopts.len-1]
     if fps.parseInt notin 0..960: fps = "0"
 
     # GUI
-    box.StaticText().setFocus()
+    box.Button(size=(-1, -1), pos=(-1, -1)).setFocus()
 
     box.StaticText(label="Resolution Scale", pos=(0, 3))
     var rs = box.SpinCtrl(pos=(100, 0), 
@@ -62,11 +59,7 @@ if isMainModule:
     var nvr = box.ComboBox(size=(120, 23), pos=(100, 102), 
                                 style=wCbDropDown or wCbReadOnly or wCbNeededScroll, 
                                 choices=reflexopts, value=reflex)
-    if execCmdEx("reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}_Display.Driver\"", options={poDaemon}).exitCode != 0:
-        reflexstatus = "NVIDIA GPU not detected, disabling NVIDIA Reflex..."
-        nvr.clear(); nvr.append("Off"); nvr.setSelection(0)
-    else: reflexstatus = "NVIDIA GPU detected, enabling NVIDIA Reflex..."
-    echo "[Main] " & reflexstatus
+    if not isNVIDIA(): nvr.clear(); nvr.append("Off"); nvr.setSelection(0)
 
     box.StaticText(label="FPS Limit", pos=(0, 139))
     var fpslimit = box.SpinCtrl(pos=(100, 137), 
@@ -98,4 +91,3 @@ if isMainModule:
     frame.center()
     frame.show()
     app.mainLoop()
-    echo "[Main] Exiting..."

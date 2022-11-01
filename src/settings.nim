@@ -1,9 +1,18 @@
-import os
+import os, osproc
 import json
 import strutils, strformat
 import parsecfg
 import winim/lean
 import vars
+
+proc isNVIDIA*: bool = 
+    var 
+        cmd = "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}_Display.Driver\""
+        msg = " detected."
+        r = true
+    if execCmdEx(cmd, options={poDaemon}).exitCode != 0: r = false; msg = " not detected."
+    echo "[Settings] NVIDIA GPU", msg
+    return r
 
 proc getDisplayModes*: seq[string] =
     var 
@@ -11,11 +20,13 @@ proc getDisplayModes*: seq[string] =
         dms: seq[string]
         dm: string
         devmode: DEVMODE
+        add: bool
     devmode.dmSize = sizeof(DEVMODE).WORD
     while true:
         if EnumDisplaySettings(nil, i, &devmode) == 0: echo "[Settings] Display Modes: ", dms; return dms
         dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
-        if not dms.contains(dm): dms.add(dm)
+        if dm == "800x600": add = true
+        if not dms.contains(dm) and add: dms.add(dm)
         inc(i)
 
 proc setGameSettings*(resscale: string): void =
@@ -32,43 +43,42 @@ proc getGameSettings*: string =
         cfg = parseFile(gameconfig)
         r: string
     r = $(cfg["spec_control_resolution_scale"]["value"].getInt())
-    echo "[Settings] Current Game Settings: spec_control_resolution_scale=", r
+    echo "[Settings] Loaded Setting: spec_control_resolution_scale=", r
     return r
 
 proc getSKSettings*: (string, string, string, string) =   
     var 
-        r: (string, string, string, string)
         c = readFile(gamedir/"dxgi.ini").splitLines()
-        k, v, reflex, cpus, fps: string
+        l, k, v, reflex, cpus, fps: string
         res: string
-        enable, lowlatency, boost, str: bool
+        enable, lowlatency, boost, str, verbose: bool
 
-    for l in c:
+    for i in 0..c.len-1:
+        l = c[i].strip()
         if str:
             try: (k, v) = l.split("=")
             except IndexDefect: discard
             (k, v) = (k.strip(), v.strip().toLower())
             case k:
-                of "Enable": enable = parseBool(v)
-                of "LowLatency": lowlatency = parseBool(v)
-                of "LowLatencyBoost": boost = parseBool(v)
-        if l.strip() == "[NVIDIA.Reflex]": str = true
+                of "Enable": enable = parseBool(v); verbose = true
+                of "LowLatency": lowlatency = parseBool(v); verbose = true
+                of "LowLatencyBoost": boost = parseBool(v); verbose = true
+        if l == "[NVIDIA.Reflex]": str = true
 
-        if l.strip().startsWith("OverrideRes"):
-            res = l.split("=")[1].strip()
-        elif l.strip().startsWith("OverrideCPUCoreCount"):
-            cpus = l.split("=")[1].strip()
-        elif l.strip().startsWith("TargetFPS"):
-            fps = $(l.split("=")[1].strip(chars={'-', ' '}).parseFloat.int)
+        if l.startsWith("OverrideRes"):
+            res = l.split("=")[1].strip(); verbose = true
+        elif l.startsWith("OverrideCPUCoreCount"):
+            cpus = l.split("=")[1].strip(); verbose = true
+        elif l.startsWith("TargetFPS"):
+            fps = $(l.split("=")[1].strip(chars={'-', ' '}).parseFloat.int); verbose = true
+        if verbose: echo "[Settings] Loaded Setting: ", l; verbose = false
 
     if enable:
         if lowlatency and boost: reflex = "On + Boost"
         elif lowlatency: reflex = "On"
         elif boost: reflex = "Boost"
     else: reflex = "Off"
-    r = (res, cpus, reflex, fps)
-    echo "[Settings] Current Special K/Resolution Enforcer Settings: ", r
-    return r
+    return (res, cpus, reflex, fps)
 
 proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): void =
     var 
