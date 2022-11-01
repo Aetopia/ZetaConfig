@@ -97,7 +97,7 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
     Set a framelimit for the game.                              
     (Due ZetaConfig setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.)
 
-Click on the `Save` to apply your settings.
+Click on the `[Save]` button to apply your settings.
 
 ## Accessing Special K & Resolution Enforcer Settings
 You can access the Special K Control Panel, by pressing Ctrl + Shift + Backspace ingame.               
