@@ -168,7 +168,7 @@ Resolution Enforcer's configuration file can be accessed here:
     2. Open it and search for the Halo Infinite profile.
 
     3. Find the following option:     
-        \> `Antialiasing - Transparency Supersampling`         
+        **\>** `Antialiasing - Transparency Supersampling`         
         and set its value to: `0x00000008 AA_MODE_REPLAY_MODE_ALL`
     
     4. Then look for `Texture filtering - LOD Bias (DX)` and set to a negative value of your choice.
