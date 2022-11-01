@@ -17,10 +17,10 @@ These are some of the core issues, you might have encountered while playing Halo
 But technically ZetaConfig is just a frontend for configuring specific settings within these 2 open source projects:
 1. [Special K](https://wiki.special-k.info) | [GitHub](https://github.com/SpecialKO/SpecialK)
 
-   > A game tweaking tool which offers a framelimiter, NVIDIA Reflex support in compatible DX11/12 game, window/volume management and much more. Make sure to check out the Special K wiki for a full list of features. 
+   > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
 2. [Resolution Enforcer](https://github.com/Aetopia/ResEnforce)
-    > This program fundamentally allows you to force an application to run at a specific resolution of your choice.              
+    > A program that fundamentally allows you to force an application to run at a specific resolution of your choice.              
     Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
 
 ZetaConfig utilizes the following features from the specified projects:
