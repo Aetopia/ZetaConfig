@@ -13,7 +13,7 @@ proc getSteamPath* : string =
         output: seq[string]
 
     if muicache.exitCode == 0:
-        echo msg, " MUICache..."
+        echo msg, " MUICache"
         output = muicache.output.strip(chars={'\n'}).splitlines()
         for i in 0..len(output)-1:
             l = output[i].strip()
@@ -26,7 +26,7 @@ proc getSteamPath* : string =
                 except IndexDefect: discard
 
     elif protocol.exitCode == 0:
-        echo msg, " Steam Browser Protocol..."
+        echo msg, " Steam Browser Protocol"
         output = protocol.output.strip(chars={'\n'}).splitlines()
         for i in 0..len(output)-1:
             l = output[i].strip()
