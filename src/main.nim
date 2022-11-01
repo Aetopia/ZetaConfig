@@ -3,6 +3,7 @@ import winim/lean
 import strutils, sequtils
 import os, osproc
 import mods, settings
+var version = "v1.0.0 Pre-Release 1"
 
 if isMainModule:
     if fileExists(getEnv("LOCALAPPDATA")/"Packages\\Microsoft.254428597CFE2_8wekyb3d8bbwe\\LocalCache\\Local\\HaloInfinite\\Settings\\SpecControlSettings.json"):
@@ -19,7 +20,7 @@ if isMainModule:
 
         # GUI 
         app = App(wPerMonitorDpiAware)
-        frame = Frame(title="ZetaConfig", style=wSystemMenu, size=(400, 300))
+        frame = Frame(title="ZetaConfig $1" % version, style=wSystemMenu, size=(400, 300))
         box = frame.Panel().StaticBox(label="Settings", pos=(7, 0), size=(380, 265))
 
 
@@ -87,7 +88,7 @@ if isMainModule:
         
     var about = box.Button(label="?", pos=(0, 208), size=(26, 26))
     about.wEvent_Button do ():
-        frame.MessageDialog("Created by Aetopia\n\nhttps://github.com/Aetopia/ZetaConfig", "About", wOk or wIconInformation).display()
+        frame.MessageDialog("Created by Aetopia\nVersion: $1\nhttps://github.com/Aetopia/ZetaConfig" % version, "About", wOk or wIconInformation).display()
     frame.center()
     frame.show()
     app.mainLoop()
