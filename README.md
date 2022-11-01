@@ -145,7 +145,7 @@ Resolution Enforcer's configuration file can be accessed here:
 
 3. Run the following command to compile:
     ```ps
-    nim c -d:ssl -d:strip -d:release --opt:size --app:gui -o:ZetaConfig src/main.nim
+    nim c -d:ssl -d:strip -d:release --opt:size --app:gui -o:ZetaConfig.exe src/main.nim
     ```
     > Optional: Compress using UPX.         
         ```
