@@ -3,8 +3,9 @@ A simple tool to optimize and fix performance issues with Halo Infinite.
 **Note: ZetaConfig only supports the Steam release of Halo Infinite!**
 
 # Discussions
-If you want more insight into how Halo Infinite or ZetaConfig works check out ZetaConfig's Discussion Page!                        
-**[ZetaConfig Discussions](https://github.com/Aetopia/ZetaConfig/discussions)**
+I plan to use GitHub Discussions to provide various technical information on Halo Infinite & ZetaConfig!
+
+Check out **[ZetaConfig Discussions](https://github.com/Aetopia/ZetaConfig/discussions)**.
 
 ## What's ZetaConfig?
 ZetaConfig aims to fix the glaring issues with the Halo Infinite PC experience.               
@@ -47,7 +48,7 @@ ZetaConfig utilizes the following features from the specified projects:
     > ![4Cores](images/4Cores.png)
 
     Spoofing the CPU core count seems to determine how many threads should be used for compute.      
-      
+
     In `[Image 1]`, the game is using all threads but in `[Image 2]`, CPUs `3, 4, 5, 6` are being either being less priortized to be used by the game or just being given less relevance thus leading to lower CPU usage.
 
     Technically Halo Infinite uses 9 compute threads, explaining why the i7-10700K was having 100% with Hyper Threading disabled.
