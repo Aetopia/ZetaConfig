@@ -2,6 +2,10 @@
 A simple tool to optimize and fix performance issues with Halo Infinite.
 **Note: ZetaConfig only supports the Steam release of Halo Infinite!**
 
+# Discussions
+If you want more insight into how Halo Infinite or ZetaConfig works check out ZetaConfig's Discussion Page!                        
+**[ZetaConfig Discussions](https://github.com/Aetopia/ZetaConfig/discussions)**
+
 ## What's ZetaConfig?
 ZetaConfig aims to fix the glaring issues with the Halo Infinite PC experience.               
 ZetaConfig doesn't touch upon every single issue but focuses on the following:
@@ -113,7 +117,6 @@ Resolution Enforcer's configuration file can be accessed here:
 ```
 "%USERPROFILE%\My Mods\ResEnforce\Options.ini"
 ```
-
 
 # Installation
 1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
