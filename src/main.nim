@@ -17,7 +17,7 @@ if isMainModule:
         resscale = getGameSettings()
         dms = getDisplayModes()
         cpusopts: seq[string]
-        default: bool
+        native: bool
 
     for cpu in toSeq(0..countProcessors()):
         if cpu mod 2 == 0 and cpu >= 4: cpusopts.add(intToStr(cpu))
@@ -72,10 +72,10 @@ if isMainModule:
             game = rs.getText()
             sk = [dm.getValue(), nvr.getValue(), scc.getValue(), fpslimit.getText()]     
         if game.parseInt <= 50: game = "50"; rs.setText(game)
-        if sk[0] == dm[dm.len-1]: default = true
+        if sk[0] == dm[dm.len-1]: native = true
         if sk[2] == cpusopts[cpusopts.len-1]: sk[2] = "-1"
         if sk[3].parseInt in 1..29: sk[3] = "30"; fpslimit.setText(sk[3])
-        setSKSettings(sk[0], sk[1], sk[2], sk[3], default)
+        setSKSettings(sk[0], sk[1], sk[2], sk[3], native)
         setGameSettings(game)
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
         

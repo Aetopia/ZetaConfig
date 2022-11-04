@@ -81,7 +81,7 @@ proc getSKSettings*: (string, string, string, string) =
     else: reflex = "Off"
     return (res, cpus, reflex, fps)
 
-proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, default: bool): void =
+proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, native: bool): void =
     let cfg = documents/"My Mods/ResEnforce/Options.ini"
     var 
         c = readFile(dxgiini).splitLines()
@@ -91,7 +91,7 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, defa
         verbose: bool
         str: bool
     
-    if default: alwaysontop = "0"
+    if native: alwaysontop = "0"
 
     if not fileExists(cfg): writeFile(cfg, "") 
     var f = loadConfig(cfg)
