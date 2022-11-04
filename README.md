@@ -46,7 +46,8 @@ ZetaConfig utilizes the following features from the specified projects:
     > **Image 2**:                     
     > ![4Cores](images/4Cores.png)
 
-    Spoofing the CPU core count seems to determine how many threads should be used for compute.        
+    Spoofing the CPU core count seems to determine how many threads should be used for compute.      
+      
     In `[Image 1]`, the game is using all threads but in `[Image 2]`, CPUs `3, 4, 5, 6` are being either being less priortized to be used by the game or just being given less relevance thus leading to lower CPU usage.
 
     Technically Halo Infinite uses 9 compute threads, explaining why the i7-10700K was having 100% with Hyper Threading disabled.
