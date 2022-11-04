@@ -6,8 +6,9 @@ import winim/lean
 import vars
 
 proc isNVIDIA*: bool = 
-    var 
+    const 
         cmd = "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}_Display.Driver\""
+    var
         msg = " detected."
         r = true
     if execCmdEx(cmd, options={poDaemon}).exitCode != 0: r = false; msg = " not detected."
@@ -47,8 +48,8 @@ proc getGameSettings*: string =
     return r
 
 proc getSKSettings*: (string, string, string, string) =   
-    var 
-        c = readFile(gamedir/"dxgi.ini").splitLines()
+    let c = readFile(dxgiini).splitLines()
+    var
         l, k, v, reflex, cpus, fps: string
         res: string
         enable, lowlatency, boost, str, verbose: bool
@@ -80,15 +81,17 @@ proc getSKSettings*: (string, string, string, string) =
     else: reflex = "Off"
     return (res, cpus, reflex, fps)
 
-proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): void =
+proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, default: bool): void =
+    let cfg = documents/"My Mods/ResEnforce/Options.ini"
     var 
-        cfg = documents/"My Mods/ResEnforce/Options.ini"
-        c = readFile(gamedir/"dxgi.ini").splitLines()
+        c = readFile(dxgiini).splitLines()
         k, v, l: string
         lowlatency, boost: string
-        enable = "true"
+        (enable, alwaysontop)  = ("true", "1")
         verbose: bool
         str: bool
+    
+    if default: alwaysontop = "0"
 
     if not fileExists(cfg): writeFile(cfg, "") 
     var f = loadConfig(cfg)
@@ -124,7 +127,7 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string): voi
         elif k in ["Borderless", "Center", "RenderInBackground"]: c[i] = &"{k}=true"
         elif k in ["RememberResolution", "Fullscreen"]: c[i] = &"{k}=false"
         elif k in ["XOffset", "YOffset"]: c[i] = &"{k}=0.0001%"
-        elif k == "AlwaysOnTop": c[i] = "AlwaysOnTop=1"
+        elif k == "AlwaysOnTop": c[i] = &"AlwaysOnTop={alwaysontop}"
         elif k == "PresentationInterval": c[i] = "PresentationInterval=-1"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
-    writeFile(gamedir/"dxgi.ini", c.join("\n"))
+    writeFile(dxgiini, c.join("\n"))

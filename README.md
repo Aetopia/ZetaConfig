@@ -35,15 +35,21 @@ ZetaConfig utilizes the following features from the specified projects:
     ### Examples
 
     #### All Cores (i7-10700K with Hyper-Threading disabled.)
-    ![AllCores](images/AllCores.png)
+    > **Image 1**:              
+    > ![AllCores](images/AllCores.png)
 
     #### Spoofed 4 Cores (i7-10700K with Hyper-Threading disabled.)
-    ![4Cores](images/4Cores.png)
+    > **Image 2**:                     
+    > ![4Cores](images/4Cores.png)
 
-    Spoofing a CPU's core count seems to affect how the game handles compute based operations.  
-    Additionally this option also decreases CPU Usage.               
-    This option might decrease peak framerate by a slight amount but the tradeoff is worth it.       
-    Use this option in conjunction with limiting your framerate.  
+    Spoofing the CPU core count seems to determine how many threads should be used for compute.        
+    In `[Image 1]`, the game is using all threads but in `[Image 2]`, CPUs `3, 4, 5, 6` are being either being less priortized to be used by the game or just being given less relevance thus leading to lower CPU usage.
+
+    Technically Halo Infinite uses 9 compute threads, explaining why the i7-10700K was having 100% with Hyper Threading disabled.
+
+    If your CPU has more than 9 compute threads those will simply be underutlized by the game or will given less relevance.
+    
+    Using this option can decrease peak framerate so its recommended to be used in conjunction with limiting your framerate.  
    
 3. NVIDIA Reflex:                      
     Special K can allow compatible DX11/12 games to utlize NVIDIA Reflex.

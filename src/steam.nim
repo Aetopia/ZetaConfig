@@ -5,10 +5,11 @@ import winim/lean
 
 proc getSteamPath* : string =
     # Fetches the Steam installation directory.
-    var 
+    const msg = "[Steam] Locating Steam Installation Directory:"
+    let 
         muicache = execCmdEx("reg query \"HKEY_CLASSES_ROOT\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache\" /s", options={poDaemon})
         protocol = execCmdEx("reg query \"HKEY_CLASSES_ROOT\\steam\\Shell\\Open\\Command\" /ve /s", options={poDaemon})
-        msg = "[Steam] Locating Steam Installation Directory:"
+    var 
         n, d, l, p: string
         output: seq[string]
 
@@ -42,20 +43,20 @@ proc getSteamPath* : string =
     quit(1)
     
 proc getSteamLibraryFolders*(steampath: string = getSteamPath()) : seq[string] =
-    var 
+    let 
         libs = steampath / "config/libraryfolders.vdf"
-        folders: seq[string]
         c = readFile(libs).splitLines()
+    var folders: seq[string]
+
     for i in c:
         var l = i.strip()
         if l.startsWith("\"path\""):
             folders.add(l.split("\"path\"")[1].strip().strip(chars={'"'}).replace("\\\\", "\\"))
     return folders
 
-proc getSteamGameInstallDir*(game: string, steampath: string = getSteamPath()): string =
-    var 
-        folders = getSteamLibraryFolders(steampath)
-        installdir: string
+proc getSteamGameInstallDir*(game: string, steampath: string = getSteamPath()): string = 
+    let folders = getSteamLibraryFolders(steampath)
+    var installdir: string
     for folder in folders:
         installdir = folder/"steamapps/common"/game.strip()
         if dirExists(installdir): echo "[Steam] Found Game Installation Directory: " & installdir; return installdir
