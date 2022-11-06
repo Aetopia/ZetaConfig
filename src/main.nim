@@ -3,7 +3,7 @@ import winim/lean
 import strutils, sequtils
 import os, osproc
 import mods, settings, vars
-const version = "v1.0.0 Pre-Release 2"
+const version = "v1.0.0 Pre-Release 3"
 
 if isMainModule:
     if fileExists(localappdata/"Packages\\Microsoft.254428597CFE2_8wekyb3d8bbwe\\LocalCache\\Local\\HaloInfinite\\Settings\\SpecControlSettings.json"):

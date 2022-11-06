@@ -12,7 +12,7 @@ proc getSteamPath* : string =
     var 
         n, d, l, p: string
         output: seq[string]
-
+    
     if muicache.exitCode == 0:
         echo msg, " MUICache"
         output = muicache.output.strip(chars={'\n'}).splitlines()
@@ -26,7 +26,7 @@ proc getSteamPath* : string =
                         p = splitPath(n.split(".FriendlyAppName")[0].split(".ApplicationCompany")[0].strip())[0]
                 except IndexDefect: discard
 
-    elif protocol.exitCode == 0:
+    if protocol.exitCode == 0:
         echo msg, " Steam Browser Protocol"
         output = protocol.output.strip(chars={'\n'}).splitlines()
         for i in 0..len(output)-1:
@@ -36,6 +36,7 @@ proc getSteamPath* : string =
                     (n, d) = l.split("REG_SZ")
                     p = splitPath(d.strip().split("\" -")[0].strip(chars={'"', ' '}))[0]
                 except IndexDefect: discard
+
     if p != "":
         echo "[Steam] Found Steam Installation Directory: " & p
         return p
