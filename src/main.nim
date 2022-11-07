@@ -3,7 +3,6 @@ import winim/lean
 import strutils, sequtils
 import os, osproc
 import mods, settings, vars
-const version = "v1.0.0 Pre-Release 3"
 
 if isMainModule:
     if fileExists(localappdata/"Packages\\Microsoft.254428597CFE2_8wekyb3d8bbwe\\LocalCache\\Local\\HaloInfinite\\Settings\\SpecControlSettings.json"):
@@ -29,7 +28,7 @@ if isMainModule:
     # GUI 
     let 
         app = App(wPerMonitorDpiAware)
-        frame = Frame(title="ZetaConfig $1" % version, style=wSystemMenu, size=(400, 300))
+        frame = Frame(title="ZetaConfig", style=wSystemMenu, size=(400, 300))
         box = frame.Panel().StaticBox(label="Settings", pos=(7, 0), size=(380, 265))
         rs = box.SpinCtrl(pos=(100, 0), style=wSpCenter or wSpArrowKeys)
         dm = box.ComboBox(size=(120, 23), pos=(100, 34), style=wCbDropDown or wCbReadOnly or wCbNeededScroll, choices=dms, value=res)
@@ -80,7 +79,7 @@ if isMainModule:
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
         
     about.wEvent_Button do ():
-        frame.MessageDialog("Created by Aetopia\nVersion: $1\nhttps://github.com/Aetopia/ZetaConfig" % version, "About", wOk or wIconInformation).display()
+        frame.MessageDialog("Created by Aetopia\nhttps://github.com/Aetopia/ZetaConfig", "About", wOk or wIconInformation).display()
 
     frame.center()
     frame.show()
