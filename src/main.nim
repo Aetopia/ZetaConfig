@@ -12,11 +12,11 @@ if isMainModule:
 
     # Settings
     var
-        (res, cpus, reflex, fps) = getSKSettings()
-        resscale = getGameSettings()
         dms = getDisplayModes()
+        resscale = getGameSettings()
         cpusopts: seq[string]
         native: bool
+        (res, cpus, reflex, fps) = getSKSettings()
 
     for cpu in toSeq(0..countProcessors()):
         if cpu mod 2 == 0 and cpu >= 4: cpusopts.add(intToStr(cpu))

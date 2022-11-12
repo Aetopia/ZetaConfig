@@ -66,7 +66,7 @@ proc installMods*: void =
         if MessageBox(0, msg & "\nInstall?", "ZetaConfig", 0x00000004 or 0x00000040) == 6:
             return true
         quit()
-    if not fileExists(gamedir/"dxgi.dll") and not fileExists(gamedir/"dxgi.ini"): 
+    if not fileExists(gamedir/"dxgi.dll") or not fileExists(gamedir/"dxgi.ini"): 
         echo "[Mods] Special K is not installed."
         issk = true
     else: echo "[Mods] Special K is installed."

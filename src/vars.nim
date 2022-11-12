@@ -10,6 +10,7 @@ let
   steamclient* = steampath/"steam.exe"
   documents* = getEnv("USERPROFILE")/"Documents"
   re* = documents/"My Mods/ResEnforce/ResEnforce.exe"
+  reini* = documents/"My Mods/ResEnforce/Options.ini"
   temp* = getEnv("TEMP")
   xml* = """<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
