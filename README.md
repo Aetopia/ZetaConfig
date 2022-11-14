@@ -197,7 +197,7 @@ Resolution Enforcer's configuration file can be accessed here:
     ![Framebuffer](images/Framebuffer.png)
 
     **If Halo Infinite launches like this then do the following:**
-    1. Press Ctrl + Shift + Backspace to open the Special K Control Panel.
+    1. Press `[Ctrl]` + `[Shift]` + `[Backspace]` to open the Special K Control Panel.
     2. Click on File and then Restart.
         ![Restart](images/Restart.png)
     3. Click on the `[Okay]` button.
