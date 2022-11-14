@@ -174,8 +174,8 @@ Resolution Enforcer's configuration file can be accessed here:
 # FAQ
 1. Why is Halo Infinite's launch after installing Special K + Resolution Enforcer slow?   
 
-  The game is compiling shaders since Special K is loaded into the game.
-  Once they compile, launches should be snappy and fast.
+    The game is compiling shaders since Special K is loaded into the game.
+    Once they compile, launches should be snappy and fast.
 
 2. How to do I fix texture quality loss when using a lower display mode/render resolution?
     
