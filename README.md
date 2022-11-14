@@ -202,7 +202,7 @@ Resolution Enforcer's configuration file can be accessed here:
         ![Restart](images/Restart.png)
     3. Click on the `[Okay]` button.
         ![RestartConfirm](images/RestartConfirm.png) 
-    ## OR
+    ### OR
     **Just press `[Alt]` + `[F4]` & relaunch the game**
 
     ### Why does this happen?
