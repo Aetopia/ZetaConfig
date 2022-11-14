@@ -1,25 +1,25 @@
 import os, osproc
-import httpclient
 import json
 import strutils
 import winim/[lean, shell]
 import vars
+
+proc downloadFile(url: string, file: string) = discard execCmdEx("curl.exe -Ls \"$1\" -o \"$2\"" % [url, file], options={poDaemon})
 
 proc installSpecialK*: void =
     for file in ["dxgi.dll", "dxgi.ini"]: removeFile(gamedir/file)
     discard execCmdEx("taskkill /f /im ResEnforce.exe", options={poDaemon})
     # Download Files.
     let 
-        client = newHttpClient()
-        r = parseJson(client.getContent("https://api.github.com/repos/SpecialKO/SpecialK/releases/latest"))
+        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/SpecialKO/SpecialK/releases/latest\"", options={poDaemon}).output)
         (specialk, archiver, dll) =  (temp/"SpecialK.7z", temp/"7zr.exe", temp/"SpecialK/SpecialK64.dll")
         osdf = documents/"My Mods/SpecialK/Global/osd.ini"
 
     echo "[Mods] Fetching the latest Special K GitHub release..."
 
-    client.downloadFile(r["assets"][0]["browser_download_url"].getStr(), specialk)
+    downloadFile(r["assets"][0]["browser_download_url"].getStr(), specialk)
     echo "[Mods] Fetching 7-Zip console executable..."
-    client.downloadFile("https://www.7-zip.org/a/7zr.exe", archiver)
+    downloadFile("https://www.7-zip.org/a/7zr.exe", archiver)
 
     discard execCmdEx("$1 x $2 -o\"$3\\SpecialK\" -y" % [archiver, specialk, temp], options={poDaemon})
     copyFile(dll, gamedir/"dxgi.dll")
@@ -46,18 +46,18 @@ proc installResEnforce: void =
     let 
         sid = execCmdEx("whoami.exe /user /fo csv").output.splitLines()[1].split("\",")[1].strip(chars={'"'}).strip()
         dir = splitPath(re)[0]
-        client = newHttpClient()
-        r = parseJson(client.getContent("https://api.github.com/repos/Aetopia/ResEnforce/releases/latest"))
+        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/Aetopia/ResEnforce/releases/latest\"", options={poDaemon}).output)
         
     discard execCmdEx("taskkill /im /f ResEnforce.exe")
     if not dirExists(dir): createDir(dir)
     echo "[Mods] Fetching the latest Resolution Enforcer GitHub release..."
-    client.downloadFile(r["assets"][0]["browser_download_url"].getStr().strip(), dir/"ResEnforce.exe")
+    downloadFile(r["assets"][0]["browser_download_url"].getStr().strip(), dir/"ResEnforce.exe")
     writeFile(temp/"ResEnforce.xml", xml % [sid, dir/"ResEnforce.exe"])
     MessageBox(0, "ZetaConfig will add Resolution Enforcer to startup via Task Scheduler.\nPress OK to add the task.", "ZetaConfig", 0x00000040)
     echo "[Mods] Attempting to prompt and add Resolution Enforcer to Task Scheduler..."
     discard ShellExecuteW(0, "runas", "schtasks.exe", "/Create /XML \"$1\" /tn ResEnforce /f" % [temp/"ResEnforce.xml"], nil, 0)
     echo "[Mods] Starting Resolution Enforcer..."
+
     discard startProcess(re)
 
 proc installMods*: void =

@@ -36,6 +36,7 @@ proc getDisplayModes*: seq[string] =
 
 proc setGameSettings*(resscale: string): void =
     var cfg = parseFile(gameconfig)
+
     for k in [
         "spec_control_minimum_framerate", 
         "spec_control_target_framerate"]: 
@@ -43,7 +44,8 @@ proc setGameSettings*(resscale: string): void =
 
     for k in [
         "spec_control_vsync", 
-        "spec_control_window_mode"]: 
+        "spec_control_window_mode",
+        "spec_control_use_cached_window_position"]: 
         cfg[k].add("value", newJInt(0))
 
     for k in [
@@ -148,6 +150,6 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
             of "AlwaysOnTop": c[i] = &"AlwaysOnTop={alwaysontop}"
             of "PresentationInterval": c[i] = "PresentationInterval=-1"
             of "Borderless", "Center", "RenderInBackground", "Fullscreen": c[i] = &"{k}=true"
-            of "XOffset", "YOffset": c[i] = &"{k}=0.0%"
+            of "XOffset", "YOffset": c[i] = &"{k}=0.0001%"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
     writeFile(dxgiini, c.join("\n"))

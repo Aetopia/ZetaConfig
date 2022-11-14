@@ -128,6 +128,12 @@ Resolution Enforcer's configuration file can be accessed here:
     This will allow for Resolution Enforcer to run when you startup Windows.
     Adminstrator privileges are required for this step.
 5. Once the ZetaConfig UI pops up, you are good to go!
+6. Configure your settings and then hit `[Save]` to save your settings.
+7. Then launch Halo Infinite, if the game launches like this and swaps to a lower display resolution automatically that means everything is working fine!
+    > I have removed the `intro.mp4` and `Startup_Sequence_Loading.mp4` from my Halo Infinite installation and enabled the Special K OSD.                           
+    For you, Intro video will play in the corner without the Special K OSD.
+
+    ![LoadingScreen](images/LoadingScreen.png)
 
 # Uninstallation
 1. Navigate to Halo Infinite's installation directory on your system.      
@@ -156,7 +162,7 @@ Resolution Enforcer's configuration file can be accessed here:
 
 3. Run the following command to compile:
     ```ps
-    nim c -d:ssl -d:release --opt:size -o:ZetaConfig.exe src/main.nim
+    nim c -d:release --opt:size -o:ZetaConfig.exe src/main.nim
     ```
     > Optional: Compress using UPX.         
         ```
@@ -166,15 +172,15 @@ Resolution Enforcer's configuration file can be accessed here:
 4. Run `ZetaConfig.exe`.
 
 # FAQ
-1. Q. Halo Infinite's launch after installing Special K + Resolution Enforcer seems slow?      
-  A. The game is compiling shaders since Special K is loaded into the game.
+1. Why is Halo Infinite's launch after installing Special K + Resolution Enforcer slow?   
+
+  The game is compiling shaders since Special K is loaded into the game.
   Once they compile, launches should be snappy and fast.
 
 2. How to do I fix texture quality loss when using a lower display mode/render resolution?
     
     If you are on an NVIDIA card, you are in luck!
-    1. Download [NVIDIA Profile Inspector](https://github.com/FoulPlay/nvidiaProfileInspector).     
-        **Note: The original NVPI hasn't been updated in years that's why I am linking fork which is update to date.**
+    1. Download [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfileInspector/releases).    
     
     2. Open it and search for the Halo Infinite profile.
 
@@ -184,3 +190,23 @@ Resolution Enforcer's configuration file can be accessed here:
     
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
+
+3. Halo Infinite is rendering the corner of the screen surrounded by black bars.
+
+    **Note: This isn't an issue with your Graphics Control Panel Scaling Mode!**
+    ![Framebuffer](images/Framebuffer.png)
+
+    **If Halo Infinite launches like this then do the following:**
+    1. Press Ctrl + Shift + Backspace to open the Special K Control Panel.
+    2. Click on File and then Restart.
+        ![Restart](images/Restart.png)
+    3. Click on the `[Okay]` button.
+        ![RestartConfirm](images/RestartConfirm.png) 
+    ## OR
+    **Just press `[Alt]` + `[F4]` & relaunch the game**
+
+    ### Why does this happen?
+    You might have likely taken focus away from the game window when it was launching.
+    Resulting in Halo Infinite to set the framebuffer area to your screen native resolution but rendering in the corner of the window.
+
+    You can mitigate this by allowing the game to first properly launch then swap to your desired display mode/resolution.
