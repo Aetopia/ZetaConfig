@@ -72,7 +72,7 @@ proc getGameSettings*: string =
 proc getSKSettings*: (string, string, string, string) =   
     let 
         skc = readFile(dxgiini).splitLines()
-        res = loadConfig(reini).getSectionValue("Profiles", "HaloInfinite.exe", "0x0")
+    var res = loadConfig(reini).getSectionValue("Profiles", "HaloInfinite.exe", "0x0")
     echo fmt"[Settings] Loaded Setting: HaloInfinite.exe={res}"
     var
         l, k, v, reflex, cpus, fps: string
@@ -92,11 +92,12 @@ proc getSKSettings*: (string, string, string, string) =
 
         case k:
             of "OverrideCPUCoreCount": 
-                cpus = l.split("=")[1].strip()
+                cpus = v
                 verbose = true
             of "TargetFPS":
-                fps = $(l.split("=")[1].strip(chars={'-', ' '}).parseFloat.int)
+                fps = $(v.strip(chars={'-', ' '}).parseFloat.int)
                 verbose = true
+            of "OverrideRes": res = v; verbose = true
         if verbose: echo "[Settings] Loaded Setting: ", l; verbose = false
 
     if enable:
@@ -142,14 +143,14 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
         if l == "[NVIDIA.Reflex]": str = true
 
         case k:
-            of "OverrideRes": c[i] = "OverrideRes=0x0"
-            of "RememberResolution": c[i] = "RememberResolution=false"
-            of "OverrideCPUCoreCount":c[i] = fmt"OverrideCPUCoreCount={cpus}"; verbose = true
-            of "TargetFPS": c[i] = fmt"TargetFPS={fps}"; verbose = true
-            of "ResolutionForMonitor": c[i] = "ResolutionForMonitor=0x0"
-            of "AlwaysOnTop": c[i] = &"AlwaysOnTop={alwaysontop}"
-            of "PresentationInterval": c[i] = "PresentationInterval=-1"
-            of "Borderless", "Center", "RenderInBackground", "Fullscreen": c[i] = &"{k}=true"
+            of "OverrideRes": c[i] = &"{k}={res}"; verbose = true
+            of "RememberResolution", "Fullscreen": c[i] = &"{k}=false"
+            of "OverrideCPUCoreCount": c[i] = fmt"{k}={cpus}"; verbose = true
+            of "TargetFPS": c[i] = fmt"{k}={fps}"; verbose = true
+            of "ResolutionForMonitor": c[i] = &"{k}=0x0"
+            of "AlwaysOnTop": c[i] = &"{k}={alwaysontop}"
+            of "PresentationInterval": c[i] = &"{k}=-1"
+            of "Borderless", "Center", "RenderInBackground": c[i] = &"{k}=true"
             of "XOffset", "YOffset": c[i] = &"{k}=0.0001%"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
     writeFile(dxgiini, c.join("\n"))
