@@ -4,7 +4,8 @@ import strutils
 import winim/[lean, shell]
 import vars
 
-proc downloadFile(url: string, file: string) = discard execCmdEx("curl.exe -Ls \"$1\" -o \"$2\"" % [url, file], options={poDaemon})
+proc downloadFile(url: string, file: string): void = 
+    discard execCmdEx("curl.exe -Ls \"$1\" -o \"$2\"" % [url, file], options={poDaemon})
 
 proc installSpecialK*: void =
     for file in ["dxgi.dll", "dxgi.ini"]: removeFile(gamedir/file)
