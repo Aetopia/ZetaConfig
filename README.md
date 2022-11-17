@@ -9,7 +9,7 @@ Check out **[ZetaConfig Discussions](https://github.com/Aetopia/ZetaConfig/discu
 
 ## What's ZetaConfig?
 ZetaConfig aims to fix the glaring issues with the Halo Infinite PC experience.               
-ZetaConfig doesn't touch upon every single issue but focuses on the following:
+This tool doesn't touch upon every single issue but focuses on the following:
 
 1. High CPU Usage.
 2. Window Scaling.
@@ -54,8 +54,6 @@ ZetaConfig utilizes the following features from the specified projects:
     Technically Halo Infinite uses 9 compute threads, explaining why the i7-10700K was having 100% with Hyper Threading disabled.
 
     If your CPU has more than 9 compute threads those will simply be underutlized by the game or will given less relevance.
-    
-    Using this option can decrease peak framerate so its recommended to be used in conjunction with limiting your framerate.  
    
 3. NVIDIA Reflex:                      
     Special K can allow compatible DX11/12 games to utlize NVIDIA Reflex.
