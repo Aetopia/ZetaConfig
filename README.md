@@ -24,8 +24,8 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Resolution Enforcer](https://github.com/Aetopia/ResEnforce)
-    > A program that fundamentally allows you to force an application to run at a specific resolution of your choice.              
+2. [Window Display Mode Tool](https://github.com/Aetopia/Window-Display-Mode-Tool)
+    > A tool to run windowed programs at specific display modes..             
     Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
 
 ZetaConfig utilizes the following features from the specified projects:
@@ -62,9 +62,8 @@ ZetaConfig utilizes the following features from the specified projects:
     Special K offers a superior framelimiter as compared to the ingame framelimiter.      
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
-### From Resolution Enforcer
-1. Ability to enforce a specific resolution upon a specific application when being it is utilized.     
-2. UWP & Win32 app support.     
+### From Window Display Mode Tool
+Ability to enforce a specific resolution upon a specific application when being it is utilized.        
 
 # Does ZetaConfig alter any Halo Infinite settings?
 
@@ -88,7 +87,7 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 1. `Resolution Scale`:       
     Set the ingame render resolution. You can set any value between `50 ~ 100`.
 
-2. `Display Mode` (Provided by Resolution Enforcer.):        
+2. `Display Mode` (Provided by Window Display Mode Tool.):        
     Configure the display resolution, the game will run at.
 
 3. `Spoof CPU Cores` (Provided by Special K.):                  
@@ -109,25 +108,17 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 
 Click on the `[Save]` button to apply your settings.
 
-## Accessing Special K & Resolution Enforcer Settings
+## Accessing Special K Settings
 You can access the Special K Control Panel, by pressing Ctrl + Shift + Backspace ingame.               
 Check out the wiki for the all of the features of Special K: https://wiki.special-k.info
-
-Resolution Enforcer's configuration file can be accessed here: 
-```
-"%USERPROFILE%\My Mods\ResEnforce\Options.ini"
-```
 
 # Installation
 1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
 2. Run `ZetaConfig.exe`.
-3. You will be prompted to install the Special K & Resolution Enforcer in order for ZetaConfig to work.
-4. ZetaConfig will prompt you to add the Resolution Enforcer task to Task Scheduler.
-    This will allow for Resolution Enforcer to run when you startup Windows.
-    Adminstrator privileges are required for this step.
-5. Once the ZetaConfig UI pops up, you are good to go!
-6. Configure your settings and then hit `[Save]` to save your settings.
-7. Launch your game!
+3. You will be prompted to install the Special K & Window Display Mode Tool in order for ZetaConfig to work.
+4. Once the ZetaConfig UI pops up, you are good to go!
+5. Configure your settings and then hit `[Save]` to save your settings.
+6. Launch your game!
 
 # Uninstallation
 1. Navigate to Halo Infinite's installation directory on your system.      
@@ -135,14 +126,8 @@ Resolution Enforcer's configuration file can be accessed here:
     ```
     C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
     ```
-2. Delete `dxgi.dll` and `dxgi.ini`. (This removes Special K.)  
-
-3. Run the following command in Command Prompt or PowerShell:    
-    ```
-    taskkill /f /im ResEnforce.exe     
-    ```
-
-3. Go to your documents folder and delete the `My Mods` folder. (This removes Resolution Enforcer.)
+2. Delete `dxgi.dll` & `dxgi.ini`. (This removes Special K.)  
+3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.ini`. (This removes Window Display Mode Tool.)
 
 # Building
 1. Install Nim: https://github.com/dom96/choosenim
@@ -151,7 +136,7 @@ Resolution Enforcer's configuration file can be accessed here:
 
 2. Install the following dependencies:
     ```
-    nimble install winim wNim
+    nimble install wNim
     ```
 
 3. Run the following command to compile:
@@ -184,3 +169,9 @@ Resolution Enforcer's configuration file can be accessed here:
     
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
+3. Halo Infinite sets rendering in the corner of my screen upon launching.
+
+    ![LoadingScreen](images/LoadingScreen.png)
+    
+    If Halo Infinite launches like this then it likely means you set the the display mode resolution to your native resolution.                 
+    This is totally normal, simply allow the game to fully launch and everything should be normal.

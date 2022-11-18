@@ -1,7 +1,7 @@
 import os, osproc
 import json
 import strutils
-import winim/[lean, shell]
+import winim/lean
 import vars
 
 proc downloadFile(url: string, file: string): void = 
@@ -30,60 +30,52 @@ proc installSpecialK*: void =
     while true:
         if fileExists(dxgiini):
             discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
+            writeFile(dxgiini, readFile(dxgiini) & wdmthook)
             break
-    
+
     # Remove Version Banner.
     var osdc = readFile(osdf).splitLines()
-    for i in 0..len(osdc)-1:
+    for i in 0..osdc.len-1:
         let l = osdc[i].strip()
         if l.startsWith("Duration"): osdc[i] = "Duration=0.0"; break
     writeFile(osdf, osdc.join("\n"))
 
-    if fileExists(re):
-        echo "[Mods] Starting Resolution Enforcer..."
-        discard startProcess(documents/"My Mods/ResEnforce/ResEnforce.exe")
+    echo "[Mods] Special K has been installed!"
 
-proc installResEnforce: void =
+proc installWDMT*: void =
     let 
-        sid = execCmdEx("whoami.exe /user /fo csv").output.splitLines()[1].split("\",")[1].strip(chars={'"'}).strip()
-        dir = splitPath(re)[0]
-        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/Aetopia/ResEnforce/releases/latest\"", options={poDaemon}).output)
-        
-    discard execCmdEx("taskkill /im /f ResEnforce.exe")
-    if not dirExists(dir): createDir(dir)
-    echo "[Mods] Fetching the latest Resolution Enforcer GitHub release..."
-    downloadFile(r["assets"][0]["browser_download_url"].getStr().strip(), dir/"ResEnforce.exe")
-    writeFile(temp/"ResEnforce.xml", xml % [sid, dir/"ResEnforce.exe"])
-    MessageBox(0, "ZetaConfig will add Resolution Enforcer to startup via Task Scheduler.\nPress OK to add the task.", "ZetaConfig", 0x00000040)
-    echo "[Mods] Attempting to prompt and add Resolution Enforcer to Task Scheduler..."
-    discard ShellExecuteW(0, "runas", "schtasks.exe", "/Create /XML \"$1\" /tn ResEnforce /f" % [temp/"ResEnforce.xml"], nil, 0)
-    echo "[Mods] Starting Resolution Enforcer..."
-
-    discard startProcess(re)
+        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/Aetopia/Window-Display-Mode-Tool/releases/latest\"", options={poDaemon}).output)
+        fs = ["WDMT.exe", "WDMTHook.dll"]
+    echo "[Mods] Fetching the latest Window Display Mode Tool GitHub release..."
+    for i in 0..fs.len-1:
+        downloadFile(r["assets"][i]["browser_download_url"].getStr().strip(), gamedir/fs[i])
+    writeFile(wdmtini, "Resolution=0x0")
+    echo "[Mods] Window Display Mode Tool has been installed!"
 
 proc installMods*: void =
-    var (issk, isre) = (false, false)
+    var (issk, iswdmt) = (false, false)
     proc consent(msg: string): bool = 
         if MessageBox(0, msg & "\nInstall?", "ZetaConfig", 0x00000004 or 0x00000040) == 6:
             return true
-        quit()
+        quit(0)
     if not fileExists(gamedir/"dxgi.dll") or not fileExists(gamedir/"dxgi.ini"): 
         echo "[Mods] Special K is not installed."
         issk = true
     else: echo "[Mods] Special K is installed."
 
-    if not fileExists(documents/"My Mods/ResEnforce/ResEnforce.exe"): 
-        echo "[Mods] ResEnforce is not installed."
-        isre = true
-    else: echo "[Mods] ResEnforce is installed."
+    if not fileExists(gamedir/"WDMT.exe") or not fileExists(gamedir/"WDMTHook.dll"): 
+        echo "[Mods] Window Display Mode Tool is not installed."
+        iswdmt = true
+    else: echo "[Mods] Window Display Mode Tool is installed."
     
-    if issk and isre: 
-        if consent("Special K and Resolution Enforcer not are installed."):
+    if issk and iswdmt: 
+        if consent("Special K and Window Display Mode Tool not are installed."):
             installSpecialK()
-            installResEnforce()
+            installWDMT()
     elif issk: 
         if consent("Special K is not installed."):
             installSpecialK()
-    elif isre: 
-        if consent("Resolution Enforcer not installed."):
-            installResEnforce()
+    elif iswdmt: 
+        if consent("Window Display Mode Tool is not installed."):
+            installWDMT()
+

@@ -72,8 +72,8 @@ proc getGameSettings*: string =
 proc getSKSettings*: (string, string, string, string) =   
     let 
         skc = readFile(dxgiini).splitLines()
-    var res = loadConfig(reini).getSectionValue("Profiles", "HaloInfinite.exe", "0x0")
-    echo fmt"[Settings] Loaded Setting: HaloInfinite.exe={res}"
+    var res = loadConfig(wdmtini).getSectionValue("", "Resolution", "0x0")
+    echo fmt"[Settings] Loaded Setting: Resolution={res}"
     var
         l, k, v, reflex, cpus, fps: string
         enable, lowlatency, boost, str, verbose: bool
@@ -118,11 +118,11 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
     
     if native: alwaysontop = "0"
 
-    if not fileExists(reini): writeFile(reini, "") 
-    var f = loadConfig(reini)
-    f.setSectionKey("Profiles", "HaloInfinite.exe", res)
-    f.writeConfig(reini)
-    echo fmt"[Settings] Saved Setting: HaloInfinite.exe={res}"
+    if not fileExists(wdmtini): writeFile(wdmtini, "Resolution=0x0") 
+    var f = loadConfig(wdmtini)
+    f.setSectionKey("", "Resolution", res)
+    f.writeConfig(wdmtini)
+    echo fmt"[Settings] Saved Setting: Resolution={res}"
 
     case reflex:
         of "Off": (enable, lowlatency, boost) = ("false", "false", "false")
