@@ -54,6 +54,8 @@ ZetaConfig utilizes the following features from the specified projects:
     Technically Halo Infinite uses 9 compute threads, explaining why the i7-10700K was having 100% with Hyper Threading disabled.
 
     If your CPU has more than 9 compute threads those will simply be underutlized by the game or will given less relevance.
+
+    This option can decrease peek framerate if the CPU Core count is set to a low value so it is recommended to use this option in conjunction with a framerate limit. 
    
 3. NVIDIA Reflex:                      
     Special K can allow compatible DX11/12 games to utlize NVIDIA Reflex.
