@@ -147,7 +147,7 @@ Resolution Enforcer's configuration file can be accessed here:
 # Building
 1. Install Nim: https://github.com/dom96/choosenim
     > Run the tool 2~3 times to ensure Nim installs properly.
-    > If Nim isn't in your `SYSTEM` path, then reboot.
+    > If Nim isn't in your `SYSTEM` path, then log out and log back in.
 
 2. Install the following dependencies:
     ```
