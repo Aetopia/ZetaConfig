@@ -169,9 +169,9 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
-3. Halo Infinite sets rendering in the corner of my screen upon launching.
+3. Halo Infinite renders in the corner of my screen upon launching.
 
     ![LoadingScreen](images/LoadingScreen.png)
-    
+
     If Halo Infinite launches like this then it likely means you set the the display mode resolution to your native resolution.                 
     This is totally normal, simply allow the game to fully launch and everything should be normal.
