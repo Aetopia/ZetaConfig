@@ -153,7 +153,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 4. Run `ZetaConfig.exe`.
 
 # FAQ
-1. Why is Halo Infinite's launch after installing Special K + Resolution Enforcer slow?   
+1. Why is Halo Infinite's launch after installing Special K + Window Display Mode Tool slow?   
 
     The game is compiling shaders since Special K is loaded into the game.
     Once they compile, launches should be snappy and fast.
