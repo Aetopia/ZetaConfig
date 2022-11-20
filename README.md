@@ -143,7 +143,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 
 3. Run the following command to compile:
     ```ps
-    nim c -d:release --opt:size -o:ZetaConfig.exe src/main.nim
+    nim c -d:release -d:strip --opt:size -o:ZetaConfig.exe src/main.nim
     ```
     > Optional: Compress using UPX.         
         ```
