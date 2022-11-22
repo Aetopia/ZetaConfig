@@ -1,7 +1,6 @@
 import os, osproc
 import json
 import strutils, strformat
-import parsecfg
 import winim/lean
 import vars
 
@@ -72,8 +71,8 @@ proc getGameSettings*: string =
 proc getSKSettings*: (string, string, string, string) =   
     let 
         skc = readFile(dxgiini).splitLines()
-    var res = loadConfig(wdmtini).getSectionValue("", "Resolution", "0x0")
-    echo fmt"[Settings] Loaded Setting: Resolution={res}"
+    var res = readFile(wdmt)
+    echo fmt"[Settings] Loaded Setting: Resolution: {res}"
     var
         l, k, v, reflex, cpus, fps: string
         enable, lowlatency, boost, str, verbose: bool
@@ -118,10 +117,8 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
     
     if native: alwaysontop = "0"
 
-    if not fileExists(wdmtini): writeFile(wdmtini, "Resolution=0x0") 
-    var f = loadConfig(wdmtini)
-    f.setSectionKey("", "Resolution", res)
-    f.writeConfig(wdmtini)
+    if not fileExists(wdmt): writeFile(wdmt, "Resolution=0x0") 
+    let res = readFile(wdmt)
     echo fmt"[Settings] Saved Setting: Resolution={res}"
 
     case reflex:
