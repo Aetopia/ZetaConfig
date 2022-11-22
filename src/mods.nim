@@ -49,7 +49,7 @@ proc installWDMT*: void =
     echo "[Mods] Fetching the latest Window Display Mode Tool GitHub release..."
     for i in 0..fs.len-1:
         downloadFile(r["assets"][i]["browser_download_url"].getStr().strip(), gamedir/fs[i])
-    writeFile(wdmtini, "Resolution=0x0")
+    writeFile(wdmt, "0x0")
     echo "[Mods] Window Display Mode Tool has been installed!"
 
 proc installMods*: void =

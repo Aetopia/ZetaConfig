@@ -73,7 +73,7 @@ proc getSKSettings*: (string, string, string, string) =
     let 
         skc = readFile(dxgiini).splitLines()
     var res = readFile(wdmt)
-    echo fmt"[Settings] Loaded Setting: Resolution: {res}"
+    echo fmt"[Settings] Loaded Setting: Resolution={res}"
     var
         l, k, v, reflex, cpus, fps: string
         enable, lowlatency, boost, str, verbose: bool
@@ -118,7 +118,7 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
     
     if native: alwaysontop = "0"
 
-    if not fileExists(wdmt): writeFile(wdmt, "Resolution=0x0") 
+    if not fileExists(wdmt): writeFile(wdmt, "0x0") 
     let res = readFile(wdmt)
     echo fmt"[Settings] Saved Setting: Resolution={res}"
 
