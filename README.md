@@ -24,8 +24,8 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Window Display Mode Tool](https://github.com/Aetopia/Window-Display-Mode-Tool)
-    > A tool to run windowed programs at specific display modes..             
+2. [Borderless Window Display Mode Tool](https://github.com/Aetopia/Borderless-Window-Display-Mode-Tool)
+    > A tool to run borderless windowed programs at specific display modes..             
     Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
 
 ZetaConfig utilizes the following features from the specified projects:
@@ -64,7 +64,7 @@ ZetaConfig utilizes the following features from the specified projects:
     Special K offers a superior framelimiter as compared to the ingame framelimiter.      
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
-### From Window Display Mode Tool
+### From Borderless Window Display Mode Tool
 Ability to enforce a specific resolution upon a specific application when being it is utilized.        
 
 # Does ZetaConfig alter any Halo Infinite settings?
@@ -89,7 +89,7 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 1. `Resolution Scale`:       
     Set the ingame render resolution. You can set any value between `50 ~ 100`.
 
-2. `Display Mode` (Provided by Window Display Mode Tool.):        
+2. `Display Mode` (Provided by Borderless Window Display Mode Tool.):        
     Configure the display resolution, the game will run at.
 
 3. `Spoof CPU Cores` (Provided by Special K.):                  
@@ -117,7 +117,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 # Installation
 1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
 2. Run `ZetaConfig.exe`.
-3. You will be prompted to install the Special K & Window Display Mode Tool in order for ZetaConfig to work.
+3. You will be prompted to install the Special K & Borderless Window Display Mode Tool in order for ZetaConfig to work.
 4. Once the ZetaConfig UI pops up, you are good to go!
 5. Configure your settings and then hit `[Save]` to save your settings.
 6. Launch your game!
@@ -129,7 +129,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
     ```
 2. Delete `dxgi.dll` & `dxgi.ini`. (This removes Special K.)  
-3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.ini`. (This removes Window Display Mode Tool.)
+3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.ini`. (This removes Borderless Window Display Mode Tool.)
 
 # Building
 1. Install Nim: https://github.com/dom96/choosenim
@@ -153,7 +153,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 4. Run `ZetaConfig.exe`.
 
 # FAQ
-1. Why is Halo Infinite's launch after installing Special K + Window Display Mode Tool slow?   
+1. Why is Halo Infinite's launch after installing Special K + Borderless Window Display Mode Tool slow?   
 
     The game is compiling shaders since Special K is loaded into the game.
     Once they compile, launches should be snappy and fast.

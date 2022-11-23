@@ -30,7 +30,7 @@ proc installSpecialK*: void =
     while true:
         if fileExists(dxgiini):
             discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-            writeFile(dxgiini, readFile(dxgiini) & wdmthook)
+            writeFile(dxgiini, readFile(dxgiini) & bwdmthook)
             break
 
     # Remove Version Banner.
@@ -42,18 +42,18 @@ proc installSpecialK*: void =
 
     echo "[Mods] Special K has been installed!"
 
-proc installWDMT*: void =
+proc installBWDMT*: void =
     let 
-        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/Aetopia/Window-Display-Mode-Tool/releases/latest\"", options={poDaemon}).output)
-        fs = ["WDMT.exe", "WDMTHook.dll"]
-    echo "[Mods] Fetching the latest Window Display Mode Tool GitHub release..."
+        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/Aetopia/Borderless-Window-Display-Mode-Tool/releases/latest\"", options={poDaemon}).output)
+        fs = ["BWDMT.exe", "BWDMTHook.dll"]
+    echo "[Mods] Fetching the latest Borderless Window Display Mode Tool GitHub release..."
     for i in 0..fs.len-1:
         downloadFile(r["assets"][i]["browser_download_url"].getStr().strip(), gamedir/fs[i])
-    writeFile(wdmt, "0x0")
-    echo "[Mods] Window Display Mode Tool has been installed!"
+    writeFile(bwdmt, "0x0")
+    echo "[Mods] Borderless Window Display Mode Tool has been installed!"
 
 proc installMods*: void =
-    var (issk, iswdmt) = (false, false)
+    var (issk, isbwdmt) = (false, false)
     proc consent(msg: string): bool = 
         if MessageBox(0, msg & "\nInstall?", "ZetaConfig", 0x00000004 or 0x00000040) == 6:
             return true
@@ -64,18 +64,18 @@ proc installMods*: void =
     else: echo "[Mods] Special K is installed."
 
     if not fileExists(gamedir/"WDMT.exe") or not fileExists(gamedir/"WDMTHook.dll"): 
-        echo "[Mods] Window Display Mode Tool is not installed."
-        iswdmt = true
-    else: echo "[Mods] Window Display Mode Tool is installed."
+        echo "[Mods] Borderless Window Display Mode Tool is not installed."
+        isbwdmt = true
+    else: echo "[Mods] Borderless Window Display Mode Tool is installed."
     
-    if issk and iswdmt: 
-        if consent("Special K and Window Display Mode Tool not are installed."):
+    if issk and isbwdmt: 
+        if consent("Special K and Borderless Window Display Mode Tool not are installed."):
             installSpecialK()
-            installWDMT()
+            installBWDMT()
     elif issk: 
         if consent("Special K is not installed."):
             installSpecialK()
-    elif iswdmt: 
-        if consent("Window Display Mode Tool is not installed."):
-            installWDMT()
+    elif isbwdmt: 
+        if consent("Borderless Window Display Mode Tool is not installed."):
+            installBWDMT()
 
