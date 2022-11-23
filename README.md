@@ -129,7 +129,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
     ```
 2. Delete `dxgi.dll` & `dxgi.ini`. (This removes Special K.)  
-3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.ini`. (This removes Borderless Window Display Mode Tool.)
+3. Delete `BWDMT.exe`, `BWDMTHook.dll` & `BWDMT.txt`. (This removes Borderless Window Display Mode Tool.)
 
 # Building
 1. Install Nim: https://github.com/dom96/choosenim
