@@ -119,7 +119,7 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
     if native: alwaysontop = "0"
 
     if not fileExists(wdmt): writeFile(wdmt, "0x0") 
-    let res = readFile(wdmt)
+    writeFile(wdmt, res)
     echo fmt"[Settings] Saved Setting: Resolution={res}"
 
     case reflex:
