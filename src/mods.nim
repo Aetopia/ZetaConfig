@@ -63,7 +63,7 @@ proc installMods*: void =
         issk = true
     else: echo "[Mods] Special K is installed."
 
-    if not fileExists(gamedir/"WDMT.exe") or not fileExists(gamedir/"WDMTHook.dll"): 
+    if not fileExists(gamedir/"BWDMT.exe") or not fileExists(gamedir/"BWDMTHook.dll"): 
         echo "[Mods] Borderless Window Display Mode Tool is not installed."
         isbwdmt = true
     else: echo "[Mods] Borderless Window Display Mode Tool is installed."
