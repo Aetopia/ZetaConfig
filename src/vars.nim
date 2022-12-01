@@ -10,7 +10,7 @@ let
   steamclient* = steampath/"steam.exe"
   documents* = getEnv("USERPROFILE")/"Documents"
   temp* = getEnv("TEMP")
-  bwdmthook* = "\n[Import.BWDMTHook]\nArchitecture=x64\nFilename=BWDMTHook.dll\nRole=ThirdParty\nWhen=Early"
+  bwdmthook* = "\n[Import.BWDMTHook]\nArchitecture=x64\nFilename=BWDMTHook.dll\nRole=ThirdParty\nWhen=Late"
   bwdmt* = gamedir/"BWDMT.txt"
   xml* = """<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
