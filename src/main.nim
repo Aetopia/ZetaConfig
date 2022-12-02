@@ -16,7 +16,7 @@ if isMainModule:
         resscale = getGameSettings()
         cpusopts: seq[string]
         native: bool
-        (res, cpus, reflex, fps) = getSKSettings()
+        (res, cpus, reflex, fps) = getSettings()
 
     for cpu in toSeq(0..countProcessors()):
         if cpu mod 2 == 0 and cpu >= 4: cpusopts.add(intToStr(cpu))
@@ -68,14 +68,14 @@ if isMainModule:
 
     save.wEvent_Button do ():
         var 
-            game = rs.getText()
-            sk = [dm.getValue(), nvr.getValue(), scc.getValue(), fpslimit.getText()]     
-        if game.parseInt <= 50: game = "50"; rs.setText(game)
+            sk = [dm.getValue(), nvr.getValue(), scc.getValue(), fpslimit.getText()]  
+            resscale = rs.getText() 
+        if resscale.parseInt <= 50: resscale = "50"; rs.setText(resscale)
         if sk[0] == dm[dm.len-1]: native = true
         if sk[2] == cpusopts[cpusopts.len-1]: sk[2] = "-1"
         if sk[3].parseInt in 1..29: sk[3] = "30"; fpslimit.setText(sk[3])
-        setGameSettings(game)
-        setSKSettings(sk[0], sk[1], sk[2], sk[3], native)
+        setGameSettings(sk[0].split("x"), resscale)
+        setSettings(sk[0], sk[1], sk[2], sk[3], native)
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
         
     about.wEvent_Button do ():

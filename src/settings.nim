@@ -34,7 +34,7 @@ proc getDisplayModes*: seq[string] =
         if not dms.contains(dm) and add: dms.add(dm)
         inc(i)
 
-proc setGameSettings*(resscale: string): void =
+proc setGameSettings*(dm: seq[string], resscale: string): void =
     var cfg = parseFile(gameconfig)
 
     for k in [
@@ -48,14 +48,14 @@ proc setGameSettings*(resscale: string): void =
         "spec_control_use_cached_window_position"]: 
         cfg[k].add("value", newJInt(0))
 
-    for k in [
-        "spec_control_windowed_display_resolution_x", 
-        "spec_control_windowed_display_resolution_y", 
+    for k in [ 
         "spec_control_window_position_x", 
         "spec_control_window_position_y", 
         "spec_control_window_size"]:
         cfg[k].add("value", newJNull())
 
+    cfg["spec_control_windowed_display_resolution_x"].add("value", newJInt(dm[0].parseInt))
+    cfg["spec_control_windowed_display_resolution_y"].add("value", newJInt(dm[1].parseInt))
     cfg["spec_control_resolution_scale"].add("value", newJInt(resscale.parseInt))
     cfg["spec_control_sharpening"].add("value", newJInt(100))
     echo "[Settings] Saved Setting: spec_control_resolution_scale=", resscale
@@ -69,13 +69,13 @@ proc getGameSettings*: string =
     echo "[Settings] Loaded Setting: spec_control_resolution_scale=", r
     return r
 
-proc getSKSettings*: (string, string, string, string) =   
+proc getSettings*: (string, string, string, string) =   
     let 
         skc = readFile(dxgiini).splitLines()
 
-    if not fileExists(bwdmt): writeFile(bwdmt, "0x0") 
-    var res = readFile(bwdmt)
-    echo fmt"[Settings] Loaded Setting: Resolution={res}"
+    if not fileExists(wdmt): writeFile(wdmt, "0x0") 
+    var dm = readFile(wdmt)
+    echo fmt"[Settings] Loaded Setting: Display Mode={dm}"
     
     var
         l, k, v, reflex, cpus, fps: string
@@ -100,7 +100,6 @@ proc getSKSettings*: (string, string, string, string) =
             of "TargetFPS":
                 fps = $(v.strip(chars={'-', ' '}).parseFloat.int)
                 verbose = true
-            of "OverrideRes": res = v; verbose = true
         if verbose: echo "[Settings] Loaded Setting: ", l; verbose = false
 
     if enable:
@@ -108,22 +107,20 @@ proc getSKSettings*: (string, string, string, string) =
         elif lowlatency: reflex = "On"
         elif boost: reflex = "Boost"
     else: reflex = "Off"
-    return (res, cpus, reflex, fps)
+    return (dm, cpus, reflex, fps)
 
-proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, native: bool): void =
+proc setSettings*(dm: string, reflex: string, cpus: string, fps: string, native: bool): void =
     var 
         c = readFile(dxgiini).splitLines()
         k, v, l: string
         lowlatency, boost: string
-        (enable, alwaysontop)  = ("true", "1")
+        enable  = "true"
         verbose: bool
         str: bool
-    
-    if native: alwaysontop = "0"
 
-    if not fileExists(bwdmt): writeFile(bwdmt, "0x0") 
-    writeFile(bwdmt, res)
-    echo fmt"[Settings] Saved Setting: Resolution={res}"
+    if not fileExists(wdmt): writeFile(wdmt, "0x0") 
+    writeFile(wdmt, dm)
+    echo fmt"[Settings] Saved Setting: Display Mode={dm}"
 
     case reflex:
         of "Off": (enable, lowlatency, boost) = ("false", "false", "false")
@@ -144,14 +141,12 @@ proc setSKSettings*(res: string, reflex: string, cpus: string, fps: string, nati
         if l == "[NVIDIA.Reflex]": str = true
 
         case k:
-            of "OverrideRes": c[i] = &"{k}={res}"; verbose = true
-            of "RememberResolution", "Fullscreen": c[i] = &"{k}=false"
+            of "OverrideRes", "ResolutionForMonitor": c[i] = &"{k}=0x0"
+            of "RememberResolution", "Fullscreen", "Borderless", "Center", "CatchAltF4": c[i] = &"{k}=false"
             of "OverrideCPUCoreCount": c[i] = fmt"{k}={cpus}"; verbose = true
             of "TargetFPS": c[i] = fmt"{k}={fps}"; verbose = true
-            of "ResolutionForMonitor": c[i] = &"{k}=0x0"
-            of "AlwaysOnTop": c[i] = &"{k}={alwaysontop}"
-            of "PresentationInterval": c[i] = &"{k}=-1"
-            of "Borderless", "Center", "RenderInBackground": c[i] = &"{k}=true"
+            of "AlwaysOnTop", "PresentationInterval": c[i] = &"{k}=-1"
+            of "RenderInBackground": c[i]= &"{k}=true"
             of "XOffset", "YOffset": c[i] = &"{k}=0.0001%"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
     writeFile(dxgiini, c.join("\n"))

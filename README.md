@@ -24,17 +24,14 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Borderless Window Display Mode Tool](https://github.com/Aetopia/Borderless-Window-Display-Mode-Tool)
-    > A tool to run borderless windowed programs at specific display modes..             
+2. [Window Display Mode Tool](https://github.com/Aetopia/Window-Display-Mode-Tool)
+    > A tool to run windowed programs at specific display modes and as borderless windows.          
     Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
 
 ZetaConfig utilizes the following features from the specified projects:
 
 ### From Special K:
-1. Window Management: 
-    This is used to fix scaling issues with the game being used with low display resolutions like `1280x720`, `1366x768`.
-
-2. Spoof CPU Core Count:     
+1. Spoof CPU Core Count:     
     This option is used to fool the game into thinking that the CPU core count is lower than usual.
 
     ### Examples
@@ -57,15 +54,16 @@ ZetaConfig utilizes the following features from the specified projects:
 
     There can decrease peek framerate if the CPU Core count is set to a low value so it is recommended to use this option in conjunction with a framerate limit. 
    
-3. NVIDIA Reflex:                      
+2. NVIDIA Reflex:                      
     Special K can allow compatible DX11/12 games to utlize NVIDIA Reflex.
 
-4. Framelimiter:                               
+3. Framelimiter:                               
     Special K offers a superior framelimiter as compared to the ingame framelimiter.      
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
-### From Borderless Window Display Mode Tool
-Ability to enforce a specific resolution upon a specific application when being it is utilized.        
+### From Window Display Mode Tool
+1. Ability to enforce a specific resolution upon a specific application when being it is utilized.  
+2. Can run a windowed program as a borderless window at a desired display resolution.  
 
 # Does ZetaConfig alter any Halo Infinite settings?
 
@@ -74,9 +72,9 @@ ZetaConfig alters a few ingame options:
 1. Minimum Framerate & Maximum Framerate are set to `960`.           
     Aggressive Dynamic Resolution Scaling is beneficial for improving performance.  
 
-2. Ingame Sharpeness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
+2. Ingame Sharpness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
 
-3. Borderless Fullscreen is disabled. This is intentionally done to allow Special K to handle window scaling when in borderless fullscreen mode.
+3. Borderless Fullscreen is disabled. This is intentionally done offload borderless window functionality to Window Display Mode Tool.
 
 >You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
 > https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
@@ -89,8 +87,8 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 1. `Resolution Scale`:       
     Set the ingame render resolution. You can set any value between `50 ~ 100`.
 
-2. `Display Mode` (Provided by Borderless Window Display Mode Tool.):        
-    Configure the display resolution, the game will run at.
+2. `Display Mode` (Provided by Window Display Mode Tool.):        
+    Configure the display resolution and window size, the game will run at.
 
 3. `Spoof CPU Cores` (Provided by Special K.):                  
     This option allows one to make their CPU core count to appear lower than actual.
@@ -117,7 +115,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 # Installation
 1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
 2. Run `ZetaConfig.exe`.
-3. You will be prompted to install the Special K & Borderless Window Display Mode Tool in order for ZetaConfig to work.
+3. You will be prompted to install the Special K & Window Display Mode Tool in order for ZetaConfig to work.
 4. Once the ZetaConfig UI pops up, you are good to go!
 5. Configure your settings and then hit `[Save]` to save your settings.
 6. Launch your game!
@@ -129,7 +127,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
     ```
 2. Delete `dxgi.dll` & `dxgi.ini`. (This removes Special K.)  
-3. Delete `BWDMT.exe`, `BWDMTHook.dll` & `BWDMT.txt`. (This removes Borderless Window Display Mode Tool.)
+3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.txt`. (This removes Window Display Mode Tool.)
 
 # Building
 1. Install Nim: https://github.com/dom96/choosenim
@@ -153,7 +151,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 4. Run `ZetaConfig.exe`.
 
 # FAQ
-1. Why is Halo Infinite's launch after installing Special K + Borderless Window Display Mode Tool slow?   
+1. Why is Halo Infinite's launch after installing Special K + Window Display Mode Tool slow?   
 
     The game is compiling shaders since Special K is loaded into the game.
     Once they compile, launches should be snappy and fast.
@@ -171,9 +169,3 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
-3. Halo Infinite renders in the corner of my screen upon launching.
-
-    ![LoadingScreen](images/LoadingScreen.png)
-
-    If Halo Infinite launches like this then it likely means you set the the display mode resolution to your native resolution.                 
-    This is totally normal, simply allow the game to fully launch and everything should be normal.
