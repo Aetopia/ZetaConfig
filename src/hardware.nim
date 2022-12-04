@@ -27,7 +27,7 @@ proc getGameDisplay* =
         exe: string
         hwnd: HWND
     if not fileExists(gamedir/"ZetaConfig.txt"):
-        echo "[Hardware] Determining which monitor, Halo Infinite is set to use..."
+        echo "[Hardware] Detecting which monitor, Halo Infinite launches on..."
         if fileExists(gamedir/"WDMTHook.dll"): moveFile(gamedir/"WDMTHook.dll", gamedir/"WDMTHook.dll.bak")
         discard execCmdEx("\"$1\" steam://rungameid/1240440" % steamclient, options={poDaemon})
         while true:
@@ -41,6 +41,7 @@ proc getGameDisplay* =
                 GetMonitorName(hwnd, cstring(gamedir/"ZetaConfig.txt"))
                 discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
                 if fileExists(gamedir/"WDMTHook.dll.bak"): moveFile(gamedir/"WDMTHook.dll.bak", gamedir/"WDMTHook.dll")
+                echo "[Hardware] Monitor detection success."
                 return
 
 proc getDisplayModes*: seq[string] =
@@ -52,10 +53,7 @@ proc getDisplayModes*: seq[string] =
         devmode: DEVMODE
         add: bool
     devmode.dmSize = sizeof(DEVMODE).WORD
-    if ChangeDisplaySettingsEx(display, &devmode, 0, CDS_TEST, nil) != DISP_CHANGE_SUCCESSFUL:
-        removeFile(gamedir/"ZetaConfig.txt")
-        getGameDisplay()
-        display = readFile(gamedir/"ZetaConfig.txt")
+    
     while true:
         if EnumDisplaySettingsEx(display, i, &devmode, EDS_RAWMODE) == 0:
             echo "[Settings] Display Modes: ", dms

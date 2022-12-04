@@ -1,5 +1,5 @@
 import wNim/[wApp, wFrame, wPanel, wStaticBox, wStaticText, wSpinCtrl, wComboBox, wButton, wMessageDialog]
-import winim/lean
+import winim/[lean, shell]
 import strutils, sequtils
 import os, osproc
 import mods, settings, hardware, vars
@@ -39,6 +39,7 @@ if isMainModule:
         save = box.Button(label="Save", pos=(269, 208))
         about = box.Button(label="?", pos=(0, 208), size=(26, 26))
         uninstall = box.Button(label="🗑️", pos=(34, 208), size=(26, 26))
+        redetect = box.Button(label="🖥️", pos=(68, 208), size=(26, 26))
         
     if not isNVIDIA(): nvr.clear(); nvr.append("Off"); nvr.setSelection(0)
     rs.setValue(resscale)
@@ -77,7 +78,7 @@ if isMainModule:
         if sk[3].parseInt in 1..29: sk[3] = "30"; fpslimit.setText(sk[3])
         setGameSettings(sk[0].split("x"), resscale)
         setSettings(sk[0], sk[1], sk[2], sk[3])
-        frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
+        frame.MessageDialog("Settings saved!", "Save", wOk or wIconInformation).display()
         
     about.wEvent_Button do ():
         frame.MessageDialog("Created by Aetopia\nhttps://github.com/Aetopia/ZetaConfig", "About", wOk or wIconInformation).display()
@@ -87,6 +88,11 @@ if isMainModule:
             uninstallMods()
             frame.hide()
             MessageDialog(nil, "Uninstalled Special K and Window Display Mode Tool.", "Uninstall", wOk or wIconInformation).display()
+            quit(0)
+    redetect.wEvent_Button do ():
+        if frame.MessageDialog("Redetect which monitor, Halo Infinite launches on?", "Redetect", wOkCancel or wIconExclamation).display() == wIdOk:
+            removeFile(gamedir/"ZetaConfig.txt")
+            ShellExecute(0, "open", getAppFilename(), nil, nil, 5)
             quit(0)
     frame.center()
     frame.show()
