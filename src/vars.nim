@@ -10,5 +10,5 @@ let
   steamclient* = steampath/"steam.exe"
   documents* = getEnv("USERPROFILE")/"Documents"
   temp* = getEnv("TEMP")
-  wdmthook* = "\n[Import.WDMTHook]\nArchitecture=x64\nFilename=WDMTHook.dll\nRole=ThirdParty\nWhen=Late"
+  wdmthook* = "\n[Import.WDMTHook]\nArchitecture=x64\nFilename=WDMTHook.dll\nRole=ThirdParty\nWhen=Early"
   wdmt* = gamedir/"WDMT.txt"

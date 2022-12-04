@@ -1,38 +1,8 @@
-import os, osproc
+import os
 import json
 import strutils, strformat
 import winim/lean
 import vars
-
-proc isNVIDIA*: bool = 
-    const key = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum\\PCI"
-    var
-        msg = " not detected."
-        r = false
-        keys = execCmdEx(&"reg query \"{key}\"").output.strip(chars={'\n'}).splitLines()
-    for l in keys:
-        if l.contains("VEN_10DE"):
-            msg = " detected."
-            r = true
-            break
-    echo "[Settings] NVIDIA GPU", msg
-    return r
-
-proc getDisplayModes*: seq[string] =
-    var 
-        i: int32 = 0
-        dms: seq[string]
-        dm: string
-        devmode: DEVMODE
-        add: bool
-    devmode.dmSize = sizeof(DEVMODE).WORD
-    while true:
-        if EnumDisplaySettings(nil, i, &devmode) == 0: 
-            echo "[Settings] Display Modes: ", dms; return dms
-        dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
-        if dm == "800x600": add = true
-        if not dms.contains(dm) and add: dms.add(dm)
-        inc(i)
 
 proc setGameSettings*(dm: seq[string], resscale: string): void =
     var cfg = parseFile(gameconfig)
@@ -109,7 +79,7 @@ proc getSettings*: (string, string, string, string) =
     else: reflex = "Off"
     return (dm, cpus, reflex, fps)
 
-proc setSettings*(dm: string, reflex: string, cpus: string, fps: string, native: bool): void =
+proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
     var 
         c = readFile(dxgiini).splitLines()
         k, v, l: string

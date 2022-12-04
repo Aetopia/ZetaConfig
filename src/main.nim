@@ -2,12 +2,14 @@ import wNim/[wApp, wFrame, wPanel, wStaticBox, wStaticText, wSpinCtrl, wComboBox
 import winim/lean
 import strutils, sequtils
 import os, osproc
-import mods, settings, vars
+import mods, settings, hardware, vars
 
 if isMainModule:
+    SetConsoleTitle("ZetaConfig")
     if fileExists(localappdata/"Packages\\Microsoft.254428597CFE2_8wekyb3d8bbwe\\LocalCache\\Local\\HaloInfinite\\Settings\\SpecControlSettings.json"):
         MessageBox(0, "Halo Infinite has been installed via the Microsoft Store.\nZetaConfig only supports the Steam version of the game.", "ZetaConfig", MB_ICONERROR)
         quit(1)
+    getGameDisplay()
     installMods()
 
     # Settings
@@ -15,7 +17,6 @@ if isMainModule:
         dms = getDisplayModes()
         resscale = getGameSettings()
         cpusopts: seq[string]
-        native: bool
         (res, cpus, reflex, fps) = getSettings()
 
     for cpu in toSeq(0..countProcessors()):
@@ -37,6 +38,7 @@ if isMainModule:
         fpslimit = box.SpinCtrl(pos=(100, 137), style=wSpCenter or wSpArrowKeys)
         save = box.Button(label="Save", pos=(269, 208))
         about = box.Button(label="?", pos=(0, 208), size=(26, 26))
+        uninstall = box.Button(label="🗑️", pos=(34, 208), size=(26, 26))
         
     if not isNVIDIA(): nvr.clear(); nvr.append("Off"); nvr.setSelection(0)
     rs.setValue(resscale)
@@ -71,16 +73,21 @@ if isMainModule:
             sk = [dm.getValue(), nvr.getValue(), scc.getValue(), fpslimit.getText()]  
             resscale = rs.getText() 
         if resscale.parseInt <= 50: resscale = "50"; rs.setText(resscale)
-        if sk[0] == dm[dm.len-1]: native = true
         if sk[2] == cpusopts[cpusopts.len-1]: sk[2] = "-1"
         if sk[3].parseInt in 1..29: sk[3] = "30"; fpslimit.setText(sk[3])
         setGameSettings(sk[0].split("x"), resscale)
-        setSettings(sk[0], sk[1], sk[2], sk[3], native)
+        setSettings(sk[0], sk[1], sk[2], sk[3])
         frame.MessageDialog("Settings saved!", "ZetaConfig", wOk or wIconInformation).display()
         
     about.wEvent_Button do ():
         frame.MessageDialog("Created by Aetopia\nhttps://github.com/Aetopia/ZetaConfig", "About", wOk or wIconInformation).display()
 
+    uninstall.wEvent_Button do ():
+        if frame.MessageDialog("Uninstall Special K and Window Display Mode Tool?", "Uninstall", wOkCancel or wIconExclamation).display() == wIdOk:
+            uninstallMods()
+            frame.hide()
+            MessageDialog(nil, "Uninstalled Special K and Window Display Mode Tool.", "Uninstall", wOk or wIconInformation).display()
+            quit(0)
     frame.center()
     frame.show()
     app.mainLoop()

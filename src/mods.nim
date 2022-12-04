@@ -53,10 +53,6 @@ proc installWDMT*: void =
 
 proc installMods*: void =
     var (issk, iswdmt) = (false, false)
-    proc consent(msg: string): bool = 
-        if MessageBox(0, msg & "\nInstall?", "ZetaConfig", 0x00000004 or 0x00000040) == 6:
-            return true
-        quit(0)
     if not fileExists(gamedir/"dxgi.dll") or not fileExists(gamedir/"dxgi.ini"): 
         echo "[Mods] Special K is not installed."
         issk = true
@@ -68,13 +64,11 @@ proc installMods*: void =
     else: echo "[Mods] Window Display Mode Tool is installed."
     
     if issk and iswdmt: 
-        if consent("Special K and Window Display Mode Tool not are installed."):
-            installSpecialK()
-            installWDMT()
-    elif issk: 
-        if consent("Special K is not installed."):
-            installSpecialK()
-    elif iswdmt: 
-        if consent("Window Display Mode Tool is not installed."):
-            installWDMT()
+        installSpecialK()
+        installWDMT()
+    elif issk: installSpecialK()
+    elif iswdmt: installWDMT()
 
+proc uninstallMods* = 
+    for file in ["dxgi.dll", "dxgi.ini", "WDMT.exe", "WDMTHook.dll", "WDMT.txt", "ZetaConfig.txt"]: 
+        removeFile(gamedir/file)
