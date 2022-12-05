@@ -24,7 +24,7 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Window Display Mode Tool](https://github.com/Aetopia/Window-Display-Mode-Tool)
+2. [Window Display Mode Tool](https://github.com/Aetopia/ZetaConfig/blob/main/src/WDMT/README.md)
     > A tool to run windowed programs at specific display modes and as borderless windows.          
     Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
 
@@ -127,7 +127,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
     ```
 2. Delete `dxgi.dll` & `dxgi.ini`. (This removes Special K.)  
-3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.txt`. (This removes Window Display Mode Tool.)
+3. Delete `WDMT.exe`, `WDMT.dll` & `WDMT.txt`. (This removes Window Display Mode Tool.)
 
 # Building
 

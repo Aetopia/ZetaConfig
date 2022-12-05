@@ -18,7 +18,7 @@ Here, you can find the source code for the following.
 
 3. Run the following command to compile:
     ```ps
-    nim c -d:release -d:strip --opt:size -o:ZetaConfig.exe src/main.nim
+    nim c -d:release -d:strip --opt:size -o:ZetaConfig.exe ZetaConfig/main.nim
     ```
     > Optional: Compress using UPX.         
         ```
@@ -31,13 +31,13 @@ Here, you can find the source code for the following.
 2. Build:
     - `WDMT.exe`
         ```
-        gcc -Wall -Wextra -Ofast -s -mwindows -o "WDMT.exe" src/WDMT.c -lshcore
+        gcc -Wall -Wextra -Ofast -s -mwindows -o "WDMT.exe" "WDMT/main.c" -lshcore
         ```
 
     - `WDMTHook.dll`
 
         ```
-        gcc -Wall -Wextra -Ofast -s -shared -o "WDMTHook.dll" src/WDMTHook.c
+        gcc -Wall -Wextra -Ofast -s -shared -o "WDMT.dll" "WDMT/dll.c"
         ```
 
     - **Optional:** Compress using UPX!
