@@ -9,7 +9,7 @@ Here, you can find the source code for the following.
 Use `build.bat` to build every project on this repository.             
 
 ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded as base64 encoded strings.             
-These strings can be found in `ZetaConfig/vars.nim` with variables names `wdmtexe` & `wdmtdll`.        
+These strings can be found in `ZetaConfig/vars.nim` with variable names `wdmtexe` & `wdmtdll`.        
 
 To convert their content into `base64` using the following commands:
 - `WDMT.exe`
