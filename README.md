@@ -106,6 +106,9 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
     Set a framelimit for the game.                              
     (Due ZetaConfig setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.)
 
+6. `[🖥️]` Button:
+        Pressing this button will make ZetaConfig redetect on which monitor, Halo Infinite is set to launch on.
+
 Click on the `[Save]` button to apply your settings.
 
 ## Accessing Special K Settings
@@ -115,19 +118,13 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 # Installation
 1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
 2. Run `ZetaConfig.exe`.
-3. You will be prompted to install the Special K & Window Display Mode Tool in order for ZetaConfig to work.
+3. Let ZetaConfig finish its initialization process.
 4. Once the ZetaConfig UI pops up, you are good to go!
 5. Configure your settings and then hit `[Save]` to save your settings.
 6. Launch your game!
 
 # Uninstallation
-1. Navigate to Halo Infinite's installation directory on your system.      
-    Example:       
-    ```
-    C:\Program Files (x86)\Steam\steamapps\common\Halo Infinite
-    ```
-2. Delete `dxgi.dll` & `dxgi.ini`. (This removes Special K.)  
-3. Delete `WDMT.exe`, `WDMT.dll` & `WDMT.txt`. (This removes Window Display Mode Tool.)
+Click on the `[🗑️]` button to uninstall Special K and Window Display Mode Tool.
 
 # Building
 **Building Instructions:** https://github.com/Aetopia/ZetaConfig/blob/main/src/README.md
@@ -151,5 +148,11 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
-3. Using my screen's native resolution as the display mode, can't switch windows!
-    
+
+3. Can't switch windows or can't show the taskbar!
+    This can occur when:
+        1. High DPI is set. (More than 100%.)
+        2. Using native screen resolution as the display mode.
+
+    Spam the Windows Key a few times, until the taskbar pops up.
+    For some reason Special K overlaps the taskbar requiring the above workaround.

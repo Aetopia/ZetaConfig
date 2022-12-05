@@ -6,10 +6,11 @@ Here, you can find the source code for the following.
 |**ZetaConfig**|A tool to fix performance issues with Halo Infinite.|
 |**Window Display Mode Tool**|A tool to allow windowed programs to use any display mode and go borderless.
 
-Use `build.bat` to build every project on this repository.
+Use `build.bat` to build every project on this repository.             
 
-ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded as base64 encoded strings.
-These strings can be found in `ZetaConfig/vars.nim` with variables names `wdmtexe` & `wdmtdll`.
+ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded as base64 encoded strings.             
+These strings can be found in `ZetaConfig/vars.nim` with variables names `wdmtexe` & `wdmtdll`.        
+
 To convert their content into `base64` using the following commands:
 - `WDMT.exe`
     ```ps
