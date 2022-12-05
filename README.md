@@ -150,6 +150,7 @@ Click on the `[🗑️]` button to uninstall Special K and Window Display Mode T
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
 
 3. Can't switch windows or can't show the taskbar!           
+
     This can occur when:                        
         1. High DPI is set. (More than 100%.)        
         2. Using native screen resolution as the display mode.      
