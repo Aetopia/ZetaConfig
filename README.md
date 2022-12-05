@@ -106,7 +106,7 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
     Set a framelimit for the game.                              
     (Due ZetaConfig setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.)
 
-6. `[🖥️]` Button:
+6. `[🖥️]` Button:                        
         Pressing this button will make ZetaConfig redetect on which monitor, Halo Infinite is set to launch on.
 
 Click on the `[Save]` button to apply your settings.
