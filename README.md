@@ -154,5 +154,5 @@ Click on the `[🗑️]` button to uninstall Special K and Window Display Mode T
     1. High DPI is set. (More than 100%.)
     2. Using native screen resolution as the display mode.
 
-    Spam the Windows Key a few times, until the taskbar pops up.
+    Spam the Windows Key a few times, until the taskbar pops up.         
     For some reason Special K overlaps the taskbar requiring the above workaround.                                   
