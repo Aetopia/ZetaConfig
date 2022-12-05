@@ -1,5 +1,5 @@
 # ZetaConfig 
-A simple tool to optimize and fix performance issues with Halo Infinite.
+A tool to optimize and fix performance issues with Halo Infinite.       
 **Note: ZetaConfig only supports the Steam release of Halo Infinite!**
 
 # Discussions
@@ -130,9 +130,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 3. Delete `WDMT.exe`, `WDMT.dll` & `WDMT.txt`. (This removes Window Display Mode Tool.)
 
 # Building
-
-
-4. Run `ZetaConfig.exe`.
+**Building Instructions:** https://github.com/Aetopia/ZetaConfig/blob/main/src/README.md
 
 # FAQ
 1. Why is Halo Infinite's launch after installing Special K + Window Display Mode Tool slow?   

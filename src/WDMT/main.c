@@ -62,7 +62,7 @@ void CheckForegroundWndPID(struct WINDOW *wnd)
     do
     {
         Sleep(1);
-    } while (!IsProcWndForeground());
+    } while (!!IsProcWndForeground(wnd));
 }
 
 void IsProcAlive(struct WINDOW *wnd)

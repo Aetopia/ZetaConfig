@@ -2,6 +2,7 @@ import os, osproc
 import json
 import strutils
 import winim/lean
+import base64
 import vars
 
 proc downloadFile(url: string, file: string): void = 
@@ -29,7 +30,7 @@ proc installSpecialK*: void =
     while true:
         if fileExists(dxgiini):
             discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-            writeFile(dxgiini, readFile(dxgiini) & wdmthook)
+            writeFile(dxgiini, readFile(dxgiini) & wdmtsk)
             break
 
     # Remove Version Banner.
@@ -42,13 +43,9 @@ proc installSpecialK*: void =
     echo "[Mods] Special K has been installed!"
 
 proc installWDMT*: void =
-    let 
-        r = parseJson(execCmdEx("curl.exe \"https://api.github.com/repos/Aetopia/Window-Display-Mode-Tool/releases/latest\"", options={poDaemon}).output)
-        fs = ["WDMT.exe", "WDMTHook.dll"]
-    echo "[Mods] Fetching the latest Window Display Mode Tool GitHub release..."
-    for i in 0..fs.len-1:
-        downloadFile(r["assets"][i]["browser_download_url"].getStr().strip(), gamedir/fs[i])
-    writeFile(wdmt, "0x0")
+    writeFile(gamedir/"WDMT.exe", decode(wdmtexe))
+    writeFile(gamedir/"WDMT.dll", decode(wdmtdll))
+    writeFile(wdmttxt, "0 0")
     echo "[Mods] Window Display Mode Tool has been installed!"
 
 proc installMods*: void =
@@ -58,7 +55,7 @@ proc installMods*: void =
         issk = true
     else: echo "[Mods] Special K is installed."
 
-    if not fileExists(gamedir/"WDMT.exe") or not fileExists(gamedir/"WDMTHook.dll"): 
+    if not fileExists(gamedir/"WDMT.exe") or not fileExists(gamedir/"WDMT.dll"): 
         echo "[Mods] Window Display Mode Tool is not installed."
         iswdmt = true
     else: echo "[Mods] Window Display Mode Tool is installed."
@@ -70,5 +67,5 @@ proc installMods*: void =
     elif iswdmt: installWDMT()
 
 proc uninstallMods* = 
-    for file in ["dxgi.dll", "dxgi.ini", "WDMT.exe", "WDMTHook.dll", "WDMT.txt", "ZetaConfig.txt"]: 
+    for file in ["dxgi.dll", "dxgi.ini", "WDMT.exe", "WDMT.dll", "WDMT.txt", "ZetaConfig.txt"]: 
         removeFile(gamedir/file)

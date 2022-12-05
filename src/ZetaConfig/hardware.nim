@@ -28,7 +28,7 @@ proc getGameDisplay* =
         hwnd: HWND
     if not fileExists(gamedir/"ZetaConfig.txt"):
         echo "[Hardware] Detecting which monitor, Halo Infinite launches on..."
-        if fileExists(gamedir/"WDMTHook.dll"): moveFile(gamedir/"WDMTHook.dll", gamedir/"WDMTHook.dll.bak")
+        if fileExists(gamedir/"WDMT.dll"): moveFile(gamedir/"WDMT.dll", gamedir/"WDMT.dll.bak")
         discard execCmdEx("\"$1\" steam://rungameid/1240440" % steamclient, options={poDaemon})
         while true:
             exe = newString(MAX_PATH)
@@ -40,7 +40,7 @@ proc getGameDisplay* =
             if (extractFilename(exe).toLower().strip(chars={'\0'}) == "haloinfinite.exe"):
                 GetMonitorName(hwnd, cstring(gamedir/"ZetaConfig.txt"))
                 discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-                if fileExists(gamedir/"WDMTHook.dll.bak"): moveFile(gamedir/"WDMTHook.dll.bak", gamedir/"WDMTHook.dll")
+                if fileExists(gamedir/"WDMT.dll.bak"): moveFile(gamedir/"WDMT.dll.bak", gamedir/"WDMT.dll")
                 echo "[Hardware] Monitor detection success."
                 return
 

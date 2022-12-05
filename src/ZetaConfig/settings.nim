@@ -18,7 +18,7 @@ proc setGameSettings*(dm: seq[string], resscale: string): void =
         "spec_control_use_cached_window_position"]: 
         cfg[k].add("value", newJInt(0))
 
-    cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
+    cfg["spec_control_use_cached_window_position"].add("value", newJInt(1))
     cfg["spec_control_window_size"].add("value", newJNull())
     cfg["spec_control_window_position_x"].add("value", newJInt(0))
     cfg["spec_control_window_position_y"].add("value", newJInt(0))
@@ -41,8 +41,8 @@ proc getSettings*: (string, string, string, string) =
     let 
         skc = readFile(dxgiini).splitLines()
 
-    if not fileExists(wdmt): writeFile(wdmt, "0 0") 
-    var dm = readFile(wdmt)
+    if not fileExists(wdmttxt): writeFile(wdmttxt, "0 0") 
+    var dm = readFile(wdmttxt)
     echo fmt"[Settings] Loaded Setting: Display Mode={dm}"
     
     var
@@ -86,8 +86,8 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
         verbose: bool
         str: bool
 
-    if not fileExists(wdmt): writeFile(wdmt, "0 0") 
-    writeFile(wdmt, dm)
+    if not fileExists(wdmttxt): writeFile(wdmttxt, "0 0") 
+    writeFile(wdmttxt, dm)
     echo fmt"[Settings] Saved Setting: Display Mode={dm}"
 
     case reflex:
