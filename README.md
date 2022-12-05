@@ -145,15 +145,14 @@ Click on the `[🗑️]` button to uninstall Special K and Window Display Mode T
     3. Find the following options:     
         - `Antialiasing - Transparency Supersampling`         
             Set its value to: `0x00000008 AA_MODE_REPLAY_MODE_ALL`
-    
+
         - `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
 
-3. Can't switch windows or can't show the taskbar!           
+3. Can't switch windows or can't show the taskbar!    
+    This can occur when:
+        1. High DPI is set. (More than 100%.)
+        2. Using native screen resolution as the display mode.
 
-    This can occur when:                        
-        1. High DPI is set. (More than 100%.)        
-        2. Using native screen resolution as the display mode.      
-
-    Spam the Windows Key a few times, until the taskbar pops up.        
-    For some reason Special K overlaps the taskbar requiring the above workaround.          
+    Spam the Windows Key a few times, until the taskbar pops up.
+    For some reason Special K overlaps the taskbar requiring the above workaround.                                   
