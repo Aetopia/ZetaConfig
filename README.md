@@ -130,23 +130,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 3. Delete `WDMT.exe`, `WDMTHook.dll` & `WDMT.txt`. (This removes Window Display Mode Tool.)
 
 # Building
-1. Install Nim: https://github.com/dom96/choosenim
-    > Run the tool 2~3 times to ensure Nim installs properly.
-    > If Nim isn't in your `SYSTEM` path, then log out and log back in.
 
-2. Install the following dependencies:
-    ```
-    nimble install wNim
-    ```
-
-3. Run the following command to compile:
-    ```ps
-    nim c -d:release -d:strip --opt:size -o:ZetaConfig.exe src/main.nim
-    ```
-    > Optional: Compress using UPX.         
-        ```
-        upx -9 ZetaConfig.exe
-        ```
 
 4. Run `ZetaConfig.exe`.
 
@@ -169,3 +153,5 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
     
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
+3. Using my screen's native resolution as the display mode, can't switch windows!
+    

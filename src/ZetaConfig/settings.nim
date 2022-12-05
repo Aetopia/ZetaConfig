@@ -18,12 +18,10 @@ proc setGameSettings*(dm: seq[string], resscale: string): void =
         "spec_control_use_cached_window_position"]: 
         cfg[k].add("value", newJInt(0))
 
-    for k in [ 
-        "spec_control_window_position_x", 
-        "spec_control_window_position_y", 
-        "spec_control_window_size"]:
-        cfg[k].add("value", newJNull())
-
+    cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
+    cfg["spec_control_window_size"].add("value", newJNull())
+    cfg["spec_control_window_position_x"].add("value", newJInt(0))
+    cfg["spec_control_window_position_y"].add("value", newJInt(0))
     cfg["spec_control_windowed_display_resolution_x"].add("value", newJInt(dm[0].parseInt))
     cfg["spec_control_windowed_display_resolution_y"].add("value", newJInt(dm[1].parseInt))
     cfg["spec_control_resolution_scale"].add("value", newJInt(resscale.parseInt))
@@ -43,7 +41,7 @@ proc getSettings*: (string, string, string, string) =
     let 
         skc = readFile(dxgiini).splitLines()
 
-    if not fileExists(wdmt): writeFile(wdmt, "0x0") 
+    if not fileExists(wdmt): writeFile(wdmt, "0 0") 
     var dm = readFile(wdmt)
     echo fmt"[Settings] Loaded Setting: Display Mode={dm}"
     
@@ -77,7 +75,7 @@ proc getSettings*: (string, string, string, string) =
         elif lowlatency: reflex = "On"
         elif boost: reflex = "Boost"
     else: reflex = "Off"
-    return (dm, cpus, reflex, fps)
+    return (dm.replace(" ", "x"), cpus, reflex, fps)
 
 proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
     var 
@@ -88,7 +86,7 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
         verbose: bool
         str: bool
 
-    if not fileExists(wdmt): writeFile(wdmt, "0x0") 
+    if not fileExists(wdmt): writeFile(wdmt, "0 0") 
     writeFile(wdmt, dm)
     echo fmt"[Settings] Saved Setting: Display Mode={dm}"
 
@@ -115,7 +113,8 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
             of "RememberResolution", "Fullscreen", "Borderless", "Center", "CatchAltF4": c[i] = &"{k}=false"
             of "OverrideCPUCoreCount": c[i] = fmt"{k}={cpus}"; verbose = true
             of "TargetFPS": c[i] = fmt"{k}={fps}"; verbose = true
-            of "AlwaysOnTop", "PresentationInterval": c[i] = &"{k}=-1"
+            of "AlwaysOnTop": c[i] = &"{k}=0"
+            of "PresentationInterval": c[i] = &"{k}=-1"
             of "RenderInBackground": c[i]= &"{k}=true"
             of "XOffset", "YOffset": c[i] = &"{k}=0.0001%"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
