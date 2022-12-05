@@ -149,10 +149,10 @@ Click on the `[🗑️]` button to uninstall Special K and Window Display Mode T
         2. `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
 
-3. Can't switch windows or can't show the taskbar!
-    This can occur when:
-        1. High DPI is set. (More than 100%.)
-        2. Using native screen resolution as the display mode.
+3. Can't switch windows or can't show the taskbar!           
+    This can occur when:                        
+        1. High DPI is set. (More than 100%.)        
+        2. Using native screen resolution as the display mode.      
 
-    Spam the Windows Key a few times, until the taskbar pops up.
-    For some reason Special K overlaps the taskbar requiring the above workaround.
+    Spam the Windows Key a few times, until the taskbar pops up.        
+    For some reason Special K overlaps the taskbar requiring the above workaround.          
