@@ -143,10 +143,10 @@ Click on the `[🗑️]` button to uninstall Special K and Window Display Mode T
     2. Open it and search for the Halo Infinite profile.
 
     3. Find the following options:     
-        1. `Antialiasing - Transparency Supersampling`         
+        - `Antialiasing - Transparency Supersampling`         
             Set its value to: `0x00000008 AA_MODE_REPLAY_MODE_ALL`
     
-        2. `Texture filtering - LOD Bias (DX)`         
+        - `Texture filtering - LOD Bias (DX)`         
             Set to a negative value of your choice. (**Recommended: `-1.00 ~ -2.00`**)
 
 3. Can't switch windows or can't show the taskbar!           
