@@ -33,3 +33,9 @@ This library allows for a game to start and use `WDMT.exe` everytime it launches
     Role=ThirdParty
     When=Early
     ```
+3. Create a new file with the name of `WDMT.txt` in the Special K local install directory.
+    Add the following contents:
+    ```txt
+    0 0
+    ```
+    Where `0 0` is the width and height of the desired resolution,
