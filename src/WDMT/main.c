@@ -29,14 +29,12 @@ void ResetForegroundWndDM(struct WINDOW *wnd);
 
 struct WINDOW
 {
-    HWND pwnd;
-    HANDLE hproc;  // HANDLE to the hooked process.
-    DEVMODE *dm;   // Display mode to be applied when the hooked process' window is in the foreground
-    BOOL reset;    // Reset the display mode back to default.
-    DWORD process; // PID of the hooked process.
-    char *monitor; // Name of the monitor, the window is present on.
-    DWORD ec, pid; // Reserved exit code and PID variables.
-    HWND hwnd;     // Reversed HWND variable.
+    HWND pwnd, hwnd;        // HWND of the hooked process's window & reserved HWND variable.
+    HANDLE hproc;           // HANDLE to the hooked process.
+    DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
+    BOOL reset;             // Reset the display mode back to default.
+    DWORD process, ec, pid; // PID of the hooked process & reserved variables.
+    char *monitor;          // Name of the monitor, the window is present on.
 };
 
 BOOL IsProcWndForeground(struct WINDOW *wnd)
@@ -116,7 +114,7 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     {
         while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd))
         {
-            if (ShowWindow(wnd->pwnd, SW_RESTORE))
+            if (OpenIcon(wnd->pwnd))
             {
                 break;
             };
@@ -134,7 +132,7 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     } while (!IsProcWndForeground(wnd));
     while (!IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd))
     {
-        if (ShowWindow(wnd->pwnd, SW_SHOWMINNOACTIVE) &&
+        if (CloseWindow(wnd->pwnd) &&
             SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)) &&
             ChangeDisplaySettingsEx(wnd->monitor,
                                     0,
@@ -213,10 +211,10 @@ int main(int argc, char *argv[])
     // Get the monitor, the window is present on.
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
-    // Name of the monitor, the window is present on.
     wnd.monitor = mi.szDevice;
 
     // Set the window style to borderless.
+    // This might change the window style to borderless or will no nothing.
     SetWindowLongPtr(wnd.hwnd, GWL_STYLE,
                      GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
     SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE,
@@ -224,7 +222,7 @@ int main(int argc, char *argv[])
 
     // If the specified resolution is not the same as the display native resolution then execute ResetForegroundWndDM(struct WINDOW *wnd).
     // This code block additionally sizes the window based on the DPI scaling set by the desired display resolution.
-    if (ChangeDisplaySettingsEx(wnd.monitor, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL)
+    if (ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL)
     {
         GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
         SetWindowPos(wnd.hwnd,
