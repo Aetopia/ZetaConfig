@@ -7,19 +7,7 @@ Here, you can find the source code for the following.
 |**Window Display Mode Tool**|A tool to allow windowed programs to use any display mode and go borderless.
 
 Use `build.bat` to build every project on this repository.             
-
-ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded as base64 encoded strings.             
-These strings can be found in `ZetaConfig/vars.nim` with variable names `wdmtexe` & `wdmtdll`.        
-
-To convert their content into `base64` using the following commands:
-- `WDMT.exe`
-    ```ps
-    [Convert]::ToBase64String((Get-Content "WDMT.exe" -Encoding Byte)) | Set-Clipboard
-    ```
-- `WDMT.dll`
-    ```ps
-    [Convert]::ToBase64String((Get-Content "WDMT.dll" -Encoding Byte)) | Set-Clipboard
-    ```
+ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded.           
 
 ## ZetaConfig
 1. Install Nim: https://github.com/dom96/choosenim

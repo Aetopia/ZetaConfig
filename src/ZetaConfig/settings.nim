@@ -113,7 +113,7 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
             of "RememberResolution", "Fullscreen", "Borderless", "Center", "CatchAltF4": c[i] = &"{k}=false"
             of "OverrideCPUCoreCount": c[i] = fmt"{k}={cpus}"; verbose = true
             of "TargetFPS": c[i] = fmt"{k}={fps}"; verbose = true
-            of "AlwaysOnTop": c[i] = &"{k}=0"
+            of "AlwaysOnTop": c[i] = &"{k}=1"
             of "PresentationInterval": c[i] = &"{k}=-1"
             of "RenderInBackground": c[i]= &"{k}=true"
             of "XOffset", "YOffset": c[i] = &"{k}=0.0001%"

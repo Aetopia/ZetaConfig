@@ -2,7 +2,6 @@ import os, osproc
 import json
 import strutils
 import winim/lean
-import base64
 import vars
 
 proc downloadFile(url: string, file: string): void = 
@@ -43,8 +42,8 @@ proc installSpecialK*: void =
     echo "[Mods] Special K has been installed!"
 
 proc installWDMT*: void =
-    writeFile(gamedir/"WDMT.exe", decode(wdmtexe))
-    writeFile(gamedir/"WDMT.dll", decode(wdmtdll))
+    writeFile(gamedir/"WDMT.exe", wdmtexe)
+    writeFile(gamedir/"WDMT.dll", wdmtdll)
     writeFile(wdmttxt, "0 0")
     echo "[Mods] Window Display Mode Tool has been installed!"
 

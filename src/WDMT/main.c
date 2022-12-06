@@ -15,6 +15,9 @@ BOOL IsProcWndForeground(struct WINDOW *wnd);
 // Check for a specific foreground window via its PID and once hooked, set the display mode.
 void CheckForegroundWndPID(struct WINDOW *wnd);
 
+// Check if the hooked process is alive or not.
+void IsProcAlive(struct WINDOW *wnd);
+
 // Check the hooked process is alive.
 void IsWndProcAlive(struct WINDOW *wnd);
 
@@ -26,6 +29,7 @@ void ResetForegroundWndDM(struct WINDOW *wnd);
 
 struct WINDOW
 {
+    HWND pwnd;
     HANDLE hproc;  // HANDLE to the hooked process.
     DEVMODE *dm;   // Display mode to be applied when the hooked process' window is in the foreground
     BOOL reset;    // Reset the display mode back to default.
@@ -37,11 +41,14 @@ struct WINDOW
 
 BOOL IsProcWndForeground(struct WINDOW *wnd)
 {
-    // Sometimes, some programs might have multiple HWNDs and WDMT might not switch display resolution due to fetching the incorrect HWND.
     wnd->hwnd = GetForegroundWindow();
     GetWindowThreadProcessId(wnd->hwnd, &wnd->pid);
-    if (wnd->process == wnd->pid)
+    if (wnd->process == wnd->pid && wnd->hwnd != 0)
     {
+        if (wnd->pwnd != wnd->hwnd)
+        {
+            wnd->pwnd = wnd->hwnd;
+        }
         return FALSE;
     };
     return TRUE;
@@ -61,7 +68,7 @@ void CheckForegroundWndPID(struct WINDOW *wnd)
     }
     do
     {
-        Sleep(1);
+        IsProcAlive(wnd);
     } while (!!IsProcWndForeground(wnd));
 }
 
@@ -107,6 +114,13 @@ void SetForegroundWndDM(struct WINDOW *wnd)
                                 CDS_FULLSCREEN,
                                 NULL) == DISP_CHANGE_SUCCESSFUL)
     {
+        while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd))
+        {
+            if (ShowWindow(wnd->pwnd, SW_RESTORE))
+            {
+                break;
+            };
+        };
         ResetForegroundWndDM(wnd);
     };
 }
@@ -118,10 +132,19 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     {
         IsProcAlive(wnd);
     } while (!IsProcWndForeground(wnd));
-    if (ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL)
+    while (!IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd))
     {
-        ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
-        SetForegroundWndDM(wnd);
+        if (ShowWindow(wnd->pwnd, SW_SHOWMINNOACTIVE) &&
+            SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)) &&
+            ChangeDisplaySettingsEx(wnd->monitor,
+                                    0,
+                                    NULL,
+                                    CDS_FULLSCREEN,
+                                    NULL) == DISP_CHANGE_SUCCESSFUL)
+        {
+            ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+            SetForegroundWndDM(wnd);
+        };
     };
 }
 
@@ -129,13 +152,12 @@ int main(int argc, char *argv[])
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     struct WINDOW wnd;
-    DEVMODE dm, cdm;
+    DEVMODE dm;
     MONITORINFOEX mi;
     HMONITOR hmon;
     UINT dpiX, dpiY, dpiC = GetDpiForSystem();
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
-    cdm.dmSize = sizeof(cdm);
 
     if (argc != 4)
     {
@@ -181,9 +203,12 @@ int main(int argc, char *argv[])
 
     // Source: https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     // Restore the window if its maximized.
-    if (IsZoomed(wnd.hwnd))
+    while (IsZoomed(wnd.hwnd))
     {
-        ShowWindow(wnd.hwnd, SW_RESTORE);
+        if (ShowWindow(wnd.hwnd, SW_RESTORE))
+        {
+            break;
+        };
     };
 
     // Get the monitor, the window is present on.
@@ -191,8 +216,6 @@ int main(int argc, char *argv[])
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
     // Name of the monitor, the window is present on.
     wnd.monitor = mi.szDevice;
-    // Get the current resolution of the monitor the window is on.
-    EnumDisplaySettings(mi.szDevice, ENUM_CURRENT_SETTINGS, &cdm);
 
     // Set the window style to borderless.
     SetWindowLongPtr(wnd.hwnd, GWL_STYLE,
@@ -202,25 +225,17 @@ int main(int argc, char *argv[])
 
     // If the specified resolution is not the same as the display native resolution then execute ResetForegroundWndDM(struct WINDOW *wnd).
     // This code block additionally sizes the window based on the DPI scaling set by the desired display resolution.
-    if (dm.dmPelsHeight != cdm.dmPelsHeight && dm.dmPelsWidth != cdm.dmPelsWidth)
+    if (ChangeDisplaySettingsEx(wnd.monitor, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL)
     {
-        ChangeDisplaySettingsEx(wnd.monitor, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
         GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
         SetWindowPos(wnd.hwnd,
-                     HWND_TOP,
+                     HWND_TOPMOST,
                      mi.rcMonitor.left,
                      mi.rcMonitor.top,
                      dm.dmPelsWidth * (float)dpiC / dpiX,
                      dm.dmPelsHeight * (float)dpiC / dpiY,
-                     SWP_FRAMECHANGED | SWP_ASYNCWINDOWPOS);
+                     SWP_FRAMECHANGED);
         ResetForegroundWndDM(&wnd);
-    }
-    SetWindowPos(wnd.hwnd,
-                 HWND_TOP,
-                 mi.rcMonitor.left,
-                 mi.rcMonitor.top,
-                 dm.dmPelsWidth,
-                 dm.dmPelsHeight,
-                 SWP_FRAMECHANGED | SWP_ASYNCWINDOWPOS);
+    };
     return 0;
 }
