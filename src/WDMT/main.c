@@ -168,8 +168,7 @@ int main(int argc, char *argv[])
         return 0;
     };
 
-    // Setup the Display Mode.
-    // Display resolution to be used.
+    // Setup the DEVMODE structure.
     dm.dmPelsWidth = atoi(argv[2]);
     dm.dmPelsHeight = atoi(argv[3]);
     dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;

@@ -38,4 +38,5 @@ This library allows for a game to start and use `WDMT.exe` everytime it launches
     ```txt
     0 0
     ```
-    Where `0 0` is the width and height of the desired resolution,
+    Where `0 0` is the width and height of the desired resolution.                            
+    Example: `1280 720`.
