@@ -122,18 +122,18 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     {
         IsProcAlive(wnd);
     } while (!IsProcWndForeground(wnd));
-    ChangeDisplaySettingsEx(wnd->monitor,
-                            0,
-                            NULL,
-                            CDS_FULLSCREEN,
-                            NULL);
-    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
     do
     {
         ShowWindow(wnd->pwnd, SW_MINIMIZE);
     } while (!IsIconic(wnd->pwnd) &&
              IsWindow(wnd->pwnd) &&
              !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
+    ChangeDisplaySettingsEx(wnd->monitor,
+                            0,
+                            NULL,
+                            CDS_FULLSCREEN,
+                            NULL);
+    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
     SetForegroundWndDM(wnd);
 }
 
