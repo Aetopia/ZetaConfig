@@ -203,30 +203,40 @@ int main(int argc, char *argv[])
 
     // Set the window style to borderless and reposition the window.
     // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
-    SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
-                     GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
-                         ~(WS_OVERLAPPEDWINDOW));
-    SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
-                     GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
-                         ~(WS_EX_DLGMODALFRAME |
-                           WS_EX_COMPOSITED |
-                           WS_EX_OVERLAPPEDWINDOW |
-                           WS_EX_LAYERED |
-                           WS_EX_STATICEDGE |
-                           WS_EX_TOOLWINDOW |
-                           WS_EX_APPWINDOW |
-                           WS_EX_TOPMOST));
+    do
+    {
+        SetLastError(0);
+    } while (SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
+                              GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
+                                  ~(WS_OVERLAPPEDWINDOW)));
+    do
+    {
+        SetLastError(0);
+    } while (SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
+                              GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
+                                  ~(WS_EX_DLGMODALFRAME |
+                                    WS_EX_COMPOSITED |
+                                    WS_EX_OVERLAPPEDWINDOW |
+                                    WS_EX_LAYERED |
+                                    WS_EX_STATICEDGE |
+                                    WS_EX_TOOLWINDOW |
+                                    WS_EX_APPWINDOW |
+                                    WS_EX_TOPMOST)));
 
     // Size the window based on the DPI scaling set by the desired display resolution.
-    ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
-    GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    SetWindowPos(wnd.pwnd,
-                 0,
-                 mi.rcMonitor.left,
-                 mi.rcMonitor.top,
-                 dm.dmPelsWidth * (float)dpiC / dpiX,
-                 dm.dmPelsHeight * (float)dpiC / dpiY,
-                 SWP_FRAMECHANGED);
-    ResetForegroundWndDM(&wnd);
+    if (ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL && GetDpiForMonitor(hmon, 0, &dpiX, &dpiY) == S_OK)
+    {
+        do
+        {
+            SetLastError(0);
+        } while (SetWindowPos(wnd.pwnd,
+                              0,
+                              mi.rcMonitor.left,
+                              mi.rcMonitor.top,
+                              dm.dmPelsWidth * (float)dpiC / dpiX,
+                              dm.dmPelsHeight * (float)dpiC / dpiY,
+                              SWP_FRAMECHANGED));
+        ResetForegroundWndDM(&wnd);
+    };
     return 0;
 }
