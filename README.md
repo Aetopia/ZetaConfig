@@ -24,9 +24,11 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Window Display Mode Tool](https://github.com/Aetopia/ZetaConfig/blob/main/src/WDMT/README.md)
-    > A tool to run windowed programs at specific display modes and as borderless windows.          
-    Example: Switch to `1280x720` whenever you use `cmd.exe` and swap back to your screen native resolution when its closed or minimized.
+2. [Borderless Window Extended](https://github.com/Aetopia/ZetaConfig/tree/main/src/Borderless%20Window%20Extended/README.md)
+    > A tool to extend the feature set of borderless windowed mode in programs.
+    1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
+    2. Override a program 's borderless window implementation with a statically sized borderless window.
+    3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 ZetaConfig utilizes the following features from the specified projects:
 
@@ -37,6 +39,11 @@ ZetaConfig utilizes the following features from the specified projects:
     ### Examples
 
     #### All Cores (i7-10700K with Hyper-Threading disabled.)
+    > Note: 
+    Halo Infinite's December 2022 update fixes the fixes the following:                 
+    "The simulation rate now matches the framerate, meaning uncapped and higher framerates on PC will no longer result in unnecessary CPU usage."        
+    TLDR; CPU usage should be marginally lower than before but this will depend on your CPU.
+
     > **Image 1**:              
     > ![AllCores](images/AllCores.png)
 
@@ -46,7 +53,7 @@ ZetaConfig utilizes the following features from the specified projects:
 
     Spoofing the CPU core count seems to determine how many threads should be used for compute.      
 
-    In `[Image 1]`, the game is using all threads but in `[Image 2]`, CPUs `3, 4, 5, 6` are being either being less priortized to be used by the game or just being given less relevance thus leading to lower CPU usage.
+    In `[Image 1]`, the game is using all threads but in `[Image 2]`, CPUs `3, 4, 5, 6` are being either being less prioritized to be used by the game or just being given less relevance thus leading to lower CPU usage.
 
     Technically Halo Infinite uses 9 compute threads, explaining why the i7-10700K was having 100% with Hyper Threading disabled.
 
@@ -61,8 +68,8 @@ ZetaConfig utilizes the following features from the specified projects:
     Special K offers a superior framelimiter as compared to the ingame framelimiter.      
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
-### From Window Display Mode Tool
-1. Ability to enforce a specific resolution upon a specific application when being it is utilized.  
+### From Borderless Window Extended
+1. Ability to use a specific resolution upon a specific application when being it is utilized.  
 2. Can run a windowed program as a borderless window at a desired display resolution.  
 
 # Does ZetaConfig alter any Halo Infinite settings?
@@ -124,7 +131,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 6. Launch your game!
 
 # Uninstallation
-Click on the `[🗑️]` button to uninstall Special K and Window Display Mode Tool.
+Click on the `[🗑️]` button to uninstall Special K and Borderless Window Extended.
 
 # Building
 **Building Instructions:** https://github.com/Aetopia/ZetaConfig/blob/main/src/README.md
