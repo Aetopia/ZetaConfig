@@ -203,7 +203,6 @@ int main(int argc, char *argv[])
 
     // Set the window style to borderless and reposition the window.
     // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
-    SetWindowPos(wnd.pwnd, 0, mi.rcMonitor.left, mi.rcMonitor.top, 0, 0, SWP_NOSIZE);
     SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
                      GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
                          ~(WS_OVERLAPPEDWINDOW));
@@ -221,10 +220,13 @@ int main(int argc, char *argv[])
     // Size the window based on the DPI scaling set by the desired display resolution.
     ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    SetWindowPos(wnd.pwnd, 0, 0, 0,
+    SetWindowPos(wnd.pwnd,
+                 0,
+                 mi.rcMonitor.left,
+                 mi.rcMonitor.top,
                  dm.dmPelsWidth * (float)dpiC / dpiX,
                  dm.dmPelsHeight * (float)dpiC / dpiY,
-                 SWP_FRAMECHANGED | SWP_NOREPOSITION);
+                 SWP_FRAMECHANGED);
     ResetForegroundWndDM(&wnd);
     return 0;
 }
