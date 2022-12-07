@@ -48,7 +48,7 @@ This additionally acts an override for Special K's borderless window implementat
     Role=ThirdParty
     When=Early
     ```
-3. Create a new file with the name of `BWEx.txt` in the Special K local install directory.
+3. Create a new file with the name of `BWEx.txt` in the Special K local install directory.                               
     Add the following contents:
     ```txt
     0 0
