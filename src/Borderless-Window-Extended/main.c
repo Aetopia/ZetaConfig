@@ -72,6 +72,7 @@ void HookForegroundWnd(struct WINDOW *wnd)
 
 void IsProcAlive(struct WINDOW *wnd)
 {
+    Sleep(1);
     GetExitCodeProcess(wnd->hproc, &wnd->ec);
     if (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd))
     {
@@ -93,7 +94,6 @@ void IsProcAlive(struct WINDOW *wnd)
             exit(0);
         };
     };
-    Sleep(1);
 }
 
 void SetForegroundWndDM(struct WINDOW *wnd)
