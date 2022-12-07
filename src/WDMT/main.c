@@ -89,14 +89,11 @@ void IsProcAlive(struct WINDOW *wnd)
                     ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
                     exit(0);
                 };
-            }
-            else
-            {
-                exit(0);
             };
+            exit(0);
         };
+        Sleep(1);
     };
-    Sleep(1);
 }
 
 void SetForegroundWndDM(struct WINDOW *wnd)
@@ -104,23 +101,18 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     wnd->reset = FALSE;
     do
     {
-        IsProcAlive(wnd);
-    } while (IsProcWndForeground(wnd));
-    if (ChangeDisplaySettingsEx(wnd->monitor,
-                                wnd->dm,
-                                NULL,
-                                CDS_FULLSCREEN,
-                                NULL) == DISP_CHANGE_SUCCESSFUL)
-    {
-        while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd))
+        do
         {
-            if (ShowWindowAsync(wnd->pwnd, SW_RESTORE))
-            {
-                break;
-            };
-        };
-        ResetForegroundWndDM(wnd);
-    };
+            IsProcAlive(wnd);
+        } while (IsProcWndForeground(wnd));
+        ShowWindow(wnd->pwnd, SW_RESTORE);
+    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
+    ChangeDisplaySettingsEx(wnd->monitor,
+                            wnd->dm,
+                            NULL,
+                            CDS_FULLSCREEN,
+                            NULL);
+    ResetForegroundWndDM(wnd);
 }
 
 void ResetForegroundWndDM(struct WINDOW *wnd)
@@ -128,22 +120,22 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     wnd->reset = TRUE;
     do
     {
-        IsProcAlive(wnd);
-    } while (!IsProcWndForeground(wnd));
-    while (!IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd))
-    {
-        if (ShowWindowAsync(wnd->pwnd, SW_MINIMIZE) &&
-            SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)) &&
-            ChangeDisplaySettingsEx(wnd->monitor,
-                                    0,
-                                    NULL,
-                                    CDS_FULLSCREEN,
-                                    NULL) == DISP_CHANGE_SUCCESSFUL)
+        do
         {
-            ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
-            SetForegroundWndDM(wnd);
+            IsProcAlive(wnd);
+        } while (!IsProcWndForeground(wnd));
+        if (SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)))
+        {
+            ShowWindow(wnd->pwnd, SW_MINIMIZE);
         };
-    };
+    } while (!IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
+    ChangeDisplaySettingsEx(wnd->monitor,
+                            0,
+                            NULL,
+                            CDS_FULLSCREEN,
+                            NULL);
+    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+    SetForegroundWndDM(wnd);
 }
 
 int main(int argc, char *argv[])
@@ -200,13 +192,10 @@ int main(int argc, char *argv[])
 
     // Source: https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     // Restore the window if its maximized.
-    while (IsZoomed(wnd.hwnd))
+    do
     {
-        if (ShowWindow(wnd.hwnd, SW_RESTORE))
-        {
-            break;
-        };
-    };
+        ShowWindow(wnd.hwnd, SW_RESTORE);
+    } while (IsZoomed(wnd.hwnd));
 
     // Get the monitor, the window is present on.
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
