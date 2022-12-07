@@ -1,6 +1,6 @@
-## Window Display Mode Tool
+# Window Display Mode Tool
+This tool allows any windowed program to run at a specific display mode and as a borderless window.
 Pass a process' PID or process name and the desired display mode to be used with that process.
-
 ```
 WDMT.exe <PID/Process> <Width> <Height>
 ```
