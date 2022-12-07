@@ -92,8 +92,8 @@ void IsProcAlive(struct WINDOW *wnd)
             };
             exit(0);
         };
-        Sleep(1);
     };
+    Sleep(1);
 }
 
 void SetForegroundWndDM(struct WINDOW *wnd)
