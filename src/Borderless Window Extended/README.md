@@ -50,10 +50,11 @@ This additionally acts an override for Special K's borderless window implementat
     ```
 3. Create a new file with the name of `BWEx.txt` in the Special K local install directory.                               
     Add the following contents:
+    
     ```txt
     0 0
     ```
-    Where `0 0` is the width and height of the desired display resolution.                            
+    > Where `0 0` is the width and height of the desired display resolution.                            
     Example:
     ```txt
     1280 720
