@@ -103,15 +103,15 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     {
         IsProcAlive(wnd);
     } while (IsProcWndForeground(wnd));
-    do
-    {
-        ShowWindow(wnd->pwnd, SW_RESTORE);
-    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
     ChangeDisplaySettingsEx(wnd->monitor,
                             wnd->dm,
                             NULL,
                             CDS_FULLSCREEN,
                             NULL);
+    do
+    {
+        ShowWindow(wnd->pwnd, SW_RESTORE);
+    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
     ResetForegroundWndDM(wnd);
 }
 
