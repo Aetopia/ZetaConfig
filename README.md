@@ -35,14 +35,15 @@ ZetaConfig utilizes the following features from the specified projects:
 ### From Special K:
 1. Spoof CPU Core Count:     
     This option is used to fool the game into thinking that the CPU core count is lower than usual.
+    
+    > **Note:**
+    **Halo Infinite's December 2022 update fixes the fixes the following:**                   
+    **"The simulation rate now matches the framerate, meaning uncapped and higher framerates on PC will no longer result in unnecessary CPU usage."**               
+    **TLDR; CPU usage should be marginally lower than before but this will depend on your CPU.**               
 
     ### Examples
 
     #### All Cores (i7-10700K with Hyper-Threading disabled.)
-    > Note: 
-    Halo Infinite's December 2022 update fixes the fixes the following:                 
-    "The simulation rate now matches the framerate, meaning uncapped and higher framerates on PC will no longer result in unnecessary CPU usage."        
-    TLDR; CPU usage should be marginally lower than before but this will depend on your CPU.
 
     > **Image 1**:              
     > ![AllCores](images/AllCores.png)
