@@ -6,8 +6,14 @@ A tool to extend the feature set of borderless windowed mode in programs.
 2. Override a program 's borderless window implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
-# Usage
-**Note: If you plan to use this tool with a game, ensure your game is set in windowed mode and the window size is the same as the specified display resolution passed to Borderless Window Extended.**
+## Usage
+
+**Notes:**
+1. **Ensure your program is set in windowed mode.**
+    **The window size is should be the same as the specified display resolution passed to Borderless Window Extended.**
+2. **Borderless Window Extended might not work properly with all programs.**
+    **Feel free to make a issue on this repository to improve compatibility.**
+
 Pass a process' PID or process name and the desired display mode to be used with that process.
 ```
 BWEx.exe <PID/Process> <Width> <Height>
