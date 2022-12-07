@@ -79,7 +79,7 @@ ZetaConfig alters a few ingame options:
 
 2. Ingame Sharpness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
 
-3. Borderless Fullscreen is disabled. This is intentionally done offload borderless window functionality to Window Display Mode Tool.
+3. Borderless Fullscreen is disabled. This is intentionally done offload borderless window functionality to Borderless Window Extended.
 
 >You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
 > https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
@@ -92,7 +92,7 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 1. `Resolution Scale`:       
     Set the ingame render resolution. You can set any value between `50 ~ 100`.
 
-2. `Display Mode` (Provided by Window Display Mode Tool.):        
+2. `Display Mode` (Provided by Borderless Window Extended.):        
     Configure the display resolution and window size, the game will run at.
 
 3. `Spoof CPU Cores` (Provided by Special K.):                  
@@ -135,7 +135,7 @@ Click on the `[🗑️]` button to uninstall Special K and Borderless Window Ext
 **Building Instructions:** https://github.com/Aetopia/ZetaConfig/blob/main/src/README.md
 
 # FAQ
-1. Why is Halo Infinite's launch after installing Special K + Window Display Mode Tool slow?   
+1. Why is Halo Infinite's launch after installing Special K + Borderless Window Extended slow?   
 
     The game is compiling shaders since Special K is loaded into the game.
     Once they compile, launches should be snappy and fast.
