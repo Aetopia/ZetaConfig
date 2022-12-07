@@ -29,7 +29,7 @@ proc installSpecialK*: void =
     while true:
         if fileExists(dxgiini):
             discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-            writeFile(dxgiini, readFile(dxgiini) & wdmtsk)
+            writeFile(dxgiini, readFile(dxgiini) & BWExsk)
             break
 
     # Remove Version Banner.
@@ -41,30 +41,30 @@ proc installSpecialK*: void =
 
     echo "[Mods] Special K has been installed!"
 
-proc installWDMT*: void =
-    writeFile(gamedir/"WDMT.exe", wdmtexe)
-    writeFile(gamedir/"WDMT.dll", wdmtdll)
-    writeFile(wdmttxt, "0 0")
-    echo "[Mods] Window Display Mode Tool has been installed!"
+proc installBWEx*: void =
+    writeFile(gamedir/"BWEx.exe", BWExexe)
+    writeFile(gamedir/"BWEx.dll", BWExdll)
+    writeFile(BWExtxt, "0 0")
+    echo "[Mods] Borderless Window Extended has been installed!"
 
 proc installMods*: void =
-    var (issk, iswdmt) = (false, false)
+    var (issk, isBWEx) = (false, false)
     if not fileExists(gamedir/"dxgi.dll") or not fileExists(gamedir/"dxgi.ini"): 
         echo "[Mods] Special K is not installed."
         issk = true
     else: echo "[Mods] Special K is installed."
 
-    if not fileExists(gamedir/"WDMT.exe") or not fileExists(gamedir/"WDMT.dll"): 
-        echo "[Mods] Window Display Mode Tool is not installed."
-        iswdmt = true
-    else: echo "[Mods] Window Display Mode Tool is installed."
+    if not fileExists(gamedir/"BWEx.exe") or not fileExists(gamedir/"BWEx.dll"): 
+        echo "[Mods] Borderless Window Extended is not installed."
+        isBWEx = true
+    else: echo "[Mods] Borderless Window Extended is installed."
     
-    if issk and iswdmt: 
+    if issk and isBWEx: 
         installSpecialK()
-        installWDMT()
+        installBWEx()
     elif issk: installSpecialK()
-    elif iswdmt: installWDMT()
+    elif isBWEx: installBWEx()
 
 proc uninstallMods* = 
-    for file in ["dxgi.dll", "dxgi.ini", "WDMT.exe", "WDMT.dll", "WDMT.txt", "ZetaConfig.txt"]: 
+    for file in ["dxgi.dll", "dxgi.ini", "BWEx.exe", "BWEx.dll", "BWEx.txt", "ZetaConfig.txt"]: 
         removeFile(gamedir/file)

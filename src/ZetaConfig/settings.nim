@@ -41,8 +41,8 @@ proc getSettings*: (string, string, string, string) =
     let 
         skc = readFile(dxgiini).splitLines()
 
-    if not fileExists(wdmttxt): writeFile(wdmttxt, "0 0") 
-    var dm = readFile(wdmttxt)
+    if not fileExists(BWExtxt): writeFile(BWExtxt, "0 0") 
+    var dm = readFile(BWExtxt)
     echo fmt"[Settings] Loaded Setting: Display Mode={dm}"
     
     var
@@ -86,8 +86,8 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
         verbose: bool
         str: bool
 
-    if not fileExists(wdmttxt): writeFile(wdmttxt, "0 0") 
-    writeFile(wdmttxt, dm)
+    if not fileExists(BWExtxt): writeFile(BWExtxt, "0 0") 
+    writeFile(BWExtxt, dm)
     echo fmt"[Settings] Saved Setting: Display Mode={dm}"
 
     case reflex:

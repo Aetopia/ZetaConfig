@@ -45,7 +45,7 @@ proc getSteamPath* : string =
     
 proc getSteamLibraryFolders*(steampath: string = getSteamPath()) : seq[string] =
     let 
-        libs = steampath / "config/libraryfolders.vdf"
+        libs = steampath/"config/libraryfolders.vdf"
         c = readFile(libs).splitLines()
     var folders: seq[string]
 
@@ -61,5 +61,5 @@ proc getSteamGameInstallDir*(game: string, steampath: string = getSteamPath()): 
     for folder in folders:
         installdir = folder/"steamapps/common"/game.strip()
         if dirExists(installdir): echo "[Steam] Found Game Installation Directory: " & installdir; return installdir
-    MessageBox(0, "Failed to find Game Directory!", "ZetaConfig", 0x00000010)
+    MessageBox(0, "Failed to find Game Directory!", "ZetaConfig", MB_ICONEXCLAMATION)
     quit(1)

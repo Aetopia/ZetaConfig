@@ -10,10 +10,10 @@ let
   steamclient* = steampath/"steam.exe"
   documents* = getEnv("USERPROFILE")/"Documents"
   temp* = getEnv("TEMP")
-  wdmtsk* = "\n[Import.WDMT]\nArchitecture=x64\nFilename=WDMT.dll\nRole=ThirdParty\nWhen=Early"
-  wdmttxt* = gamedir/"WDMT.txt"
+  BWExsk* = "\n[Import.BWEx]\nArchitecture=x64\nFilename=BWEx.dll\nRole=ThirdParty\nWhen=Early"
+  BWExtxt* = gamedir/"BWEx.txt"
 
-# This embeds Window Display Mode Tool when compiling ZetaConfig.
+# This embeds Borderless Window Extended when compiling ZetaConfig.
 const
-  wdmtexe* = staticRead("../WDMT.exe")
-  wdmtdll* = staticRead("../WDMT.dll")
+  BWExexe* = staticRead("../BWEx.exe")
+  BWExdll* = staticRead("../BWEx.dll")

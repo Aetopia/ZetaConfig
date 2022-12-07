@@ -90,10 +90,10 @@ if isMainModule:
             quit(0)
 
     uninstall.wEvent_Button do ():
-        if frame.MessageDialog("Uninstall Special K and Window Display Mode Tool?", "Uninstall", wOkCancel or wIconExclamation).display() == wIdOk:
+        if frame.MessageDialog("Uninstall Special K and Borderless Window Extended?", "Uninstall", wOkCancel or wIconExclamation).display() == wIdOk:
             uninstallMods()
             frame.hide()
-            MessageDialog(nil, "Uninstalled Special K and Window Display Mode Tool.", "Uninstall", wOk or wIconInformation).display()
+            MessageDialog(nil, "Uninstalled Special K and Borderless Window Extended.", "Uninstall", wOk or wIconInformation).display()
             quit(0)
             
     frame.center()

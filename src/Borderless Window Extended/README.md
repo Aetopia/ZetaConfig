@@ -37,7 +37,7 @@ BWEx.exe <PID/Process> <Width> <Height>
 ## Borderless Window Extended Library
 **Intended to be used with [Special K](https://wiki.special-k.info).**            
 This library allows for a game to start and use `BWEx.exe` everytime it launches.     
-This additionally acts an override for Special K's borderless window implementation.
+This additionally acts an override for Special K's borderless windowed mode implementation.
 
 1. Simply place `BWEx.dll` and `BWEx.exe` in a Special K local install. 
 2. Add the following to your Special K configuration file:
@@ -55,7 +55,7 @@ This additionally acts an override for Special K's borderless window implementat
     0 0
     ```
     > Where `0 0` is the width and height of the desired display resolution.    
-                            
+
     Example:
     ```txt
     1280 720
