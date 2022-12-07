@@ -18,7 +18,7 @@ proc setGameSettings*(dm: seq[string], resscale: string): void =
         "spec_control_use_cached_window_position"]: 
         cfg[k].add("value", newJInt(0))
 
-    cfg["spec_control_use_cached_window_position"].add("value", newJInt(1))
+    cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
     cfg["spec_control_window_size"].add("value", newJNull())
     cfg["spec_control_window_position_x"].add("value", newJInt(0))
     cfg["spec_control_window_position_y"].add("value", newJInt(0))

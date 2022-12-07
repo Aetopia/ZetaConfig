@@ -103,15 +103,15 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     {
         IsProcAlive(wnd);
     } while (IsProcWndForeground(wnd));
+    do
+    {
+        ShowWindow(wnd->pwnd, SW_RESTORE);
+    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
     ChangeDisplaySettingsEx(wnd->monitor,
                             wnd->dm,
                             NULL,
                             CDS_FULLSCREEN,
                             NULL);
-    do
-    {
-        ShowWindow(wnd->pwnd, SW_RESTORE);
-    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
     ResetForegroundWndDM(wnd);
 }
 
@@ -193,23 +193,22 @@ int main(int argc, char *argv[])
     // Restore the window if its maximized.
     do
     {
-        ShowWindow(wnd.hwnd, SW_RESTORE);
-    } while (IsZoomed(wnd.hwnd));
+        ShowWindow(wnd.pwnd, SW_RESTORE);
+    } while (IsZoomed(wnd.pwnd));
 
     // Get the monitor, the window is present on.
-    hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
+    hmon = MonitorFromWindow(wnd.pwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
     wnd.monitor = mi.szDevice;
 
-    // Set the window style to borderless.
+    // Set the window style to borderless and reposition the window.
     // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
-    SetWindowLongPtr(wnd.hwnd,
-                     GWL_STYLE,
-                     GetWindowLongPtr(wnd.hwnd, GWL_STYLE) &
+    SetWindowPos(wnd.pwnd, 0, mi.rcMonitor.left, mi.rcMonitor.top, 0, 0, SWP_NOSIZE);
+    SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
+                     GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
                          ~(WS_OVERLAPPEDWINDOW));
-    SetWindowLongPtr(wnd.hwnd,
-                     GWL_EXSTYLE,
-                     GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) &
+    SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
+                     GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
                          ~(WS_EX_DLGMODALFRAME |
                            WS_EX_COMPOSITED |
                            WS_EX_OVERLAPPEDWINDOW |
@@ -222,13 +221,10 @@ int main(int argc, char *argv[])
     // Size the window based on the DPI scaling set by the desired display resolution.
     ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    SetWindowPos(wnd.hwnd,
-                 0,
-                 mi.rcMonitor.left,
-                 mi.rcMonitor.top,
+    SetWindowPos(wnd.pwnd, 0, 0, 0,
                  dm.dmPelsWidth * (float)dpiC / dpiX,
                  dm.dmPelsHeight * (float)dpiC / dpiY,
-                 SWP_FRAMECHANGED);
+                 SWP_FRAMECHANGED | SWP_NOREPOSITION);
     ResetForegroundWndDM(&wnd);
     return 0;
 }
