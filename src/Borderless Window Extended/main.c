@@ -1,4 +1,4 @@
-// Source code for Window Display Mode Tool.
+// Borderless Window Extended
 #include <windows.h>
 #include <libgen.h>
 #include <psapi.h>
@@ -13,10 +13,13 @@ struct WINDOW;
 BOOL IsProcWndForeground(struct WINDOW *wnd);
 
 // Check for a specific foreground window via its PID and once hooked, set the display mode.
-void CheckForegroundWndPID(struct WINDOW *wnd);
+void HookForegroundWnd(struct WINDOW *wnd);
+
+// Check if the hooked process is alive or not.
+void IsProcAlive(struct WINDOW *wnd);
 
 // Check the hooked process is alive.
-void IsProcAlive(struct WINDOW *wnd);
+void IsWndProcAlive(struct WINDOW *wnd);
 
 // Apply the desired resolution when the hooked process is in the foreground.
 void SetForegroundWndDM(struct WINDOW *wnd);
@@ -26,11 +29,11 @@ void ResetForegroundWndDM(struct WINDOW *wnd);
 
 struct WINDOW
 {
-    HWND pwnd, hwnd;        // HWND of the hooked process' window & reserved HWND variable.
+    HWND pwnd, hwnd;        // HWND of the hooked process's window & reserved HWND variable.
     HANDLE hproc;           // HANDLE to the hooked process.
     DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
     BOOL reset;             // Reset the display mode back to default.
-    DWORD process, ec, pid; //  PID of the hooked process & reserved exit code + PID variables. //
+    DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     char *monitor;          // Name of the monitor, the window is present on.
 };
 
@@ -38,7 +41,7 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
 {
     wnd->hwnd = GetForegroundWindow();
     GetWindowThreadProcessId(wnd->hwnd, &wnd->pid);
-    if (wnd->process == wnd->pid)
+    if (wnd->process == wnd->pid && wnd->hwnd != 0)
     {
         if (wnd->pwnd != wnd->hwnd)
         {
@@ -49,7 +52,7 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
     return TRUE;
 }
 
-void CheckForegroundWndPID(struct WINDOW *wnd)
+void HookForegroundWnd(struct WINDOW *wnd)
 {
     wnd->hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, wnd->process);
     if (!wnd->hproc)
@@ -57,20 +60,20 @@ void CheckForegroundWndPID(struct WINDOW *wnd)
         CloseHandle(wnd->hproc);
         MessageBox(0,
                    "Invaild PID!",
-                   "Window Display Mode Tool",
+                   "Borderless Windowed Extended",
                    MB_ICONEXCLAMATION);
         exit(1);
     }
     do
     {
-        Sleep(1);
-    } while (!IsProcWndForeground());
+        IsProcAlive(wnd);
+    } while (!!IsProcWndForeground(wnd));
 }
 
 void IsProcAlive(struct WINDOW *wnd)
 {
     GetExitCodeProcess(wnd->hproc, &wnd->ec);
-    if (wnd->ec != STILL_ACTIVE || IsWindowVisible(wnd->pwnd))
+    if (wnd->ec != STILL_ACTIVE)
     {
         CloseHandle(wnd->hproc);
         for (;;)
@@ -86,14 +89,11 @@ void IsProcAlive(struct WINDOW *wnd)
                     ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
                     exit(0);
                 };
-            }
-            else
-            {
-                exit(0);
             };
+            exit(0);
         };
+        Sleep(1);
     };
-    Sleep(1);
 }
 
 void SetForegroundWndDM(struct WINDOW *wnd)
@@ -106,15 +106,14 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     do
     {
         ShowWindow(wnd->pwnd, SW_RESTORE);
-    } while (IsIconic(wnd->pwnd));
-    if (ChangeDisplaySettingsEx(wnd->monitor,
-                                wnd->dm,
-                                NULL,
-                                CDS_FULLSCREEN,
-                                NULL) == DISP_CHANGE_SUCCESSFUL)
-    {
-        ResetForegroundWndDM(wnd);
-    };
+    } while (IsIconic(wnd->pwnd) &&
+             IsWindow(wnd->pwnd));
+    ChangeDisplaySettingsEx(wnd->monitor,
+                            wnd->dm,
+                            NULL,
+                            CDS_FULLSCREEN,
+                            NULL);
+    ResetForegroundWndDM(wnd);
 }
 
 void ResetForegroundWndDM(struct WINDOW *wnd)
@@ -126,13 +125,15 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     } while (!IsProcWndForeground(wnd));
     do
     {
-        if (SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)))
-        {
-            ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        };
-    } while (!IsIconic(wnd->pwnd));
-
-    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, CDS_FULLSCREEN, NULL);
+        ShowWindow(wnd->pwnd, SW_MINIMIZE);
+    } while (!IsIconic(wnd->pwnd) &&
+             IsWindow(wnd->pwnd) &&
+             !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
+    ChangeDisplaySettingsEx(wnd->monitor,
+                            0,
+                            NULL,
+                            CDS_FULLSCREEN,
+                            NULL);
     ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
     SetForegroundWndDM(wnd);
 }
@@ -151,25 +152,10 @@ int main(int argc, char *argv[])
     if (argc != 4)
     {
         MessageBox(0,
-                   "WDMT.exe <PID> <Width> <Height>",
-                   "Window Display Mode Tool",
+                   "BWEx.exe <PID> <Width> <Height>",
+                   "Borderless Windowed Extended",
                    MB_ICONINFORMATION);
         return 0;
-    };
-
-    // Check if the <PID/Process> argument contains only integers or not.
-    if (strspn(argv[1], "0123456789") == strlen(argv[1]))
-    {
-        wnd.process = atoi(argv[1]);
-        CheckForegroundWndPID(&wnd);
-    }
-    else
-    {
-        MessageBox(0,
-                   "Invaild PID!",
-                   "Window Display Mode Tool",
-                   MB_ICONEXCLAMATION);
-        return 1;
     };
 
     // Setup the DEVMODE structure.
@@ -184,37 +170,61 @@ int main(int argc, char *argv[])
     {
         MessageBox(0,
                    "Invaild Resolution!",
-                   "Window Display Mode Tool",
+                   "Borderless Windowed Extended",
                    MB_ICONEXCLAMATION);
         return 1;
     }
 
+    // Check if the <PID/Process> argument contains only integers or not.
+    if (strspn(argv[1], "0123456789") == strlen(argv[1]))
+    {
+        wnd.process = atoi(argv[1]);
+        HookForegroundWnd(&wnd);
+    }
+    else
+    {
+        MessageBox(0,
+                   "Invaild PID!",
+                   "Borderless Windowed Extended",
+                   MB_ICONEXCLAMATION);
+        return 1;
+    };
+
     // Source: https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     // Restore the window if its maximized.
-    if (IsZoomed(wnd.hwnd))
+    do
     {
         ShowWindow(wnd.hwnd, SW_RESTORE);
-    };
+    } while (IsZoomed(wnd.hwnd));
 
     // Get the monitor, the window is present on.
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
-    // Name of the monitor, the window is present on.
     wnd.monitor = mi.szDevice;
-    // Get the current resolution of the monitor the window is on.
-    EnumDisplaySettings(mi.szDevice, ENUM_CURRENT_SETTINGS, &cdm);
 
     // Set the window style to borderless.
-    SetWindowLongPtr(wnd.hwnd, GWL_STYLE,
-                     GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
-    SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE,
-                     GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
+    // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
+    SetWindowLongPtr(wnd.hwnd,
+                     GWL_STYLE,
+                     GetWindowLongPtr(wnd.hwnd, GWL_STYLE) &
+                         ~(WS_OVERLAPPEDWINDOW));
+    SetWindowLongPtr(wnd.hwnd,
+                     GWL_EXSTYLE,
+                     GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) &
+                         ~(WS_EX_DLGMODALFRAME |
+                           WS_EX_COMPOSITED |
+                           WS_EX_OVERLAPPEDWINDOW |
+                           WS_EX_LAYERED |
+                           WS_EX_STATICEDGE |
+                           WS_EX_TOOLWINDOW |
+                           WS_EX_APPWINDOW |
+                           WS_EX_TOPMOST));
 
-    // This code block sizes the window based on the DPI scaling set by the desired display resolution.
-    ChangeDisplaySettingsEx(wnd.monitor, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
+    // Size the window based on the DPI scaling set by the desired display resolution.
+    ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
     SetWindowPos(wnd.hwnd,
-                 HWND_TOP,
+                 0,
                  mi.rcMonitor.left,
                  mi.rcMonitor.top,
                  dm.dmPelsWidth * (float)dpiC / dpiX,
