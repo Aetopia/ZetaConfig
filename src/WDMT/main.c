@@ -106,7 +106,8 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     do
     {
         ShowWindow(wnd->pwnd, SW_RESTORE);
-    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
+    } while (IsIconic(wnd->pwnd) &&
+             IsWindow(wnd->pwnd));
     ChangeDisplaySettingsEx(wnd->monitor,
                             wnd->dm,
                             NULL,
@@ -124,11 +125,10 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     } while (!IsProcWndForeground(wnd));
     do
     {
-        if (SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)))
-        {
-            ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        };
-    } while (!IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
+        ShowWindow(wnd->pwnd, SW_MINIMIZE);
+    } while (!IsIconic(wnd->pwnd) &&
+             IsWindow(wnd->pwnd) &&
+             !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
     ChangeDisplaySettingsEx(wnd->monitor,
                             0,
                             NULL,
