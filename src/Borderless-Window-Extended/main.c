@@ -105,9 +105,8 @@ void SetForegroundWndDM(struct WINDOW *wnd)
     } while (IsProcWndForeground(wnd));
     do
     {
-        ShowWindow(wnd->pwnd, SW_RESTORE);
-    } while (IsIconic(wnd->pwnd) &&
-             IsWindow(wnd->pwnd));
+        ShowWindowAsync(wnd->pwnd, SW_RESTORE);
+    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
     ChangeDisplaySettingsEx(wnd->monitor,
                             wnd->dm,
                             NULL,
@@ -123,18 +122,16 @@ void ResetForegroundWndDM(struct WINDOW *wnd)
     {
         IsProcAlive(wnd);
     } while (!IsProcWndForeground(wnd));
-    do
-    {
-        ShowWindow(wnd->pwnd, SW_MINIMIZE);
-    } while (!IsIconic(wnd->pwnd) &&
-             IsWindow(wnd->pwnd) &&
-             !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
     ChangeDisplaySettingsEx(wnd->monitor,
                             0,
                             NULL,
                             CDS_FULLSCREEN,
                             NULL);
     ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+    do
+    {
+        ShowWindowAsync(wnd->pwnd, SW_FORCEMINIMIZE);
+    } while (!IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
     SetForegroundWndDM(wnd);
 }
 
@@ -229,7 +226,7 @@ int main(int argc, char *argv[])
                  mi.rcMonitor.top,
                  dm.dmPelsWidth * (float)dpiC / dpiX,
                  dm.dmPelsHeight * (float)dpiC / dpiY,
-                 SWP_FRAMECHANGED);
+                 SWP_FRAMECHANGED | SWP_ASYNCWINDOWPOS);
     ResetForegroundWndDM(&wnd);
     return 0;
 }
