@@ -26,9 +26,6 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
 2. [Borderless Window Extended](https://github.com/Aetopia/ZetaConfig/tree/main/src/Borderless%20Window%20Extended/README.md)
     > A tool to extend the feature set of borderless windowed mode in programs.
-    1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
-    2. Override a program 's borderless window implementation with a statically sized borderless window.
-    3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 ZetaConfig utilizes the following features from the specified projects:
 
@@ -69,8 +66,9 @@ ZetaConfig utilizes the following features from the specified projects:
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
 ### From Borderless Window Extended
-1. Ability to use a specific resolution upon a specific application when being it is utilized.  
-2. Can run a windowed program as a borderless window at a desired display resolution.  
+1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
+2. Override a program 's borderless window implementation with a statically sized borderless window.
+3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 # Does ZetaConfig alter any Halo Infinite settings?
 
