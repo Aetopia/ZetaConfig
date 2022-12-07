@@ -206,13 +206,13 @@ int main(int argc, char *argv[])
     do
     {
         SetLastError(0);
-    } while (SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
+    } while (!SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
                               GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
                                   ~(WS_OVERLAPPEDWINDOW)));
     do
     {
         SetLastError(0);
-    } while (SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
+    } while (!SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
                               GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
                                   ~(WS_EX_DLGMODALFRAME |
                                     WS_EX_COMPOSITED |
@@ -224,12 +224,13 @@ int main(int argc, char *argv[])
                                     WS_EX_TOPMOST)));
 
     // Size the window based on the DPI scaling set by the desired display resolution.
-    if (ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL && GetDpiForMonitor(hmon, 0, &dpiX, &dpiY) == S_OK)
+    if (ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL)
     {
+        GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
         do
         {
             SetLastError(0);
-        } while (SetWindowPos(wnd.pwnd,
+        } while (!SetWindowPos(wnd.pwnd,
                               0,
                               mi.rcMonitor.left,
                               mi.rcMonitor.top,
