@@ -4,10 +4,10 @@ Here, you can find the source code for the following.
 |Project|Description|
 |-|-|
 |**ZetaConfig**|A tool to fix performance issues with Halo Infinite.|
-|**Window Display Mode Tool**|A tool to allow windowed programs to use any display mode and go borderless.
+|**Borderless Window Extended**|A tool to allow windowed programs to use any display mode and go borderless.
 
 Use `build.bat` to build every project on this repository.             
-ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded.           
+ZetaConfig comes with `BWEx.exe` and `BWEx.dll` embedded.           
 
 ## ZetaConfig
 1. Install Nim: https://github.com/dom96/choosenim
@@ -32,18 +32,18 @@ ZetaConfig comes with `WDMT.exe` and `WDMT.dll` embedded.
 1. Install `GCC`.
 
 2. Build:
-    - `WDMT.exe`
+    - `BWEx.exe`
         ```
-        gcc -Wall -Wextra -Ofast -s -mwindows -o "WDMT.exe" "WDMT/main.c" -lshcore
+        gcc -Wall -Wextra -Ofast -s -mwindows -o "BWEx.exe" "Borderless-Window-Extended/main.c" -lshcore
         ```
 
-    - `WDMTHook.dll`
+    - `BWExHook.dll`
 
         ```
-        gcc -Wall -Wextra -Ofast -s -shared -o "WDMT.dll" "WDMT/dll.c"
+        gcc -Wall -Wextra -Ofast -s -shared -o "BWEx.dll" "Borderless-Window-Extended/dll.c"
         ```
 
     - **Optional:** Compress using UPX!
         ```
-        upx --best WDMT.exe WDMTHook.dll
+        upx --best BWEx.exe BWExHook.dll
         ```

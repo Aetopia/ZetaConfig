@@ -24,7 +24,7 @@ But technically ZetaConfig is just a frontend for configuring specific settings 
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Borderless Window Extended](https://github.com/Aetopia/ZetaConfig/tree/main/src/Borderless%20Window%20Extended/README.md)
+2. [Borderless Window Extended](https://github.com/Aetopia/ZetaConfig/tree/main/src/Borderless-Window-Extended/README.md)
     > A tool to extend the feature set of borderless windowed mode in programs.
 
 ZetaConfig utilizes the following features from the specified projects:

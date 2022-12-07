@@ -38,7 +38,7 @@ proc getSteamPath* : string =
                 except IndexDefect: discard
 
     if p != "":
-        echo "[Steam] Found Steam Installation Directory: " & p
+        echo "[Steam] Found Steam Installation Directory: " & "\"" & p & "\""
         return p
     MessageBox(0, "Could not find Steam installation directory.\nMUI Cache & Steam Browser Protocol are not available!", "ZetaConfig", MB_ICONERROR)
     quit(1)
@@ -60,6 +60,8 @@ proc getSteamGameInstallDir*(game: string, steampath: string = getSteamPath()): 
     var installdir: string
     for folder in folders:
         installdir = folder/"steamapps/common"/game.strip()
-        if dirExists(installdir): echo "[Steam] Found Game Installation Directory: " & installdir; return installdir
+        if dirExists(installdir): 
+            echo "[Steam] Found Game Installation Directory: " & "\"" & installdir & "\""
+            return installdir
     MessageBox(0, "Failed to find Game Directory!", "ZetaConfig", MB_ICONEXCLAMATION)
     quit(1)
