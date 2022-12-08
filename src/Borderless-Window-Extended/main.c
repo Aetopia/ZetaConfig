@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
                  dm.dmPelsWidth * (float)(dpiC / dpiX),
                  dm.dmPelsHeight * (float)(dpiC / dpiY),
                  SWP_FRAMECHANGED | SWP_NOSENDCHANGING | SWP_NOREPOSITION);
-    // CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
+    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
 }
