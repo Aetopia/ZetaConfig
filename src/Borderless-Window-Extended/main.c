@@ -19,13 +19,10 @@ void HookForegroundWnd(struct WINDOW *wnd);
 void IsProcAlive(struct WINDOW *wnd);
 
 // Check the hooked process is alive.
-void IsWndProcAlive(struct WINDOW *wnd);
+void IsProcAlive(struct WINDOW *wnd);
 
-// Apply the desired resolution when the hooked process is in the foreground.
-void SetForegroundWndDM(struct WINDOW *wnd);
-
-// Reset to the native resolution when the hooked process is not in the foreground.
-void ResetForegroundWndDM(struct WINDOW *wnd);
+// Hooked process' window's display mode apply and reset loop.
+void WndDMProc(struct WINDOW *wnd);
 
 struct WINDOW
 {
@@ -74,7 +71,7 @@ void IsProcAlive(struct WINDOW *wnd)
 {
     Sleep(1);
     GetExitCodeProcess(wnd->hproc, &wnd->ec);
-    if (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd))
+    if (wnd->ec != STILL_ACTIVE && (IsHungAppWindow(wnd->pwnd) || !IsWindow(wnd->pwnd)))
     {
         CloseHandle(wnd->hproc);
         for (;;)
@@ -96,45 +93,42 @@ void IsProcAlive(struct WINDOW *wnd)
     };
 }
 
-void SetForegroundWndDM(struct WINDOW *wnd)
+void WndDMProc(struct WINDOW *wnd)
 {
-    wnd->reset = FALSE;
     do
     {
-        IsProcAlive(wnd);
-    } while (IsProcWndForeground(wnd));
-    ChangeDisplaySettingsEx(wnd->monitor,
-                            wnd->dm,
-                            NULL,
-                            CDS_FULLSCREEN,
-                            NULL);
-    do
-    {
-        ShowWindow(wnd->pwnd, SW_RESTORE);
-    } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
-    ResetForegroundWndDM(wnd);
-}
-
-void ResetForegroundWndDM(struct WINDOW *wnd)
-{
-    wnd->reset = TRUE;
-    do
-    {
-        IsProcAlive(wnd);
-    } while (!IsProcWndForeground(wnd));
-    do
-    {
-        ShowWindow(wnd->pwnd, SW_MINIMIZE);
-    } while (!IsIconic(wnd->pwnd) &&
-             IsWindow(wnd->pwnd) &&
-             !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
-    ChangeDisplaySettingsEx(wnd->monitor,
-                            0,
-                            NULL,
-                            CDS_FULLSCREEN,
-                            NULL);
-    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
-    SetForegroundWndDM(wnd);
+        wnd->reset = TRUE;
+        do
+        {
+            IsProcAlive(wnd);
+        } while (!IsProcWndForeground(wnd));
+        do
+        {
+            ShowWindow(wnd->pwnd, SW_MINIMIZE);
+        } while (!IsIconic(wnd->pwnd) &&
+                 IsWindow(wnd->pwnd) &&
+                 !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
+        ChangeDisplaySettingsEx(wnd->monitor,
+                                0,
+                                NULL,
+                                CDS_FULLSCREEN,
+                                NULL);
+        ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+        wnd->reset = FALSE;
+        do
+        {
+            IsProcAlive(wnd);
+        } while (IsProcWndForeground(wnd));
+        ChangeDisplaySettingsEx(wnd->monitor,
+                                wnd->dm,
+                                NULL,
+                                CDS_FULLSCREEN,
+                                NULL);
+        do
+        {
+            ShowWindow(wnd->pwnd, SW_RESTORE);
+        } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
+    } while (TRUE);
 }
 
 int main(int argc, char *argv[])
@@ -203,41 +197,29 @@ int main(int argc, char *argv[])
 
     // Set the window style to borderless and reposition the window.
     // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
-    do
-    {
-        SetLastError(0);
-    } while (!SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
-                              GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
-                                  ~(WS_OVERLAPPEDWINDOW)));
-    do
-    {
-        SetLastError(0);
-    } while (!SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
-                              GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
-                                  ~(WS_EX_DLGMODALFRAME |
-                                    WS_EX_COMPOSITED |
-                                    WS_EX_OVERLAPPEDWINDOW |
-                                    WS_EX_LAYERED |
-                                    WS_EX_STATICEDGE |
-                                    WS_EX_TOOLWINDOW |
-                                    WS_EX_APPWINDOW |
-                                    WS_EX_TOPMOST)));
-
     // Size the window based on the DPI scaling set by the desired display resolution.
-    if (ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL)
-    {
-        GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-        do
-        {
-            SetLastError(0);
-        } while (!SetWindowPos(wnd.pwnd,
-                              0,
-                              mi.rcMonitor.left,
-                              mi.rcMonitor.top,
-                              dm.dmPelsWidth * (float)dpiC / dpiX,
-                              dm.dmPelsHeight * (float)dpiC / dpiY,
-                              SWP_FRAMECHANGED));
-        ResetForegroundWndDM(&wnd);
-    };
+    ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
+    GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
+    SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
+                     GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
+                         ~(WS_OVERLAPPEDWINDOW));
+    SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
+                     GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
+                         ~(WS_EX_DLGMODALFRAME |
+                           WS_EX_COMPOSITED |
+                           WS_EX_OVERLAPPEDWINDOW |
+                           WS_EX_LAYERED |
+                           WS_EX_STATICEDGE |
+                           WS_EX_TOOLWINDOW |
+                           WS_EX_APPWINDOW |
+                           WS_EX_TOPMOST));
+    SetWindowPos(wnd.pwnd,
+                 0,
+                 mi.rcMonitor.left,
+                 mi.rcMonitor.top,
+                 dm.dmPelsWidth * (float)dpiC / dpiX,
+                 dm.dmPelsHeight * (float)dpiC / dpiY,
+                 SWP_FRAMECHANGED | SWP_NOSENDCHANGING);
+    WndDMProc(&wnd);
     return 0;
 }
