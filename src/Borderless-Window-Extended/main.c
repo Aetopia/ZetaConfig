@@ -12,17 +12,14 @@ struct WINDOW;
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground(struct WINDOW *wnd);
 
-// Check for a specific foreground window via its PID and once hooked, set the display mode.
-void HookForegroundWnd(struct WINDOW *wnd);
+// Check for a specific foreground window via its PID and get a handle to the process
+void HookForegroundWndProc(struct WINDOW *wnd);
 
 // Check if the hooked process is alive or not.
-void IsProcAlive(struct WINDOW *wnd);
-
-// Check the hooked process is alive.
-void IsProcAlive(struct WINDOW *wnd);
+DWORD IsProcAlive(LPVOID args);
 
 // Hooked process' window's display mode apply and reset loop.
-void WndDMProc(struct WINDOW *wnd);
+void ForegroundWndDMProc(struct WINDOW *wnd);
 
 struct WINDOW
 {
@@ -49,7 +46,7 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
     return TRUE;
 }
 
-void HookForegroundWnd(struct WINDOW *wnd)
+void HookForegroundWndProc(struct WINDOW *wnd)
 {
     wnd->hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, wnd->process);
     if (!wnd->hproc)
@@ -63,19 +60,20 @@ void HookForegroundWnd(struct WINDOW *wnd)
     }
     do
     {
-        IsProcAlive(wnd);
+        Sleep(1);
     } while (!!IsProcWndForeground(wnd));
 }
 
-void IsProcAlive(struct WINDOW *wnd)
+DWORD IsProcAlive(LPVOID args)
 {
-    Sleep(1);
-    GetExitCodeProcess(wnd->hproc, &wnd->ec);
-    if (wnd->ec != STILL_ACTIVE && (IsHungAppWindow(wnd->pwnd) || !IsWindow(wnd->pwnd)))
+    struct WINDOW *wnd = (struct WINDOW *)args;
+    do
     {
-        CloseHandle(wnd->hproc);
-        for (;;)
+        Sleep(1);
+        GetExitCodeProcess(wnd->hproc, &wnd->ec);
+        if (wnd->ec != STILL_ACTIVE && (IsHungAppWindow(wnd->pwnd) || !IsWindow(wnd->pwnd)))
         {
+            CloseHandle(wnd->hproc);
             if (wnd->reset)
             {
                 if (ChangeDisplaySettingsEx(wnd->monitor,
@@ -85,22 +83,23 @@ void IsProcAlive(struct WINDOW *wnd)
                                             NULL) == DISP_CHANGE_SUCCESSFUL)
                 {
                     ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
-                    exit(0);
                 };
             };
             exit(0);
         };
-    };
+    } while (TRUE);
+    return 0;
 }
 
-void WndDMProc(struct WINDOW *wnd)
+void ForegroundWndDMProc(struct WINDOW *wnd)
 {
     do
     {
+        // Switch back to native display resolution.
         wnd->reset = TRUE;
         do
         {
-            IsProcAlive(wnd);
+            Sleep(1);
         } while (!IsProcWndForeground(wnd));
         do
         {
@@ -114,10 +113,12 @@ void WndDMProc(struct WINDOW *wnd)
                                 CDS_FULLSCREEN,
                                 NULL);
         ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+
+        // Switch to the desired display resolution.
         wnd->reset = FALSE;
         do
         {
-            IsProcAlive(wnd);
+            Sleep(1);
         } while (IsProcWndForeground(wnd));
         ChangeDisplaySettingsEx(wnd->monitor,
                                 wnd->dm,
@@ -168,11 +169,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Check if the <PID/Process> argument contains only integers or not.
+    // Check if the <PID> argument contains only integers or not.
     if (strspn(argv[1], "0123456789") == strlen(argv[1]))
     {
         wnd.process = atoi(argv[1]);
-        HookForegroundWnd(&wnd);
+        HookForegroundWndProc(&wnd);
+        // Create a thread that checks if the process is alive or not.
+        CreateThread(0, 0, IsProcAlive, (LPVOID)&wnd, 0, 0);
     }
     else
     {
@@ -220,6 +223,6 @@ int main(int argc, char *argv[])
                  dm.dmPelsWidth * (float)dpiC / dpiX,
                  dm.dmPelsHeight * (float)dpiC / dpiY,
                  SWP_FRAMECHANGED | SWP_NOSENDCHANGING);
-    WndDMProc(&wnd);
+    ForegroundWndDMProc(&wnd);
     return 0;
 }
