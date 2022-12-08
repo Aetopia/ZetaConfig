@@ -76,7 +76,7 @@ DWORD SetWndPosThread(LPVOID args)
                          wnd->y,
                          wnd->cx,
                          wnd->cy,
-                         SWP_FRAMECHANGED | SWP_NOSENDCHANGING);
+                         SWP_FRAMECHANGED | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
         };
     } while (TRUE);
     return 0;
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
     */
-   
+
     // Restore the window if its maximized.
     do
     {
