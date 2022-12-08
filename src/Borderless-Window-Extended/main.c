@@ -3,12 +3,8 @@
 #include <libgen.h>
 #include <psapi.h>
 #include <shellscalingapi.h>
-#include <pthread_time.h>
 
 // Prototypes
-
-// Alternative function to Sleep(dwMilliseconds), this function suspends the program for 0.0001 seconds.
-void Suspend();
 
 // Set the display mode.
 void SetDM(char *monitor, DEVMODE *dm);
@@ -21,9 +17,6 @@ void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
 
 // Structure that contains information on the hooked process' window.
 struct WINDOW;
-
-// A thread that is a wrapper for SetWindowPos (HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
-DWORD SetWndPosThread(LPVOID args);
 
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground(struct WINDOW *wnd);
@@ -45,11 +38,9 @@ struct WINDOW
     BOOL reset;             // Reset the display mode back to default.
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     char *monitor;          // Name of the monitor, the window is present on.
-    int x, y, cx, cy;       // Hooked process' window position and client size.
-    RECT rect;              // Reserved RECT structure.
+    int x, y;               // Hooked process' window position.
 };
 
-void Suspend() { nanosleep((const struct timespec[]){{0, 100000}}, NULL); }
 void SetDM(char *monitor, DEVMODE *dm)
 {
     ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL);
@@ -66,18 +57,8 @@ DWORD SetWndPosThread(LPVOID args)
     struct WINDOW *wnd = (struct WINDOW *)args;
     do
     {
-        Suspend();
-        GetWindowRect(wnd->pwnd, &wnd->rect);
-        if (wnd->rect.left != wnd->x || wnd->rect.top != wnd->y)
-        {
-            SetWindowPos(wnd->pwnd,
-                         0,
-                         wnd->x,
-                         wnd->y,
-                         wnd->cx,
-                         wnd->cy,
-                         SWP_FRAMECHANGED | SWP_NOSENDCHANGING);
-        };
+        Sleep(1);
+        SetWindowPos(wnd->pwnd, 0, wnd->x, wnd->y, 0, 0, SWP_ASYNCWINDOWPOS | SWP_NOSIZE);
     } while (TRUE);
     return 0;
 }
@@ -108,7 +89,7 @@ void HookForegroundWndProc(struct WINDOW *wnd)
     }
     do
     {
-        Suspend();
+        Sleep(1);
     } while (!!IsProcWndForeground(wnd));
 }
 
@@ -117,7 +98,7 @@ DWORD IsProcAlive(LPVOID args)
     struct WINDOW *wnd = (struct WINDOW *)args;
     do
     {
-        Suspend();
+        Sleep(1);
         GetExitCodeProcess(wnd->hproc, &wnd->ec);
         if (wnd->ec != STILL_ACTIVE && (IsHungAppWindow(wnd->pwnd) || !IsWindow(wnd->pwnd)))
         {
@@ -140,7 +121,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         wnd->reset = TRUE;
         do
         {
-            Suspend();
+            Sleep(1);
         } while (!IsProcWndForeground(wnd));
         do
         {
@@ -153,7 +134,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         wnd->reset = FALSE;
         do
         {
-            Suspend();
+            Sleep(1);
         } while (IsProcWndForeground(wnd));
         do
         {
@@ -239,11 +220,11 @@ int main(int argc, char *argv[])
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
     wnd.x = mi.rcMonitor.left;
     wnd.y = mi.rcMonitor.top;
-    wnd.cx = dm.dmPelsWidth * (float)dpiC / dpiX;
-    wnd.cy = dm.dmPelsHeight * (float)dpiC / dpiY;
-    
-    // Resize and reposition the window using a thread and execute ForegroundWndDMProc(struct WINDOW *wnd).
-    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
+    SetWindowPos(wnd.pwnd, 0, 0, 0,
+                 dm.dmPelsWidth * (float)(dpiC / dpiX),
+                 dm.dmPelsHeight * (float)(dpiC / dpiY),
+                 SWP_FRAMECHANGED | SWP_NOSENDCHANGING | SWP_NOREPOSITION);
+    // CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
 }
