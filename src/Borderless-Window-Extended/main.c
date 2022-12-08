@@ -3,7 +3,17 @@
 #include <libgen.h>
 #include <psapi.h>
 #include <shellscalingapi.h>
+#include <pthread_time.h>
 
+// Marcos
+#define Suspend() nanosleep((const struct timespec[]){{0, 100000}}, NULL)
+#define ResetDM()                                                                                       \
+    if (ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL) \
+    {                                                                                                   \
+        ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);                                        \
+    };
+#define SetDM(monitor, dm) ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL)
+#define PIDErrorMsgBox() MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
 // Prototypes
 
 // Structure that contains information on the hooked process' window.
@@ -40,7 +50,7 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
         if (wnd->pwnd != wnd->hwnd)
         {
             wnd->pwnd = wnd->hwnd;
-        }
+        };
         return FALSE;
     };
     return TRUE;
@@ -52,15 +62,12 @@ void HookForegroundWndProc(struct WINDOW *wnd)
     if (!wnd->hproc)
     {
         CloseHandle(wnd->hproc);
-        MessageBox(0,
-                   "Invaild PID!",
-                   "Borderless Windowed Extended",
-                   MB_ICONEXCLAMATION);
+        PIDErrorMsgBox();
         exit(1);
     }
     do
     {
-        Sleep(1);
+        Suspend();
     } while (!!IsProcWndForeground(wnd));
 }
 
@@ -69,21 +76,14 @@ DWORD IsProcAlive(LPVOID args)
     struct WINDOW *wnd = (struct WINDOW *)args;
     do
     {
-        Sleep(1);
+        Suspend();
         GetExitCodeProcess(wnd->hproc, &wnd->ec);
         if (wnd->ec != STILL_ACTIVE && (IsHungAppWindow(wnd->pwnd) || !IsWindow(wnd->pwnd)))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
             {
-                if (ChangeDisplaySettingsEx(wnd->monitor,
-                                            0,
-                                            NULL,
-                                            CDS_FULLSCREEN,
-                                            NULL) == DISP_CHANGE_SUCCESSFUL)
-                {
-                    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
-                };
+                ResetDM()
             };
             exit(0);
         };
@@ -99,7 +99,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         wnd->reset = TRUE;
         do
         {
-            Sleep(1);
+            Suspend();
         } while (!IsProcWndForeground(wnd));
         do
         {
@@ -107,28 +107,20 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (!IsIconic(wnd->pwnd) &&
                  IsWindow(wnd->pwnd) &&
                  !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
-        ChangeDisplaySettingsEx(wnd->monitor,
-                                0,
-                                NULL,
-                                CDS_FULLSCREEN,
-                                NULL);
-        ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+        ResetDM();
 
         // Switch to the desired display resolution.
         wnd->reset = FALSE;
         do
         {
-            Sleep(1);
+            Suspend();
         } while (IsProcWndForeground(wnd));
-        ChangeDisplaySettingsEx(wnd->monitor,
-                                wnd->dm,
-                                NULL,
-                                CDS_FULLSCREEN,
-                                NULL);
+        SetDM(wnd->monitor, wnd->dm);
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd) && IsWindow(wnd->pwnd));
+        } while (IsIconic(wnd->pwnd) &&
+                 IsWindow(wnd->pwnd));
     } while (TRUE);
 }
 
@@ -179,11 +171,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        MessageBox(0,
-                   "Invaild PID!",
-                   "Borderless Windowed Extended",
-                   MB_ICONEXCLAMATION);
-        return 1;
+        PIDErrorMsgBox() return 1;
     };
 
     // Source: https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
@@ -201,7 +189,7 @@ int main(int argc, char *argv[])
     // Set the window style to borderless and reposition the window.
     // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
     // Size the window based on the DPI scaling set by the desired display resolution.
-    ChangeDisplaySettingsEx(mi.szDevice, wnd.dm, NULL, CDS_FULLSCREEN, NULL);
+    SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
     SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
                      GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
