@@ -68,7 +68,7 @@ DWORD SetWndPosThread(LPVOID args)
     {
         Suspend();
         GetWindowRect(wnd->pwnd, &wnd->rect);
-        if (wnd->rect.left != wnd->x && wnd->rect.top != wnd->y)
+        if (wnd->rect.left != wnd->x || wnd->rect.top != wnd->y)
         {
             SetWindowPos(wnd->pwnd,
                          0,
@@ -241,7 +241,6 @@ int main(int argc, char *argv[])
     wnd.y = mi.rcMonitor.top;
     wnd.cx = dm.dmPelsWidth * (float)dpiC / dpiX;
     wnd.cy = dm.dmPelsHeight * (float)dpiC / dpiY;
-
     // Resize and reposition the window using a thread and execute ForegroundWndDMProc(struct WINDOW *wnd).
     CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
