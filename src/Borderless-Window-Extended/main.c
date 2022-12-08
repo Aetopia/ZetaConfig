@@ -41,7 +41,7 @@ struct WINDOW
     BOOL reset;             // Reset the display mode back to default.
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     char *monitor;          // Name of the monitor, the window is present on.
-    int x, y;               // Hooked process' window position.
+    int x, y, cx, cy;       // Hooked process' window position.
 };
 
 void SetDM(char *monitor, DEVMODE *dm)
@@ -62,8 +62,9 @@ DWORD SetWndPosThread(LPVOID args)
     {
         Sleep(1);
         SetWindowPos(wnd->pwnd, 0,
-                     wnd->x, wnd->y, 0, 0,
-                     SWP_ASYNCWINDOWPOS | SWP_NOSIZE | SWP_NOACTIVATE);
+                     wnd->x, wnd->y,
+                     wnd->cx, wnd->cy,
+                     SWP_ASYNCWINDOWPOS | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     } while (TRUE);
     return 0;
 }
@@ -221,15 +222,14 @@ int main(int argc, char *argv[])
     wnd.monitor = mi.szDevice;
     wnd.x = mi.rcMonitor.left;
     wnd.y = mi.rcMonitor.top;
-    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
 
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    SetWindowPos(wnd.pwnd, 0, 0, 0,
-                 dm.dmPelsWidth * (float)(dpiC / dpiX),
-                 dm.dmPelsHeight * (float)(dpiC / dpiY),
-                 SWP_FRAMECHANGED | SWP_NOSENDCHANGING | SWP_NOREPOSITION);
+    wnd.cx = dm.dmPelsWidth * (float)(dpiC / dpiX);
+    wnd.cy = dm.dmPelsHeight * (float)(dpiC / dpiY);
+
+    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
 }
