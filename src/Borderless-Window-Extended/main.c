@@ -219,13 +219,13 @@ int main(int argc, char *argv[])
     hmon = MonitorFromWindow(wnd.pwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
     wnd.monitor = mi.szDevice;
+    wnd.x = mi.rcMonitor.left;
+    wnd.y = mi.rcMonitor.top;
+    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
 
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    wnd.x = mi.rcMonitor.left;
-    wnd.y = mi.rcMonitor.top;
-    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     SetWindowPos(wnd.pwnd, 0, 0, 0,
                  dm.dmPelsWidth * (float)(dpiC / dpiX),
                  dm.dmPelsHeight * (float)(dpiC / dpiY),
