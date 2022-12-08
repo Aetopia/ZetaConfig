@@ -172,7 +172,8 @@ int main(int argc, char *argv[])
     }
     else
     {
-        PIDErrorMsgBox() return 1;
+        PIDErrorMsgBox();
+        return 1;
     };
 
     // Source: https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
