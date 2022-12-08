@@ -23,7 +23,7 @@ void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
 struct WINDOW;
 
 // A thread that is a wrapper for SetWindowPos (HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
-DWORD SetWndBorderless(LPVOID args);
+DWORD SetWndPosThread(LPVOID args);
 
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground(struct WINDOW *wnd);
@@ -61,11 +61,9 @@ void SetDM(char *monitor, DEVMODE *dm)
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
 
-DWORD SetWndBorderless(LPVOID args)
+DWORD SetWndPosThread(LPVOID args)
 {
     struct WINDOW *wnd = (struct WINDOW *)args;
-    SetWndStyle(wnd->pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-    SetWndStyle(wnd->pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
     do
     {
         Suspend();
@@ -226,12 +224,15 @@ int main(int argc, char *argv[])
         ShowWindow(wnd.pwnd, SW_RESTORE);
     } while (IsZoomed(wnd.pwnd));
 
+    // Set the window style to borderless.
+    SetWndStyle(wnd.pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+    SetWndStyle(wnd.pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
+
     // Get the monitor, the window is present on.
     hmon = MonitorFromWindow(wnd.pwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
     wnd.monitor = mi.szDevice;
 
-    // Set the window style to borderless and reposition the window using a thread.
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
@@ -239,7 +240,8 @@ int main(int argc, char *argv[])
     wnd.y = mi.rcMonitor.top;
     wnd.cx = dm.dmPelsWidth * (float)dpiC / dpiX;
     wnd.cy = dm.dmPelsHeight * (float)dpiC / dpiY;
-    CreateThread(0, 0, SetWndBorderless, (LPVOID)&wnd, 0, 0);
+    // Resize and reposition the window using a thread.
+    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
 }
