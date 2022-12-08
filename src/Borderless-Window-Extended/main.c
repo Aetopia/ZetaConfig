@@ -61,7 +61,9 @@ DWORD SetWndPosThread(LPVOID args)
     do
     {
         Sleep(1);
-        SetWindowPos(wnd->pwnd, 0, wnd->x, wnd->y, 0, 0, SWP_ASYNCWINDOWPOS | SWP_NOSIZE);
+        SetWindowPos(wnd->pwnd, 0,
+                     wnd->x, wnd->y, 0, 0,
+                     SWP_ASYNCWINDOWPOS | SWP_NOSIZE | SWP_NOACTIVATE);
     } while (TRUE);
     return 0;
 }
@@ -223,11 +225,11 @@ int main(int argc, char *argv[])
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
     wnd.x = mi.rcMonitor.left;
     wnd.y = mi.rcMonitor.top;
+    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     SetWindowPos(wnd.pwnd, 0, 0, 0,
                  dm.dmPelsWidth * (float)(dpiC / dpiX),
                  dm.dmPelsHeight * (float)(dpiC / dpiY),
                  SWP_FRAMECHANGED | SWP_NOSENDCHANGING | SWP_NOREPOSITION);
-    CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
 }
