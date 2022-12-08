@@ -14,6 +14,7 @@
     };
 #define SetDM(monitor, dm) ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL)
 #define PIDErrorMsgBox() MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
+
 // Prototypes
 
 // Structure that contains information on the hooked process' window.
