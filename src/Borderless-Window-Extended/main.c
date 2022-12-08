@@ -174,7 +174,10 @@ int main(int argc, char *argv[])
         return 1;
     };
 
-    // Source: https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
+    /* References:
+    https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
+    https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
+    */
     // Restore the window if its maximized.
     do
     {
@@ -187,7 +190,6 @@ int main(int argc, char *argv[])
     wnd.monitor = mi.szDevice;
 
     // Set the window style to borderless and reposition the window.
-    // Source: https://github.com/Codeusa/Borderless-Gaming/blob/74b19ecebc4bae4df1fbb1776ec7c5d69d4e0d0c/BorderlessGaming.Logic/Windows/Manipulation.cs#L72
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
