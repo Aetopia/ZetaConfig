@@ -22,6 +22,9 @@ void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
 // Structure that contains information on the hooked process' window.
 struct WINDOW;
 
+// A thread that is a wrapper for SetWindowPos (HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
+DWORD SetWndBorderless(LPVOID args);
+
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground(struct WINDOW *wnd);
 
@@ -42,6 +45,8 @@ struct WINDOW
     BOOL reset;             // Reset the display mode back to default.
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     char *monitor;          // Name of the monitor, the window is present on.
+    int x, y, cx, cy;       // Hooked process' window position and client size.
+    RECT rect;              // Reserved RECT structure.
 };
 
 void Suspend() { nanosleep((const struct timespec[]){{0, 100000}}, NULL); }
@@ -55,6 +60,29 @@ void SetDM(char *monitor, DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
+
+DWORD SetWndBorderless(LPVOID args)
+{
+    struct WINDOW *wnd = (struct WINDOW *)args;
+    SetWndStyle(wnd->pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+    SetWndStyle(wnd->pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
+    do
+    {
+        Suspend();
+        GetWindowRect(wnd->pwnd, &wnd->rect);
+        if (wnd->rect.left != wnd->x && wnd->rect.top != wnd->y)
+        {
+            SetWindowPos(wnd->pwnd,
+                         0,
+                         wnd->x,
+                         wnd->y,
+                         wnd->cx,
+                         wnd->cy,
+                         SWP_FRAMECHANGED | SWP_NOSENDCHANGING);
+        };
+    } while (TRUE);
+    return 0;
+}
 
 BOOL IsProcWndForeground(struct WINDOW *wnd)
 {
@@ -203,19 +231,15 @@ int main(int argc, char *argv[])
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
     wnd.monitor = mi.szDevice;
 
-    // Set the window style to borderless and reposition the window.
+    // Set the window style to borderless and reposition the window using a thread.
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    SetWndStyle(wnd.pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-    SetWndStyle(wnd.pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
-    SetWindowPos(wnd.pwnd,
-                 0,
-                 mi.rcMonitor.left,
-                 mi.rcMonitor.top,
-                 dm.dmPelsWidth * (float)dpiC / dpiX,
-                 dm.dmPelsHeight * (float)dpiC / dpiY,
-                 SWP_FRAMECHANGED | SWP_NOSENDCHANGING);
+    wnd.x = mi.rcMonitor.left;
+    wnd.y = mi.rcMonitor.top;
+    wnd.cx = dm.dmPelsWidth * (float)dpiC / dpiX;
+    wnd.cy = dm.dmPelsHeight * (float)dpiC / dpiY;
+    CreateThread(0, 0, SetWndBorderless, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
 }
