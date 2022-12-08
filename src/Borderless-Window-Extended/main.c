@@ -6,13 +6,11 @@
 #include <pthread_time.h>
 
 // Marcos
-#define Suspend() nanosleep((const struct timespec[]){{0, 100000}}, NULL)
-#define ResetDM()                                                                                       \
-    if (ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, CDS_FULLSCREEN, NULL) == DISP_CHANGE_SUCCESSFUL) \
-    {                                                                                                   \
-        ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);                                        \
-    };
-#define SetDM(monitor, dm) ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL)
+#define Suspend() nanosleep((const struct timespec[]){{0, 100000}}, NULL);
+#define ResetDM()                                                         \
+    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, CDS_FULLSCREEN, NULL); \
+    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
+#define SetDM(monitor, dm) ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL);
 #define PIDErrorMsgBox() MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
 
 // Prototypes
