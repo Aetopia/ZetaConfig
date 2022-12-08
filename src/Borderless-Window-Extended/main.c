@@ -5,15 +5,19 @@
 #include <shellscalingapi.h>
 #include <pthread_time.h>
 
-// Marcos
-#define Suspend() nanosleep((const struct timespec[]){{0, 100000}}, NULL);
-#define ResetDM()                                                         \
-    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, CDS_FULLSCREEN, NULL); \
-    ChangeDisplaySettingsEx(wnd->monitor, 0, NULL, 0, NULL);
-#define SetDM(monitor, dm) ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL);
-#define PIDErrorMsgBox() MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
-
 // Prototypes
+
+// Alternative function to Sleep(dwMilliseconds), this function suspends the program for 0.0001 seconds.
+void Suspend();
+
+// Set the display mode.
+void SetDM(char *monitor, DEVMODE *dm);
+
+// Show a message box regarding about an invalid PID.
+void PIDErrorMsgBox();
+
+// Set the window style by getting the current window style and adding additional styles to the current one.
+void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
 
 // Structure that contains information on the hooked process' window.
 struct WINDOW;
@@ -39,6 +43,18 @@ struct WINDOW
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     char *monitor;          // Name of the monitor, the window is present on.
 };
+
+void Suspend() { nanosleep((const struct timespec[]){{0, 100000}}, NULL); }
+void SetDM(char *monitor, DEVMODE *dm)
+{
+    ChangeDisplaySettingsEx(monitor, dm, NULL, CDS_FULLSCREEN, NULL);
+    if (dm == 0)
+    {
+        ChangeDisplaySettingsEx(monitor, 0, NULL, 0, NULL);
+    };
+}
+void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
+void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
 
 BOOL IsProcWndForeground(struct WINDOW *wnd)
 {
@@ -82,7 +98,7 @@ DWORD IsProcAlive(LPVOID args)
             CloseHandle(wnd->hproc);
             if (wnd->reset)
             {
-                ResetDM()
+                SetDM(wnd->monitor, 0);
             };
             exit(0);
         };
@@ -104,9 +120,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
         } while (!IsIconic(wnd->pwnd) &&
-                 IsWindow(wnd->pwnd) &&
                  !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
-        ResetDM();
+        SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
         wnd->reset = FALSE;
@@ -114,12 +129,11 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         {
             Suspend();
         } while (IsProcWndForeground(wnd));
-        SetDM(wnd->monitor, wnd->dm);
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd) &&
-                 IsWindow(wnd->pwnd));
+        } while (IsIconic(wnd->pwnd));
+        SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
 
@@ -193,19 +207,8 @@ int main(int argc, char *argv[])
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    SetWindowLongPtr(wnd.pwnd, GWL_STYLE,
-                     GetWindowLongPtr(wnd.pwnd, GWL_STYLE) &
-                         ~(WS_OVERLAPPEDWINDOW));
-    SetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE,
-                     GetWindowLongPtr(wnd.pwnd, GWL_EXSTYLE) &
-                         ~(WS_EX_DLGMODALFRAME |
-                           WS_EX_COMPOSITED |
-                           WS_EX_OVERLAPPEDWINDOW |
-                           WS_EX_LAYERED |
-                           WS_EX_STATICEDGE |
-                           WS_EX_TOOLWINDOW |
-                           WS_EX_APPWINDOW |
-                           WS_EX_TOPMOST));
+    SetWndStyle(wnd.pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+    SetWndStyle(wnd.pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
     SetWindowPos(wnd.pwnd,
                  0,
                  mi.rcMonitor.left,
