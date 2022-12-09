@@ -62,7 +62,7 @@ DWORD SetWndPosThread(LPVOID args)
         SetWindowPos(wnd->pwnd, 0,
                      wnd->x, wnd->y,
                      wnd->cx, wnd->cy,
-                     SWP_ASYNCWINDOWPOS | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_FRAMECHANGED);
+                     SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_FRAMECHANGED);
     } while (TRUE);
     return 0;
 }
@@ -130,9 +130,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (!IsProcWndForeground(wnd));
         do
         {
-            ShowWindowAsync(wnd->pwnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd->pwnd) &&
-                 !SetForegroundWindow(GetDesktopWindow()));
+            ShowWindow(wnd->pwnd, SW_MINIMIZE);
+        } while (!IsIconic(wnd->pwnd) && !SetForegroundWindow(GetDesktopWindow()));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -143,9 +142,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (IsProcWndForeground(wnd));
         do
         {
-            ShowWindowAsync(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd) &&
-                 !SetForegroundWindow(GetDesktopWindow()));
+            ShowWindow(wnd->pwnd, SW_RESTORE);
+        } while (IsIconic(wnd->pwnd) && !SetForegroundWindow(GetDesktopWindow()));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
@@ -211,7 +209,7 @@ int main(int argc, char *argv[])
     // Restore the window if its maximized.
     do
     {
-        ShowWindowAsync(wnd.pwnd, SW_RESTORE);
+        ShowWindow(wnd.pwnd, SW_RESTORE);
     } while (IsZoomed(wnd.pwnd));
 
     // Set the window style to borderless.
