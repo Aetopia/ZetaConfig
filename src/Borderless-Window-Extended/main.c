@@ -103,9 +103,10 @@ DWORD IsProcAlive(LPVOID args)
     do
     {
         Sleep(1);
-        if (GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
-            (wnd->ec != STILL_ACTIVE ||
-             IsHungAppWindow(wnd->pwnd)))
+        if ((GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
+             (wnd->ec != STILL_ACTIVE ||
+              IsHungAppWindow(wnd->pwnd))) ||
+            !IsWindow(wnd->shell))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
@@ -131,7 +132,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while ((!IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)) || !IsWindow(wnd->shell));
+        } while ((!IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -143,7 +144,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while ((IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)) || !IsWindow(wnd->shell));
+        } while ((IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
