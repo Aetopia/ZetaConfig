@@ -69,6 +69,7 @@ DWORD SetWndPosThread(LPVOID args)
 
 BOOL IsProcWndForeground(struct WINDOW *wnd)
 {
+    Sleep(1);
     wnd->hwnd = GetForegroundWindow();
     GetWindowThreadProcessId(wnd->hwnd, &wnd->pid);
     if (wnd->process == wnd->pid && wnd->hwnd != 0)
@@ -107,10 +108,8 @@ void HookForegroundWndProc(struct WINDOW *wnd)
         MessageBox(0, "Specified PID doesn't have a window!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
         exit(1);
     };
-    do
-    {
-        Sleep(1);
-    } while (!!IsProcWndForeground(wnd));
+    while (!!IsProcWndForeground(wnd))
+        ;
 }
 
 DWORD IsProcAlive(LPVOID args)
@@ -140,10 +139,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
     {
         // Switch back to native display resolution.
         wnd->reset = TRUE;
-        do
-        {
-            Sleep(1);
-        } while (!IsProcWndForeground(wnd));
+        while (!IsProcWndForeground(wnd))
+            ;
         do
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
@@ -152,10 +149,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
 
         // Switch to the desired display resolution.
         wnd->reset = FALSE;
-        do
-        {
-            Sleep(1);
-        } while (IsProcWndForeground(wnd));
+        while (IsProcWndForeground(wnd))
+            ;
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
