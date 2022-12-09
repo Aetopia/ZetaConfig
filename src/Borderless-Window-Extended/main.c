@@ -105,7 +105,9 @@ DWORD IsProcAlive(LPVOID args)
     do
     {
         Sleep(1);
-        if (GetExitCodeProcess(wnd->hproc, &wnd->ec) && (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd)))
+        if (GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
+            (wnd->ec != STILL_ACTIVE ||
+             IsHungAppWindow(wnd->pwnd)))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
@@ -130,9 +132,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (!IsProcWndForeground(wnd));
         do
         {
-            ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd->pwnd) &&
-                 !SetForegroundWindow(FindWindow("Shell_TrayWnd", NULL)));
+            ShowWindowAsync(wnd->pwnd, SW_MINIMIZE);
+        } while (!IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -143,7 +144,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (IsProcWndForeground(wnd));
         do
         {
-            ShowWindow(wnd->pwnd, SW_RESTORE);
+            ShowWindowAsync(wnd->pwnd, SW_RESTORE);
         } while (IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
@@ -209,7 +210,7 @@ int main(int argc, char *argv[])
     // Restore the window if its maximized.
     do
     {
-        ShowWindow(wnd.pwnd, SW_RESTORE);
+        ShowWindowAsync(wnd.pwnd, SW_RESTORE);
     } while (IsZoomed(wnd.pwnd));
 
     // Set the window style to borderless.
