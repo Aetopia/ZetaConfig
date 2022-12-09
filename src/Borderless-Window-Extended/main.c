@@ -92,7 +92,7 @@ void HookForegroundWndProc(struct WINDOW *wnd)
         exit(1);
     }
     // Create a thread that checks if the process is alive or not.
-    CreateThread(0, 0, IsProcAlive, (LPVOID)&wnd, 0, 0);
+    CreateThread(0, 0, IsProcAlive, (LPVOID)wnd, 0, 0);
     do
     {
         Sleep(1);
