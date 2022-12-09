@@ -76,7 +76,7 @@ if isMainModule:
         if resscale.parseInt <= 50: resscale = "50"; rs.setText(resscale)
         if settings[2] == cpusopts[cpusopts.len-1]: settings[2] = "-1"
         if settings[3].parseInt in 1..29: settings[3] = "30"; fpslimit.setText(settings[3])
-        setGameSettings(settings[0].split(" "), resscale)
+        setGameSettings(resscale)
         setSettings(settings[0], settings[1], settings[2], settings[3])
         frame.MessageDialog("Settings saved!", "Save", wOk or wIconInformation).display()
         
