@@ -105,8 +105,7 @@ DWORD IsProcAlive(LPVOID args)
     do
     {
         Sleep(1);
-        GetExitCodeProcess(wnd->hproc, &wnd->ec);
-        if (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd))
+        if (GetExitCodeProcess(wnd->hproc, &wnd->ec) && (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd)))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
@@ -157,7 +156,8 @@ int main(int argc, char *argv[])
     DEVMODE dm;
     MONITORINFOEX mi;
     HMONITOR hmon;
-    UINT dpiX, dpiY, dpiC = GetDpiForSystem();
+    UINT dpiM, dpiS = GetDpiForSystem();
+    float scale;
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
@@ -191,9 +191,9 @@ int main(int argc, char *argv[])
     if (strspn(argv[1], "0123456789") == strlen(argv[1]))
     {
         wnd.process = atoi(argv[1]);
+        CreateThread(0, 0, IsProcAlive, (LPVOID)&wnd, 0, 0);
         HookForegroundWndProc(&wnd);
         // Create a thread that checks if the process is alive or not.
-        CreateThread(0, 0, IsProcAlive, (LPVOID)&wnd, 0, 0);
     }
     else
     {
@@ -225,9 +225,10 @@ int main(int argc, char *argv[])
 
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
-    GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    wnd.cx = dm.dmPelsWidth * (float)(dpiC / dpiX);
-    wnd.cy = dm.dmPelsHeight * (float)(dpiC / dpiY);
+    GetDpiForMonitor(hmon, 0, &dpiM, &dpiM);
+    scale = dpiS / dpiM;
+    wnd.cx = dm.dmPelsWidth * scale;
+    wnd.cy = dm.dmPelsHeight * scale;
 
     CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
