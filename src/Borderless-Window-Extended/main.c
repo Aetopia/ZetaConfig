@@ -103,10 +103,9 @@ DWORD IsProcAlive(LPVOID args)
     do
     {
         Sleep(1);
-        if ((GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
-             (wnd->ec != STILL_ACTIVE ||
-              IsHungAppWindow(wnd->pwnd))) ||
-            !IsWindow(wnd->desktop))
+        if (GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
+            (wnd->ec != STILL_ACTIVE ||
+             IsHungAppWindow(wnd->pwnd)))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
