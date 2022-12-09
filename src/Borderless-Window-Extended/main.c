@@ -108,8 +108,9 @@ void HookForegroundWndProc(struct WINDOW *wnd)
         MessageBox(0, "Specified PID doesn't have a window!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
         exit(1);
     };
-    while (!!IsProcWndForeground(wnd))
-        ;
+    do
+    {
+    } while (!!IsProcWndForeground(wnd));
 }
 
 DWORD IsProcAlive(LPVOID args)
