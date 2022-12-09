@@ -111,12 +111,12 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
 
         case k:
             of "OverrideRes", "ResolutionForMonitor": c[i] = &"{k}=0x0"
-            of "RememberResolution", "Fullscreen", "Borderless", "Center", "CatchAltF4": c[i] = &"{k}=false"
+            of "RememberResolution", "Fullscreen", "Borderless", "Center", "CatchAltF4", "AntialiasLines", "AntialiasContours": c[i] = &"{k}=false"
             of "OverrideCPUCoreCount": c[i] = fmt"{k}={cpus}"; verbose = true
             of "TargetFPS": c[i] = fmt"{k}={fps}"; verbose = true
             of "AlwaysOnTop": c[i] = &"{k}=1"
             of "PresentationInterval": c[i] = &"{k}=-1"
-            of "RenderInBackground": c[i]= &"{k}=true"
+            of "RenderInBackground", "DisableAlpha": c[i]= &"{k}=true"
             of "XOffset", "YOffset": c[i] = &"{k}=0.0001%"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
     writeFile(dxgiini, c.join("\n"))
