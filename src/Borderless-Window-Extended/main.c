@@ -131,7 +131,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd->pwnd) && !SetForegroundWindow(GetDesktopWindow()));
+        } while (!IsIconic(wnd->pwnd) && !SetForegroundWindow(GetShellWindow()));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -143,14 +143,13 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd) && !SetForegroundWindow(GetDesktopWindow()));
+        } while (IsIconic(wnd->pwnd) && !SetForegroundWindow(GetShellWindow()));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
 
 int main(int argc, char *argv[])
 {
-    DestroyWindow(GetDesktopWindow());
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     struct WINDOW wnd;
     DEVMODE dm;
