@@ -64,7 +64,7 @@ DWORD SetWndPosThread(LPVOID args)
         SetWindowPos(wnd->pwnd, 0,
                      wnd->x, wnd->y,
                      wnd->cx, wnd->cy,
-                     SWP_ASYNCWINDOWPOS | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
+                     SWP_ASYNCWINDOWPOS | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_FRAMECHANGED);
     } while (TRUE);
     return 0;
 }
