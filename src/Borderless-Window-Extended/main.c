@@ -33,13 +33,13 @@ void ForegroundWndDMProc(struct WINDOW *wnd);
 
 struct WINDOW
 {
-    HWND pwnd, hwnd, shell; // HWND of the hooked process's window, shell process & reserved HWND variable.
-    HANDLE hproc;           // HANDLE to the hooked process.
-    DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
-    BOOL reset;             // Reset the display mode back to default.
-    DWORD process, ec, pid; // PID of the hooked process & reserved variables.
-    char *monitor;          // Name of the monitor, the window is present on.
-    int x, y, cx, cy;       // Hooked process' window position.
+    HWND pwnd, hwnd, desktop; // HWND of the hooked process's window, desktop & reserved HWND variable.
+    HANDLE hproc;             // HANDLE to the hooked process.
+    DEVMODE *dm;              // Display mode to be applied when the hooked process' window is in the foreground
+    BOOL reset;               // Reset the display mode back to default.
+    DWORD process, ec, pid;   // PID of the hooked process & reserved variables.
+    char *monitor;            // Name of the monitor, the window is present on.
+    int x, y, cx, cy;         // Hooked process' window position.
 };
 
 void SetDM(char *monitor, DEVMODE *dm)
@@ -106,7 +106,7 @@ DWORD IsProcAlive(LPVOID args)
         if ((GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
              (wnd->ec != STILL_ACTIVE ||
               IsHungAppWindow(wnd->pwnd))) ||
-            !IsWindow(wnd->shell))
+            !IsWindow(wnd->desktop))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
@@ -132,7 +132,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while ((!IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)));
+        } while ((!IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->desktop)));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -144,7 +144,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while ((IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)));
+        } while ((IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->desktop)));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
     HMONITOR hmon;
     UINT dpiM, dpiS = GetDpiForSystem();
     float scale;
-    wnd.shell = GetShellWindow();
+    wnd.desktop = GetDesktopWindow();
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
