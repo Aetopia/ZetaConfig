@@ -144,7 +144,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd));
+        } while (IsIconic(wnd->pwnd) &&
+                 !SetForegroundWindow(GetDesktopWindow()));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
