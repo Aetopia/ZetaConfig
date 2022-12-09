@@ -33,13 +33,13 @@ void ForegroundWndDMProc(struct WINDOW *wnd);
 
 struct WINDOW
 {
-    HWND pwnd, hwnd, desktop; // HWND of the hooked process's window, desktop & reserved HWND variable.
-    HANDLE hproc;             // HANDLE to the hooked process.
-    DEVMODE *dm;              // Display mode to be applied when the hooked process' window is in the foreground
-    BOOL reset;               // Reset the display mode back to default.
-    DWORD process, ec, pid;   // PID of the hooked process & reserved variables.
-    char *monitor;            // Name of the monitor, the window is present on.
-    int x, y, cx, cy;         // Hooked process' window position.
+    HWND pwnd, hwnd;        // HWND of the hooked process's window & reserved HWND variable.
+    HANDLE hproc;           // HANDLE to the hooked process.
+    DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
+    BOOL reset;             // Reset the display mode back to default.
+    DWORD process, ec, pid; // PID of the hooked process & reserved variables.
+    char *monitor;          // Name of the monitor, the window is present on.
+    int x, y, cx, cy;       // Hooked process' window position.
 };
 
 void SetDM(char *monitor, DEVMODE *dm)
@@ -130,8 +130,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (!IsProcWndForeground(wnd));
         do
         {
-            ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while ((!IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->desktop)));
+            ShowWindowAsync(wnd->pwnd, SW_MINIMIZE);
+        } while (!IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -142,8 +142,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (IsProcWndForeground(wnd));
         do
         {
-            ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while ((IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->desktop)));
+            ShowWindowAsync(wnd->pwnd, SW_RESTORE);
+        } while (IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
@@ -157,7 +157,6 @@ int main(int argc, char *argv[])
     HMONITOR hmon;
     UINT dpiM, dpiS = GetDpiForSystem();
     float scale;
-    wnd.desktop = GetDesktopWindow();
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
@@ -209,7 +208,7 @@ int main(int argc, char *argv[])
     // Restore the window if its maximized.
     do
     {
-        ShowWindow(wnd.pwnd, SW_RESTORE);
+        ShowWindowAsync(wnd.pwnd, SW_RESTORE);
     } while (IsZoomed(wnd.pwnd));
 
     // Set the window style to borderless.
