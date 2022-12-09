@@ -82,6 +82,17 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
     return TRUE;
 }
 
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam)
+{
+    struct WINDOW *wnd = (struct WINDOW *)lparam;
+    GetWindowThreadProcessId(hwnd, &wnd->pid);
+    if (wnd->process == wnd->pid)
+    {
+        return FALSE;
+    };
+    return TRUE;
+}
+
 void HookForegroundWndProc(struct WINDOW *wnd)
 {
     wnd->hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, wnd->process);
@@ -91,6 +102,11 @@ void HookForegroundWndProc(struct WINDOW *wnd)
         PIDErrorMsgBox();
         exit(1);
     }
+    if (EnumWindows(EnumWindowsProc, (LPARAM)wnd))
+    {
+        MessageBox(0, "Specified PID doesn't have a window!", "Borderless Windowed Extended", MB_ICONEXCLAMATION);
+        exit(1);
+    };
     do
     {
         Sleep(1);
