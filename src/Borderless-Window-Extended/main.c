@@ -1,8 +1,6 @@
 // Borderless Window Extended
 #include <windows.h>
-#include <libgen.h>
 #include <psapi.h>
-#include <shellscalingapi.h>
 
 // Prototypes
 
@@ -93,6 +91,8 @@ void HookForegroundWndProc(struct WINDOW *wnd)
         PIDErrorMsgBox();
         exit(1);
     }
+    // Create a thread that checks if the process is alive or not.
+    CreateThread(0, 0, IsProcAlive, (LPVOID)&wnd, 0, 0);
     do
     {
         Sleep(1);
@@ -105,8 +105,7 @@ DWORD IsProcAlive(LPVOID args)
     do
     {
         Sleep(1);
-        GetExitCodeProcess(wnd->hproc, &wnd->ec);
-        if (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd))
+        if (GetExitCodeProcess(wnd->hproc, &wnd->ec) && (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd)))
         {
             CloseHandle(wnd->hproc);
             if (wnd->reset)
@@ -156,8 +155,7 @@ int main(int argc, char *argv[])
     struct WINDOW wnd;
     DEVMODE dm;
     MONITORINFOEX mi;
-    HMONITOR hmon;
-    UINT dpiX, dpiY, dpiC = GetDpiForSystem();
+    int scale;
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
@@ -192,8 +190,7 @@ int main(int argc, char *argv[])
     {
         wnd.process = atoi(argv[1]);
         HookForegroundWndProc(&wnd);
-        // Create a thread that checks if the process is alive or not.
-        CreateThread(0, 0, IsProcAlive, (LPVOID)&wnd, 0, 0);
+        scale = GetDpiForWindow(wnd.pwnd) / 96;
     }
     else
     {
@@ -216,18 +213,16 @@ int main(int argc, char *argv[])
     SetWndStyle(wnd.pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
     SetWndStyle(wnd.pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
 
-    // Get the monitor, the window is present on.
-    hmon = MonitorFromWindow(wnd.pwnd, MONITOR_DEFAULTTONEAREST);
-    GetMonitorInfo(hmon, (MONITORINFO *)&mi);
+    // Get the monitor, the window is present on.;
+    GetMonitorInfo(MonitorFromWindow(wnd.pwnd, MONITOR_DEFAULTTONEAREST), (MONITORINFO *)&mi);
     wnd.monitor = mi.szDevice;
     wnd.x = mi.rcMonitor.left;
     wnd.y = mi.rcMonitor.top;
 
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
-    GetDpiForMonitor(hmon, 0, &dpiX, &dpiY);
-    wnd.cx = dm.dmPelsWidth * (float)(dpiC / dpiX);
-    wnd.cy = dm.dmPelsHeight * (float)(dpiC / dpiY);
+    wnd.cx = dm.dmPelsWidth * scale;
+    wnd.cy = dm.dmPelsHeight * scale;
 
     CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
