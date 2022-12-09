@@ -132,7 +132,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
         } while (!IsIconic(wnd->pwnd) &&
-                 !SetForegroundWindow(GetShellWindow()));
+                 !SetForegroundWindow(GetDesktopWindow()));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
