@@ -33,7 +33,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd);
 
 struct WINDOW
 {
-    HWND pwnd, hwnd;        // HWND of the hooked process's window & reserved HWND variable.
+    HWND pwnd, hwnd, shell; // HWND of the hooked process's window, shell process & reserved HWND variable.
     HANDLE hproc;           // HANDLE to the hooked process.
     DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
     BOOL reset;             // Reset the display mode back to default.
@@ -131,7 +131,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd->pwnd) && !SetForegroundWindow(GetShellWindow()));
+        } while ((!IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)) || !IsWindow(wnd->shell));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -143,7 +143,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd) && !SetForegroundWindow(GetShellWindow()));
+        } while ((IsIconic(wnd->pwnd) && !SetForegroundWindow(wnd->shell)) || !IsWindow(wnd->shell));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
@@ -157,6 +157,7 @@ int main(int argc, char *argv[])
     HMONITOR hmon;
     UINT dpiM, dpiS = GetDpiForSystem();
     float scale;
+    wnd.shell = GetShellWindow();
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
