@@ -139,8 +139,9 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
     {
         // Switch back to native display resolution.
         wnd->reset = TRUE;
-        while (!IsProcWndForeground(wnd))
-            ;
+        do
+        {
+        } while (!IsProcWndForeground(wnd));
         do
         {
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
@@ -149,8 +150,9 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
 
         // Switch to the desired display resolution.
         wnd->reset = FALSE;
-        while (IsProcWndForeground(wnd))
-            ;
+        do
+        {
+        } while (IsProcWndForeground(wnd));
         do
         {
             ShowWindow(wnd->pwnd, SW_RESTORE);
