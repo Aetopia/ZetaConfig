@@ -200,10 +200,8 @@ int main(int argc, char *argv[])
     */
 
     // Restore the window if its maximized.
-    do
-    {
+    if (IsZoomed(wnd.pwnd))
         ShowWindow(wnd.pwnd, SW_RESTORE);
-    } while (IsZoomed(wnd.pwnd));
 
     // Set the window style to borderless.
     SetWndStyle(wnd.pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
