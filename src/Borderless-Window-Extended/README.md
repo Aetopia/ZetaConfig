@@ -8,11 +8,12 @@ A tool to extend the feature set of borderless windowed mode in programs.
 
 ## Usage
 
-**Notes:**
+### Notes
 1. **Ensure your program is set in windowed mode.**
     **The window size is should be the same as the specified display resolution passed to Borderless Window Extended.**
 2. **Borderless Window Extended might not work properly with all programs.**
     **Feel free to make a issue on this repository to improve compatibility.**
+3. **Borderless Window Extended might not play well with multi monitor setups but this depends on the setup itself.**
 
 Pass a process' PID or process name and the desired display resolution to be used with that process.
 ```
