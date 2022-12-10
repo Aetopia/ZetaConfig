@@ -128,7 +128,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (!IsProcWndForeground(wnd));
         do
         {
-            ShowWindowAsync(wnd->pwnd, SW_MINIMIZE);
+            ShowWindow(wnd->pwnd, SW_MINIMIZE);
         } while (IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, 0);
 
@@ -139,7 +139,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         } while (IsProcWndForeground(wnd));
         do
         {
-            ShowWindowAsync(wnd->pwnd, SW_RESTORE);
+            ShowWindow(wnd->pwnd, SW_RESTORE);
         } while (IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
     // Restore the window if its maximized.
     do
     {
-        ShowWindowAsync(wnd.pwnd, SW_RESTORE);
+        ShowWindow(wnd.pwnd, SW_RESTORE);
     } while (IsZoomed(wnd.pwnd));
 
     // Set the window style to borderless.
