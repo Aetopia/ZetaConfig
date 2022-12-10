@@ -63,7 +63,12 @@ DWORD SetWndPosThread(LPVOID args)
         SetWindowPos(wnd->pwnd, 0,
                      wnd->x, wnd->y,
                      wnd->cx, wnd->cy,
-                     SWP_NOACTIVATE | SWP_NOSENDCHANGING);
+                     SWP_ASYNCWINDOWPOS |
+                         SWP_NOCOPYBITS |
+                         SWP_NOACTIVATE |
+                         SWP_NOSENDCHANGING |
+                         SWP_NOOWNERZORDER |
+                         SWP_NOZORDER);
     } while (TRUE);
     return 0;
 }
@@ -136,9 +141,9 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
         } while (IsProcWndForeground(wnd));
+        SetDM(wnd->monitor, wnd->dm);
         if (IsIconic(wnd->pwnd))
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
 
