@@ -152,9 +152,8 @@ int main(int argc, char *argv[])
     DEVMODE dm;
     MONITORINFOEX mi;
     HMONITOR hmon;
-    UINT dpim, dpis = GetDpiForSystem();
+    UINT dpia, dpib;
     float scale;
-
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
@@ -213,20 +212,30 @@ int main(int argc, char *argv[])
     SetWndStyle(wnd.pwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
     SetWndStyle(wnd.pwnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
 
-    // Get the monitor, the window is present on.
+    /* 
+    Get the monitor, the window is present on.
+    1. Get the currently set DPI for the monitor, the window launches.
+    2. Store monitor name and new window position coordinates to the WINDOW structure.
+    */
     hmon = MonitorFromWindow(wnd.pwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
+    GetDpiForMonitor(hmon, 0, &dpia, &dpia);
     wnd.monitor = mi.szDevice;
     wnd.x = mi.rcMonitor.left;
     wnd.y = mi.rcMonitor.top;
 
-    // Size the window based on the DPI scaling set by the desired display resolution.
+    /*
+    Size the window based on the DPI scaling set by the desired display resolution and execute ForegroundWndDMProc(struct WINDOW *wnd).
+    1. Get the DPI set for the monitor after the display resolution change.
+    2. Find the scaling factor for sizing the window. 
+    Scaling Factor: [DPI A (DPI of the monitor before the resolution change.) / DPI B (DPI of the monitor after resolution change.)]`.
+    3. Create a new thread that calls SetWndPosThread(LPVOID args) to set and maintain the window size & position.
+    */
     SetDM(mi.szDevice, wnd.dm);
-    GetDpiForMonitor(hmon, 0, &dpim, &dpim);
-    scale = dpis / dpim;
+    GetDpiForMonitor(hmon, 0, &dpib, &dpib);
+    scale = dpia / dpib;
     wnd.cx = dm.dmPelsWidth * scale;
     wnd.cy = dm.dmPelsHeight * scale;
-
     CreateThread(0, 0, SetWndPosThread, (LPVOID)&wnd, 0, 0);
     ForegroundWndDMProc(&wnd);
     return 0;
