@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     // Size the window based on the DPI scaling set by the desired display resolution.
     SetDM(mi.szDevice, wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpim, &dpim);
-    scale = dpim / dpis;
+    scale = dpis / dpim;
     wnd.cx = dm.dmPelsWidth * scale;
     wnd.cy = dm.dmPelsHeight * scale;
 
