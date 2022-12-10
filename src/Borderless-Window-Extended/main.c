@@ -72,7 +72,7 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
     Sleep(1);
     wnd->hwnd = GetForegroundWindow();
     GetWindowThreadProcessId(wnd->hwnd, &wnd->pid);
-    if (wnd->process == wnd->pid && wnd->hwnd != 0)
+    if (wnd->process == wnd->pid && wnd->hwnd != NULL)
     {
         if (wnd->pwnd != wnd->hwnd)
         {
