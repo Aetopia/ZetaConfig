@@ -16,7 +16,7 @@ void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
 // Structure that contains information on the hooked process' window.
 struct WINDOW;
 
-// A thread that wraps SetWindowPos (HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
+// A thread that wraps SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
 DWORD SetWndPosThread(LPVOID args);
 
 // Check if the current foreground window is the hooked process' window.
