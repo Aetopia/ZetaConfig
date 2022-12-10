@@ -1,6 +1,7 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
+#include <stdio.h>
 
 // Prototypes
 
@@ -126,10 +127,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
         } while (!IsProcWndForeground(wnd));
-        do
-        {
+        if (!IsIconic(wnd->pwnd))
             ShowWindow(wnd->pwnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -137,10 +136,8 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
         } while (IsProcWndForeground(wnd));
-        do
-        {
+        if (IsIconic(wnd->pwnd))
             ShowWindow(wnd->pwnd, SW_RESTORE);
-        } while (IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
