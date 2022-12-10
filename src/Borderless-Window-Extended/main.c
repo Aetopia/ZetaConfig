@@ -90,7 +90,7 @@ void HookForegroundWndProc(struct WINDOW *wnd)
     {
         CloseHandle(wnd->hproc);
         PIDErrorMsgBox();
-        exit(1);
+        ExitProcess(1);
     }
     do
     {
@@ -111,7 +111,7 @@ DWORD IsProcAlive(LPVOID args)
             {
                 SetDM(wnd->monitor, 0);
             };
-            exit(0);
+            ExitProcess(0);
         };
     } while (TRUE);
     return 0;
