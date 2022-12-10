@@ -129,7 +129,7 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
             ShowWindowAsync(wnd->pwnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd->pwnd));
+        } while (IsIconic(wnd->pwnd));
         SetDM(wnd->monitor, 0);
 
         // Switch to the desired display resolution.
@@ -154,6 +154,7 @@ int main(int argc, char *argv[])
     HMONITOR hmon;
     UINT dpim, dpis = GetDpiForSystem();
     float scale;
+
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
 
