@@ -11,7 +11,7 @@ void SetDM(DEVMODE *dm);
 void PIDErrorMsgBox();
 
 // Set the window style by getting the current window style and adding additional styles to the current one.
-void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
+void SetWndStyle(int nIndex, LONG_PTR Style);
 
 // Structure that contains information on the hooked process' window.
 struct WINDOW;
@@ -36,21 +36,21 @@ struct WINDOW
     DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
     BOOL reset;             // Reset the display mode back to default.
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
-    char *monitor;          // Name of the monitor, the window is present on.
-    int x, y, cx, cy;       // Hooked process' window position and size.
+    MONITORINFOEX mi;       // Info of the monitor, the hooked process' window is present on.
+    int cx, cy;             // Hooked process' window client size.
 };
 struct WINDOW wnd;
 
 void SetDM(DEVMODE *dm)
 {
-    ChangeDisplaySettingsEx(wnd.monitor, dm, NULL, CDS_FULLSCREEN, NULL);
+    ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, CDS_FULLSCREEN, NULL);
     if (dm == 0)
     {
-        ChangeDisplaySettingsEx(wnd.monitor, 0, NULL, 0, NULL);
+        ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
     };
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
-void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
+void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.wnd, nIndex, GetWindowLongPtr(wnd.wnd, nIndex) & ~(Style)); }
 
 BOOL IsProcWndForeground()
 {
@@ -98,7 +98,7 @@ DWORD IsProcAlive()
             ExitProcess(0);
         };
         SetWindowPos(wnd.wnd, 0,
-                     wnd.x, wnd.y,
+                     wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
                      SWP_NOACTIVATE |
                          SWP_NOSENDCHANGING |
@@ -135,11 +135,10 @@ void ForegroundWndDMProc()
 int main(int argc, char *argv[])
 {
     DEVMODE dm;
-    MONITORINFOEX mi;
     HMONITOR hmon;
     UINT dpi;
     float scale;
-    mi.cbSize = sizeof(mi);
+    wnd.mi.cbSize = sizeof(wnd.mi);
     dm.dmSize = sizeof(dm);
 
     if (argc != 4)
@@ -192,20 +191,14 @@ int main(int argc, char *argv[])
         ShowWindow(wnd.wnd, SW_RESTORE);
 
     // Set the window style to borderless.
-    SetWndStyle(wnd.wnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-    SetWndStyle(wnd.wnd, GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
+    SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
+    SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
 
     /*
     Get the monitor, the window is present on.
     1. Get the currently set DPI for the monitor, the window launches.
     2. Store monitor name and new window position coordinates to the WINDOW structure.
     */
-    hmon = MonitorFromWindow(wnd.wnd, MONITOR_DEFAULTTONEAREST);
-    GetMonitorInfo(hmon, (MONITORINFO *)&mi);
-    wnd.monitor = mi.szDevice;
-    wnd.x = mi.rcMonitor.left;
-    wnd.y = mi.rcMonitor.top;
-
     /*
     Size the window based on the DPI scaling set by the desired display resolution and execute ForegroundWndDMProc().
     1. Get the DPI set for the monitor after the display resolution change.
@@ -213,6 +206,8 @@ int main(int argc, char *argv[])
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     3. Create a new thread that calls SetWndPosThread(LPVOID args) to set and maintain the window size & position.
     */
+    hmon = MonitorFromWindow(wnd.wnd, MONITOR_DEFAULTTONEAREST);
+    GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
     SetDM(wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpi, &dpi);
     scale = dpi / 96;
