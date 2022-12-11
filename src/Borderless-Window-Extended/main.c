@@ -138,9 +138,9 @@ void ForegroundWndDMProc()
         do
         {
         } while (IsProcWndForeground());
-        SetDM(wnd.dm);
         if (IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_RESTORE);
+        SetDM(wnd.dm);
     } while (TRUE);
 }
 
