@@ -10,7 +10,7 @@ let
   steamclient* = steampath/"steam.exe"
   documents* = getEnv("USERPROFILE")/"Documents"
   temp* = getEnv("TEMP")
-  BWExsk* = "\n[Import.BWEx]\nArchitecture=x64\nFilename=BWEx.dll\nRole=ThirdParty\nWhen=Late"
+  BWExsk* = "\n[Import.BWEx]\nArchitecture=x64\nFilename=BWEx.dll\nRole=ThirdParty\nWhen=Early"
   BWExtxt* = gamedir/"BWEx.txt"
 
 # This embeds Borderless Window Extended when compiling ZetaConfig.
