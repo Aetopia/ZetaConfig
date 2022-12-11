@@ -47,7 +47,7 @@ This additionally acts an override for Special K's borderless windowed mode impl
     Architecture=x64
     Filename=BWEx.dll
     Role=ThirdParty
-    When=Late
+    When=Early
     ```
 3. Create a new file with the name of `BWEx.txt` in the Special K local install directory.                               
     Add the following contents:
