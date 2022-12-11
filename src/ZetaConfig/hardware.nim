@@ -59,6 +59,6 @@ proc getDisplayModes*: seq[string] =
             echo "[Settings] Display Modes: ", dms
             return dms
         dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
-        if dm == "800x600": add = true
+        if dm == "1360x768": add = true
         if not dms.contains(dm) and add: dms.add(dm)
         inc(i)
