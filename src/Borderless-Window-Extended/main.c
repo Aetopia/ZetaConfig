@@ -22,8 +22,11 @@ BOOL IsProcWndForeground();
 // Check for a specific foreground window via its PID and get a handle to the process
 void HookForegroundWndProc();
 
+// Wrapper around SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
+DWORD SetWndPosThread();
+
 // Check if the hooked process is alive or not.
-DWORD IsProcAlive();
+DWORD IsProcAliveThread();
 
 // Hooked process' window's display mode apply and reset loop.
 void ForegroundWndDMProc();
@@ -81,7 +84,23 @@ void HookForegroundWndProc()
     } while (!!IsProcWndForeground());
 }
 
-DWORD IsProcAlive()
+DWORD SetWndPosThread()
+{
+    do
+    {
+        Sleep(1);
+        SetWindowPos(wnd.wnd, 0,
+                     wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
+                     wnd.cx, wnd.cy,
+                     SWP_NOACTIVATE |
+                         SWP_NOSENDCHANGING |
+                         SWP_NOOWNERZORDER |
+                         SWP_NOZORDER);
+    } while (TRUE);
+    return TRUE;
+}
+
+DWORD IsProcAliveThread()
 {
     do
     {
@@ -92,13 +111,6 @@ DWORD IsProcAlive()
             CloseHandle(wnd.hproc);
             ExitProcess(0);
         };
-        SetWindowPos(wnd.wnd, 0,
-                     wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
-                     wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE |
-                         SWP_NOSENDCHANGING |
-                         SWP_NOOWNERZORDER |
-                         SWP_NOZORDER);
     } while (TRUE);
     return TRUE;
 }
@@ -111,9 +123,9 @@ void ForegroundWndDMProc()
         do
         {
         } while (!IsProcWndForeground());
-        SetDM(0);
         if (!IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_MINIMIZE);
+        SetDM(0);
 
         // Switch to the desired display resolution.
         do
@@ -163,7 +175,7 @@ int main(int argc, char *argv[])
     {
         wnd.process = atoi(argv[1]);
         // Create a thread that checks if the process is alive or not.
-        CreateThread(0, 0, IsProcAlive, NULL, 0, 0);
+        CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
         HookForegroundWndProc(&wnd);
     }
     else
@@ -200,6 +212,7 @@ int main(int argc, char *argv[])
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     ForegroundWndDMProc();
     return 0;
 }
