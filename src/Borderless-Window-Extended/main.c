@@ -233,6 +233,6 @@ int main(int argc, char *argv[])
     wnd.cx = dm.dmPelsWidth * scale;
     wnd.cy = dm.dmPelsHeight * scale;
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
-    ForegroundWndDMProc(&wnd);
+    ForegroundWndDMProc();
     return 0;
 }
