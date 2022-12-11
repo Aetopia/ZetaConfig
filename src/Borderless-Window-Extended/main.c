@@ -139,6 +139,8 @@ void ForegroundWndDMProc()
 
 int main(int argc, char *argv[])
 {
+    CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     HMONITOR hmon;
     UINT dpi;
     float scale;
@@ -174,8 +176,6 @@ int main(int argc, char *argv[])
     if (strspn(argv[1], "0123456789") == strlen(argv[1]))
     {
         wnd.process = atoi(argv[1]);
-        // Create a thread that checks if the process is alive or not.
-        CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
         HookForegroundWndProc(&wnd);
     }
     else
@@ -212,7 +212,6 @@ int main(int argc, char *argv[])
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     ForegroundWndDMProc();
     return 0;
 }
