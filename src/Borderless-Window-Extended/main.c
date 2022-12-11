@@ -33,8 +33,7 @@ struct WINDOW
 {
     HWND wnd, hwnd;         // HWND of the hooked process's window & reserved HWND variable.
     HANDLE hproc;           // HANDLE to the hooked process.
-    DEVMODE dm;            // Display mode to be applied when the hooked process' window is in the foreground
-    BOOL reset;             // Reset the display mode back to default.
+    DEVMODE dm;             // Display mode to be applied when the hooked process' window is in the foreground
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     MONITORINFOEX mi;       // Info of the monitor, the hooked process' window is present on.
     int cx, cy;             // Hooked process' window client size.
@@ -90,10 +89,6 @@ DWORD IsProcAlive()
         if (GetExitCodeProcess(wnd.hproc, &wnd.ec) &&
             (wnd.ec != STILL_ACTIVE || IsHungAppWindow(wnd.wnd)))
         {
-            if (wnd.reset)
-            {
-                SetDM(0);
-            };
             CloseHandle(wnd.hproc);
             ExitProcess(0);
         };
@@ -113,16 +108,14 @@ void ForegroundWndDMProc()
     do
     {
         // Switch back to native display resolution.
-        wnd.reset = TRUE;
         do
         {
         } while (!IsProcWndForeground());
+        SetDM(0);
         if (!IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_MINIMIZE);
-        SetDM(0);
 
         // Switch to the desired display resolution.
-        wnd.reset = FALSE;
         do
         {
         } while (IsProcWndForeground());
