@@ -16,9 +16,6 @@ void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
 // Structure that contains information on the hooked process' window.
 struct WINDOW;
 
-// A thread that wraps SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
-DWORD SetWndPosThread();
-
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground();
 
@@ -54,22 +51,6 @@ void SetDM(DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
-
-DWORD SetWndPosThread()
-{
-    do
-    {
-        Sleep(1);
-        SetWindowPos(wnd.wnd, 0,
-                     wnd.x, wnd.y,
-                     wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE |
-                         SWP_NOSENDCHANGING |
-                         SWP_NOOWNERZORDER |
-                         SWP_NOZORDER);
-    } while (TRUE);
-    return 0;
-}
 
 BOOL IsProcWndForeground()
 {
@@ -116,6 +97,13 @@ DWORD IsProcAlive()
             CloseHandle(wnd.hproc);
             ExitProcess(0);
         };
+        SetWindowPos(wnd.wnd, 0,
+                     wnd.x, wnd.y,
+                     wnd.cx, wnd.cy,
+                     SWP_NOACTIVATE |
+                         SWP_NOSENDCHANGING |
+                         SWP_NOOWNERZORDER |
+                         SWP_NOZORDER);
     } while (TRUE);
     return TRUE;
 }
@@ -232,7 +220,6 @@ int main(int argc, char *argv[])
     scale = dpia / dpib;
     wnd.cx = dm.dmPelsWidth * scale;
     wnd.cy = dm.dmPelsHeight * scale;
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     ForegroundWndDMProc();
     return 0;
 }
