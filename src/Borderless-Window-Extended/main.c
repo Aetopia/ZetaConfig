@@ -4,20 +4,20 @@
 
 // Prototypes
 
+// Structure that contains information on the hooked process' window.
+struct WINDOW;
+
 // Set the display mode.
 void SetDM(DEVMODE *dm);
 
 // Show a message box regarding about an invalid PID.
 void PIDErrorMsgBox();
 
+// Wrapper around SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
+void SetWndPos();
+
 // Set the window style by getting the current window style and adding additional styles to the current one.
 void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style);
-
-// Structure that contains information on the hooked process' window.
-struct WINDOW;
-
-// A thread that wraps SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
-DWORD SetWndPosThread();
 
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground();
