@@ -33,7 +33,7 @@ struct WINDOW
 {
     HWND wnd, hwnd;         // HWND of the hooked process's window & reserved HWND variable.
     HANDLE hproc;           // HANDLE to the hooked process.
-    DEVMODE *dm;            // Display mode to be applied when the hooked process' window is in the foreground
+    DEVMODE dm;            // Display mode to be applied when the hooked process' window is in the foreground
     BOOL reset;             // Reset the display mode back to default.
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     MONITORINFOEX mi;       // Info of the monitor, the hooked process' window is present on.
@@ -128,18 +128,17 @@ void ForegroundWndDMProc()
         } while (IsProcWndForeground());
         if (IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_RESTORE);
-        SetDM(wnd.dm);
+        SetDM(&wnd.dm);
     } while (TRUE);
 }
 
 int main(int argc, char *argv[])
 {
-    DEVMODE dm;
     HMONITOR hmon;
     UINT dpi;
     float scale;
     wnd.mi.cbSize = sizeof(wnd.mi);
-    dm.dmSize = sizeof(dm);
+    wnd.dm.dmSize = sizeof(wnd.dm);
 
     if (argc != 4)
     {
@@ -151,14 +150,13 @@ int main(int argc, char *argv[])
     };
 
     // Setup the DEVMODE structure.
-    dm.dmPelsWidth = atoi(argv[2]);
-    dm.dmPelsHeight = atoi(argv[3]);
-    dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-    wnd.dm = &dm;
+    wnd.dm.dmPelsWidth = atoi(argv[2]);
+    wnd.dm.dmPelsHeight = atoi(argv[3]);
+    wnd.dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
 
     // Check if specified resolution is valid or not.
-    if (ChangeDisplaySettings(wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
-        (dm.dmPelsWidth || dm.dmPelsHeight) == 0)
+    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
+        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
     {
         MessageBox(0,
                    "Invaild Resolution!",
@@ -184,6 +182,7 @@ int main(int argc, char *argv[])
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     https://github.com/Codeusa/Borderless-Gaming/blob/master/BorderlessGaming.Logic/Windows/Manipulation.cs
+    https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
     */
 
     // Restore the window if its maximized.
@@ -195,24 +194,19 @@ int main(int argc, char *argv[])
     SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
 
     /*
-    Get the monitor, the window is present on.
-    1. Get the currently set DPI for the monitor, the window launches.
-    2. Store monitor name and new window position coordinates to the WINDOW structure.
-    */
-    /*
-    Size the window based on the DPI scaling set by the desired display resolution and execute ForegroundWndDMProc().
-    1. Get the DPI set for the monitor after the display resolution change.
-    2. Find the scaling factor for sizing the window.
+    1. Get the monitor, the window is present on.
+    2. Get the DPI set for the monitor after the display resolution change.
+    3. Find the scaling factor for sizing the window.
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
-    3. Create a new thread that calls SetWndPosThread(LPVOID args) to set and maintain the window size & position.
+    4. Execute ForegroundWndDMProc().
     */
     hmon = MonitorFromWindow(wnd.wnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
-    SetDM(wnd.dm);
+    SetDM(&wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpi, &dpi);
     scale = dpi / 96;
-    wnd.cx = dm.dmPelsWidth * scale;
-    wnd.cy = dm.dmPelsHeight * scale;
+    wnd.cx = wnd.dm.dmPelsWidth * scale;
+    wnd.cy = wnd.dm.dmPelsHeight * scale;
     ForegroundWndDMProc();
     return 0;
 }
