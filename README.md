@@ -93,7 +93,8 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
     Set the ingame render resolution. You can set any value between `50 ~ 100`.
 
 2. `Display Mode` (Provided by Borderless Window Extended.):        
-    Configure the display resolution and window size, the game will run at.
+    Configure the display resolution and window size, the game will run at.    
+    **Note: The minimum available display mode or resolution is 1360x768 since Halo Infinite doesn't detect 1280x720 as a valid window size for some reason.**
 
 3. `Spoof CPU Cores` (Provided by Special K.):                  
     This option allows one to make their CPU core count to appear lower than actual.
