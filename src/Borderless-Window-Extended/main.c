@@ -58,6 +58,7 @@ DWORD SetWndPosThread(LPVOID args)
     struct WINDOW *wnd = (struct WINDOW *)args;
     do
     {
+        Sleep(1);
         SetWindowPos(wnd->pwnd, 0,
                      wnd->x, wnd->y,
                      wnd->cx, wnd->cy,
@@ -65,13 +66,13 @@ DWORD SetWndPosThread(LPVOID args)
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
-        Sleep(1);
     } while (TRUE);
     return 0;
 }
 
 BOOL IsProcWndForeground(struct WINDOW *wnd)
 {
+    Sleep(1);
     wnd->hwnd = GetForegroundWindow();
     GetWindowThreadProcessId(wnd->hwnd, &wnd->pid);
     if (wnd->process == wnd->pid && wnd->hwnd != NULL)
@@ -80,10 +81,8 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
         {
             wnd->pwnd = wnd->hwnd;
         };
-        Sleep(1);
         return FALSE;
     };
-    Sleep(1);
     return TRUE;
 }
 
@@ -106,6 +105,7 @@ DWORD IsProcAlive(LPVOID args)
     struct WINDOW *wnd = (struct WINDOW *)args;
     do
     {
+        Sleep(1);
         if (GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
             (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd)))
         {
@@ -116,7 +116,6 @@ DWORD IsProcAlive(LPVOID args)
             CloseHandle(wnd->hproc);
             ExitProcess(0);
         };
-        Sleep(1);
     } while (TRUE);
     return 0;
 }
