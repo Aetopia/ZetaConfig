@@ -31,6 +31,7 @@ DWORD IsProcAlive();
 // Hooked process' window's display mode apply and reset loop.
 void ForegroundWndDMProc();
 
+// Make this global structure so it can be easily accessed by functions.
 struct WINDOW
 {
     HWND wnd, hwnd;         // HWND of the hooked process's window & reserved HWND variable.
