@@ -80,6 +80,7 @@ BOOL IsProcWndForeground(struct WINDOW *wnd)
         {
             wnd->pwnd = wnd->hwnd;
         };
+        Sleep(1);
         return FALSE;
     };
     Sleep(1);
