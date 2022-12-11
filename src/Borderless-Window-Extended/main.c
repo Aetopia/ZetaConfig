@@ -110,11 +110,11 @@ DWORD IsProcAlive(LPVOID args)
         if (GetExitCodeProcess(wnd->hproc, &wnd->ec) &&
             (wnd->ec != STILL_ACTIVE || IsHungAppWindow(wnd->pwnd)))
         {
-            CloseHandle(wnd->hproc);
             if (wnd->reset)
             {
                 SetDM(wnd->monitor, 0);
             };
+            CloseHandle(wnd->hproc);
             ExitProcess(0);
         };
     } while (TRUE);
