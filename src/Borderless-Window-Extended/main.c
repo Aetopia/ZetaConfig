@@ -134,11 +134,10 @@ void ForegroundWndDMProc()
 
 int main(int argc, char *argv[])
 {
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     DEVMODE dm;
     MONITORINFOEX mi;
     HMONITOR hmon;
-    UINT dpia, dpib;
+    UINT dpi;
     float scale;
     mi.cbSize = sizeof(mi);
     dm.dmSize = sizeof(dm);
@@ -203,7 +202,6 @@ int main(int argc, char *argv[])
     */
     hmon = MonitorFromWindow(wnd.wnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&mi);
-    GetDpiForMonitor(hmon, 0, &dpia, &dpia);
     wnd.monitor = mi.szDevice;
     wnd.x = mi.rcMonitor.left;
     wnd.y = mi.rcMonitor.top;
@@ -212,12 +210,12 @@ int main(int argc, char *argv[])
     Size the window based on the DPI scaling set by the desired display resolution and execute ForegroundWndDMProc().
     1. Get the DPI set for the monitor after the display resolution change.
     2. Find the scaling factor for sizing the window.
-    Scaling Factor: [DPI A (DPI of the monitor before the resolution change.) / DPI B (DPI of the monitor after resolution change.)]`.
+    Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     3. Create a new thread that calls SetWndPosThread(LPVOID args) to set and maintain the window size & position.
     */
     SetDM(wnd.dm);
-    GetDpiForMonitor(hmon, 0, &dpib, &dpib);
-    scale = dpia / dpib;
+    GetDpiForMonitor(hmon, 0, &dpi, &dpi);
+    scale = dpi / 96;
     wnd.cx = dm.dmPelsWidth * scale;
     wnd.cy = dm.dmPelsHeight * scale;
     ForegroundWndDMProc();
