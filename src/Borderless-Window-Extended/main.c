@@ -54,7 +54,7 @@ void SetDM(DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
-void SetWndPos() { SetWindowPos(wnd.wnd, 0, wnd.x, wnd.y, wnd.cx, wnd.cy, SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_NOCOPYBITS | SWP_NOOWNERZORDER | SWP_NOZORDER); }
+void SetWndPos() { SetWindowPos(wnd.wnd, 0, wnd.x, wnd.y, wnd.cx, wnd.cy, SWP_ASYNCWINDOWPOS | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_NOOWNERZORDER | SWP_NOZORDER); }
 
 BOOL IsProcWndForeground()
 {
