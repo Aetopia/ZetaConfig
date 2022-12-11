@@ -139,9 +139,9 @@ void ForegroundWndDMProc(struct WINDOW *wnd)
         do
         {
         } while (IsProcWndForeground(wnd));
-        SetDM(wnd->monitor, wnd->dm);
         if (IsIconic(wnd->pwnd))
             ShowWindow(wnd->pwnd, SW_RESTORE);
+        SetDM(wnd->monitor, wnd->dm);
     } while (TRUE);
 }
 
