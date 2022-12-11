@@ -54,22 +54,7 @@ void SetDM(DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(HWND hwnd, int nIndex, LONG_PTR Style) { SetWindowLongPtr(hwnd, nIndex, GetWindowLongPtr(hwnd, nIndex) & ~(Style)); }
-
-DWORD SetWndPosThread()
-{
-    do
-    {
-        Sleep(1);
-        SetWindowPos(wnd.wnd, 0,
-                     wnd.x, wnd.y,
-                     wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE |
-                         SWP_NOSENDCHANGING |
-                         SWP_NOOWNERZORDER |
-                         SWP_NOZORDER);
-    } while (TRUE);
-    return 0;
-}
+void SetWndPos() { SetWindowPos(wnd.wnd, 0, wnd.x, wnd.y, wnd.cx, wnd.cy, SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_NOCOPYBITS | SWP_NOOWNERZORDER | SWP_NOZORDER); }
 
 BOOL IsProcWndForeground()
 {
@@ -128,6 +113,7 @@ void ForegroundWndDMProc()
         wnd.reset = TRUE;
         do
         {
+            SetWndPos();
         } while (!IsProcWndForeground());
         if (!IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_MINIMIZE);
@@ -137,6 +123,7 @@ void ForegroundWndDMProc()
         wnd.reset = FALSE;
         do
         {
+            SetWndPos();
         } while (IsProcWndForeground());
         if (IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_RESTORE);
@@ -232,7 +219,6 @@ int main(int argc, char *argv[])
     scale = dpia / dpib;
     wnd.cx = dm.dmPelsWidth * scale;
     wnd.cy = dm.dmPelsHeight * scale;
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     ForegroundWndDMProc();
     return 0;
 }
