@@ -214,16 +214,16 @@ int main(int argc, char *argv[])
         // Switch back to native display resolution.
         while (!IsProcWndForeground())
             ;
-        SetDM(0);
         if (!IsMinimized())
             ShowWindowAsync(wnd.wnd, SW_MINIMIZE);
+        SetDM(0);
 
         // Switch to the desired display resolution.
         while (IsProcWndForeground())
             ;
-        SetDM(&wnd.dm);
         if (IsMinimized())
             ShowWindowAsync(wnd.wnd, SW_RESTORE);
+        SetDM(&wnd.dm);
     } while (TRUE);
     return 0;
 }
