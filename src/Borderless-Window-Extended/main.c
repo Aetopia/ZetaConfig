@@ -120,26 +120,6 @@ DWORD IsProcAliveThread()
     return TRUE;
 }
 
-void ForegroundWndDMProc()
-{
-    while (TRUE)
-    {
-        // Switch back to native display resolution.
-        while (!IsProcWndForeground())
-            ;
-        if (!IsIconic(wnd.wnd))
-            ShowWindowAsync(wnd.wnd, SW_MINIMIZE);
-        SetDM(0);
-
-        // Switch to the desired display resolution.
-        while (IsProcWndForeground())
-            ;
-        if (IsIconic(wnd.wnd))
-            ShowWindowAsync(wnd.wnd, SW_RESTORE);
-        SetDM(&wnd.dm);
-    };
-}
-
 int main(int argc, char *argv[])
 {
     CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
@@ -206,7 +186,6 @@ int main(int argc, char *argv[])
     2. Get the DPI set for the monitor after the display resolution change.
     3. Find the scaling factor for sizing the window.
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
-    4. Execute ForegroundWndDMProc().
     */
     hmon = MonitorFromWindow(wnd.wnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
@@ -215,6 +194,31 @@ int main(int argc, char *argv[])
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
-    ForegroundWndDMProc();
+
+    /*
+    1. Wait until the hooked process' window is the not the foreground window and then reset the display resolution.
+    2. Wait until the hooked process' window is the the foreground window and then reset the display resolution.
+    */
+
+    do
+    {
+        // Switch back to native display resolution.
+        while (!IsProcWndForeground())
+            ;
+        do
+        {
+            ShowWindowAsync(wnd.wnd, SW_MINIMIZE);
+        } while (!IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
+        SetDM(0);
+
+        // Switch to the desired display resolution.
+        while (IsProcWndForeground())
+            ;
+        do
+        {
+            ShowWindowAsync(wnd.wnd, SW_RESTORE);
+        } while (IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
+        SetDM(&wnd.dm);
+    } while (TRUE);
     return 0;
 }
