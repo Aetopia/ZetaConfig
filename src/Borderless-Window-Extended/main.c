@@ -173,10 +173,8 @@ int main(int argc, char *argv[])
     */
 
     // Restore the window if its maximized.
-    do
-    {
+    if (IsZoomed(wnd.wnd))
         ShowWindow(wnd.wnd, SW_RESTORE);
-    } while (IsZoomed(wnd.wnd));
 
     // Set the window style to borderless.
     SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
@@ -207,19 +205,15 @@ int main(int argc, char *argv[])
         while (!IsProcWndForeground())
             ;
         SetDM(0);
-        do
-        {
+        if (!IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
 
         // Switch to the desired display resolution.
         while (IsProcWndForeground())
             ;
         SetDM(&wnd.dm);
-        do
-        {
+        if (IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_RESTORE);
-        } while (IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
     } while (TRUE);
     return 0;
 }
