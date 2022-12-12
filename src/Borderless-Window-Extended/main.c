@@ -64,7 +64,6 @@ BOOL IsMinimized()
 
 BOOL IsProcWndForeground(HWND hwnd)
 {
-    Sleep(1);
     GetWindowThreadProcessId(hwnd, &wnd.pid);
     if (wnd.process == wnd.pid && hwnd != NULL)
     {
@@ -87,7 +86,7 @@ void HookForegroundWndProc()
         ExitProcess(1);
     }
     while (!IsProcWndForeground(GetForegroundWindow()))
-        ;
+        Sleep(1);
 }
 
 DWORD SetWndPosThread()
