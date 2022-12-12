@@ -42,7 +42,8 @@ struct WINDOW
     DEVMODE dm;             // Display mode to be applied when the hooked process' window is in the foreground
     DWORD process, ec, pid; // PID of the hooked process & reserved variables.
     MONITORINFOEX mi;       // Info of the monitor, the hooked process' window is present on.
-    int cx, cy;             // Hooked process' window client size.
+    BOOL cds;
+    int cx, cy; // Hooked process' window client size.
 };
 struct WINDOW wnd;
 
@@ -53,28 +54,27 @@ void SetDM(DEVMODE *dm)
         ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
-void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.wnd, nIndex, GetWindowLongPtr(wnd.wnd, nIndex) & ~(Style)); }
+void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.hwnd, nIndex, GetWindowLongPtr(wnd.hwnd, nIndex) & ~(Style)); }
 BOOL IsMinimized()
 {
-    if (IsWindow(wnd.wnd))
-        return IsIconic(wnd.wnd);
+    if (IsWindow(wnd.hwnd))
+        return IsIconic(wnd.hwnd);
     return FALSE;
 }
 
-BOOL IsProcWndForeground()
+BOOL IsProcWndForeground(HWND hwnd)
 {
     Sleep(1);
-    wnd.hwnd = GetForegroundWindow();
-    GetWindowThreadProcessId(wnd.hwnd, &wnd.pid);
-    if (wnd.process == wnd.pid && wnd.hwnd != NULL)
+    GetWindowThreadProcessId(hwnd, &wnd.pid);
+    if (wnd.process == wnd.pid && hwnd != NULL)
     {
-        if (wnd.wnd != wnd.hwnd)
+        if (wnd.hwnd != hwnd)
         {
-            wnd.wnd = wnd.hwnd;
+            wnd.hwnd = hwnd;
         };
-        return FALSE;
+        return TRUE;
     };
-    return TRUE;
+    return FALSE;
 }
 
 void HookForegroundWndProc()
@@ -86,7 +86,7 @@ void HookForegroundWndProc()
         PIDErrorMsgBox();
         ExitProcess(1);
     }
-    while (!!IsProcWndForeground())
+    while (!IsProcWndForeground(GetForegroundWindow()))
         ;
 }
 
@@ -95,10 +95,10 @@ DWORD SetWndPosThread()
     while (TRUE)
     {
         Sleep(1);
-        SetWindowPos(wnd.wnd, 0,
+        SetWindowPos(wnd.hwnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
-                         SWP_NOACTIVATE |
+                     SWP_NOACTIVATE |
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
@@ -114,7 +114,7 @@ DWORD IsProcAliveThread()
     {
         Sleep(1);
         if (GetExitCodeProcess(wnd.hproc, &wnd.ec) &&
-            (wnd.ec != STILL_ACTIVE || IsHungAppWindow(wnd.wnd)))
+            (wnd.ec != STILL_ACTIVE || IsHungAppWindow(wnd.hwnd)))
         {
             CloseHandle(wnd.hproc);
             do
@@ -128,11 +128,45 @@ DWORD IsProcAliveThread()
     return TRUE;
 }
 
+void ForegroundWndDMProc(
+    __attribute__((unused)) HWINEVENTHOOK hWinEventHook,
+    DWORD event,
+    HWND hwnd,
+    __attribute__((unused)) LONG idObject,
+    __attribute__((unused)) LONG idChild,
+    __attribute__((unused)) DWORD idEventThread,
+    __attribute__((unused)) DWORD dwmsEventTime)
+{
+    if (event == EVENT_SYSTEM_FOREGROUND)
+    {
+        if (IsProcWndForeground(hwnd))
+        {
+            if (wnd.cds)
+            {
+                if (IsMinimized())
+                    ShowWindow(wnd.hwnd, SW_RESTORE);
+                SetDM(&wnd.dm);
+                wnd.cds = FALSE;
+                return;
+            };
+        };
+        if (!wnd.cds)
+        {
+            if (!IsMinimized())
+                ShowWindow(wnd.hwnd, SW_MINIMIZE);
+            SetDM(0);
+            wnd.cds = TRUE;
+        };
+    };
+};
+
 int main(int argc, char *argv[])
 {
     CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
+    wnd.cds = FALSE;
     HMONITOR hmon;
+    MSG msg;
     UINT dpi;
     float scale;
     wnd.mi.cbSize = sizeof(wnd.mi);
@@ -182,8 +216,8 @@ int main(int argc, char *argv[])
     */
 
     // Restore the window if its maximized.
-    if (IsZoomed(wnd.wnd))
-        ShowWindow(wnd.wnd, SW_RESTORE);
+    if (IsZoomed(wnd.hwnd))
+        ShowWindow(wnd.hwnd, SW_RESTORE);
 
     // Set the window style to borderless.
     SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
@@ -195,34 +229,19 @@ int main(int argc, char *argv[])
     3. Find the scaling factor for sizing the window.
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     */
-    hmon = MonitorFromWindow(wnd.wnd, MONITOR_DEFAULTTONEAREST);
+    hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
     SetDM(&wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpi, &dpi);
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
-
-    /*
-    1. Wait until the hooked process' window is the not the foreground window and then reset the display resolution.
-    2. Wait until the hooked process' window is the the foreground window and then reset the display resolution.
-    */
-
-    do
+    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    while (GetMessage(&msg, NULL, 0, 0))
     {
-        // Switch back to native display resolution.
-        while (!IsProcWndForeground())
-            ;
-        if (!IsMinimized())
-            ShowWindow(wnd.wnd, SW_MINIMIZE);
-        SetDM(0);
 
-        // Switch to the desired display resolution.
-        while (IsProcWndForeground())
-            ;
-        if (IsMinimized())
-            ShowWindow(wnd.wnd, SW_RESTORE);
-        SetDM(&wnd.dm);
-    } while (TRUE);
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    };
     return 0;
 }

@@ -51,14 +51,12 @@ proc getDisplayModes*: seq[string] =
         dms: seq[string]
         dm: string
         devmode: DEVMODE
-        add: bool
     devmode.dmSize = sizeof(DEVMODE).WORD
     
     while true:
-        if EnumDisplaySettingsEx(display, i, &devmode, EDS_RAWMODE) == 0:
+        if EnumDisplaySettingsEx(display, i, &devmode, 0) == 0:
             echo "[Settings] Display Modes: ", dms
             return dms
         dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
-        if dm == "800x600": add = true
-        if not dms.contains(dm) and add: dms.add(dm)
+        if not dms.contains(dm): dms.add(dm)
         inc(i)
