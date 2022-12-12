@@ -1,7 +1,6 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
-#include <stdio.h>
 
 // Prototypes
 
