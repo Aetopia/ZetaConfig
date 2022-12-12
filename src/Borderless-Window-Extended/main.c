@@ -4,6 +4,12 @@
 
 // Prototypes
 
+// Structure that contains information on the hooked process' window.
+struct WINDOW;
+
+// Check if the hooked process' window is minimized or not.
+BOOL IsMinimized(BOOL check);
+
 // Set the display mode.
 void SetDM(DEVMODE *dm);
 
@@ -12,9 +18,6 @@ void PIDErrorMsgBox();
 
 // Set the window style by getting the current window style and adding additional styles to the current one.
 void SetWndStyle(int nIndex, LONG_PTR Style);
-
-// Structure that contains information on the hooked process' window.
-struct WINDOW;
 
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground();
@@ -51,6 +54,7 @@ void SetDM(DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.wnd, nIndex, GetWindowLongPtr(wnd.wnd, nIndex) & ~(Style)); }
+BOOL IsMinimized(BOOL check) { return IsIconic(wnd.wnd) == check && IsWindow(wnd.wnd); }
 
 BOOL IsProcWndForeground()
 {
@@ -208,7 +212,7 @@ int main(int argc, char *argv[])
         do
         {
             ShowWindowAsync(wnd.wnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
+        } while (IsMinimized(FALSE));
         SetDM(0);
 
         // Switch to the desired display resolution.
@@ -217,7 +221,7 @@ int main(int argc, char *argv[])
         do
         {
             ShowWindowAsync(wnd.wnd, SW_RESTORE);
-        } while (IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
+        } while (IsMinimized(TRUE));
         SetDM(&wnd.dm);
     } while (TRUE);
     return 0;
