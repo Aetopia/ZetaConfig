@@ -79,14 +79,13 @@ void HookForegroundWndProc()
         PIDErrorMsgBox();
         ExitProcess(1);
     }
-    do
-    {
-    } while (!!IsProcWndForeground());
+    while (!!IsProcWndForeground())
+        ;
 }
 
 DWORD SetWndPosThread()
 {
-    do
+    while (TRUE)
     {
         Sleep(1);
         SetWindowPos(wnd.wnd, 0,
@@ -96,13 +95,13 @@ DWORD SetWndPosThread()
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
-    } while (TRUE);
+    };
     return TRUE;
 }
 
 DWORD IsProcAliveThread()
 {
-    do
+    while (TRUE)
     {
         Sleep(1);
         if (GetExitCodeProcess(wnd.hproc, &wnd.ec) &&
@@ -112,30 +111,28 @@ DWORD IsProcAliveThread()
             CloseHandle(wnd.hproc);
             ExitProcess(0);
         };
-    } while (TRUE);
+    };
     return TRUE;
 }
 
 void ForegroundWndDMProc()
 {
-    do
+    while (TRUE)
     {
         // Switch back to native display resolution.
-        do
-        {
-        } while (!IsProcWndForeground());
+        while (!IsProcWndForeground())
+            ;
         if (!IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_MINIMIZE);
         SetDM(0);
 
         // Switch to the desired display resolution.
-        do
-        {
-        } while (IsProcWndForeground());
+        while (IsProcWndForeground())
+            ;
         if (IsIconic(wnd.wnd))
             ShowWindow(wnd.wnd, SW_RESTORE);
         SetDM(&wnd.dm);
-    } while (TRUE);
+    };
 }
 
 int main(int argc, char *argv[])
