@@ -46,10 +46,6 @@ struct WINDOW wnd;
 void SetDM(DEVMODE *dm)
 {
     ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, CDS_FULLSCREEN, NULL);
-    if (dm == 0)
-    {
-        ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
-    };
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.wnd, nIndex, GetWindowLongPtr(wnd.wnd, nIndex) & ~(Style)); }
@@ -107,8 +103,8 @@ DWORD IsProcAliveThread()
     {
         Sleep(1);
         if (GetExitCodeProcess(wnd.hproc, &wnd.ec) &&
-                (wnd.ec != STILL_ACTIVE && !IsWindow(wnd.wnd)) ||
-            IsHungAppWindow(wnd.wnd))
+            ((wnd.ec != STILL_ACTIVE && !IsWindow(wnd.wnd)) ||
+             IsHungAppWindow(wnd.wnd)))
         {
             CloseHandle(wnd.hproc);
             do
@@ -116,6 +112,7 @@ DWORD IsProcAliveThread()
                 EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
             } while (dm.dmPelsWidth == wnd.dm.dmPelsWidth &&
                      dm.dmPelsHeight == wnd.dm.dmPelsHeight);
+            ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
             ExitProcess(0);
         };
     };
