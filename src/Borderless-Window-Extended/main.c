@@ -105,9 +105,8 @@ DWORD IsProcAliveThread()
     {
         Sleep(1);
         if (GetExitCodeProcess(wnd.hproc, &wnd.ec) &&
-            (wnd.ec != STILL_ACTIVE || IsHungAppWindow(wnd.wnd)))
+            (wnd.ec != STILL_ACTIVE || IsHungAppWindow(wnd.wnd)) && !IsWindow(wnd.wnd))
         {
-            ShowWindow(wnd.wnd, SW_FORCEMINIMIZE);
             CloseHandle(wnd.hproc);
             ExitProcess(0);
         };
