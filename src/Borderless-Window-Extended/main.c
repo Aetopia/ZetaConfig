@@ -46,6 +46,8 @@ struct WINDOW wnd;
 void SetDM(DEVMODE *dm)
 {
     ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, CDS_FULLSCREEN, NULL);
+    if (dm == 0)
+        ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.wnd, nIndex, GetWindowLongPtr(wnd.wnd, nIndex) & ~(Style)); }
@@ -87,7 +89,8 @@ DWORD SetWndPosThread()
         SetWindowPos(wnd.wnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE |
+                     SWP_ASYNCWINDOWPOS |
+                         SWP_NOACTIVATE |
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
@@ -111,7 +114,6 @@ DWORD IsProcAliveThread()
                 EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
             } while (dm.dmPelsWidth == wnd.dm.dmPelsWidth &&
                      dm.dmPelsHeight == wnd.dm.dmPelsHeight);
-            ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
             ExitProcess(0);
         };
     };
@@ -126,14 +128,14 @@ void ForegroundWndDMProc()
         while (!IsProcWndForeground())
             ;
         if (!IsIconic(wnd.wnd))
-            ShowWindow(wnd.wnd, SW_MINIMIZE);
+            ShowWindowAsync(wnd.wnd, SW_MINIMIZE);
         SetDM(0);
 
         // Switch to the desired display resolution.
         while (IsProcWndForeground())
             ;
         if (IsIconic(wnd.wnd))
-            ShowWindow(wnd.wnd, SW_RESTORE);
+            ShowWindowAsync(wnd.wnd, SW_RESTORE);
         SetDM(&wnd.dm);
     };
 }
@@ -193,7 +195,7 @@ int main(int argc, char *argv[])
 
     // Restore the window if its maximized.
     if (IsZoomed(wnd.wnd))
-        ShowWindow(wnd.wnd, SW_RESTORE);
+        ShowWindowAsync(wnd.wnd, SW_RESTORE);
 
     // Set the window style to borderless.
     SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
