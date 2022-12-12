@@ -98,7 +98,8 @@ DWORD SetWndPosThread()
         SetWindowPos(wnd.wnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE |
+                     SWP_ASYNCWINDOWPOS |
+                         SWP_NOACTIVATE |
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
@@ -183,7 +184,7 @@ int main(int argc, char *argv[])
 
     // Restore the window if its maximized.
     if (IsZoomed(wnd.wnd))
-        ShowWindow(wnd.wnd, SW_RESTORE);
+        ShowWindowAsync(wnd.wnd, SW_RESTORE);
 
     // Set the window style to borderless.
     SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
@@ -215,14 +216,14 @@ int main(int argc, char *argv[])
             ;
         SetDM(0);
         if (!IsMinimized())
-            ShowWindow(wnd.wnd, SW_MINIMIZE);
+            ShowWindowAsync(wnd.wnd, SW_MINIMIZE);
 
         // Switch to the desired display resolution.
         while (IsProcWndForeground())
             ;
         SetDM(&wnd.dm);
         if (IsMinimized())
-            ShowWindow(wnd.wnd, SW_RESTORE);
+            ShowWindowAsync(wnd.wnd, SW_RESTORE);
     } while (TRUE);
     return 0;
 }
