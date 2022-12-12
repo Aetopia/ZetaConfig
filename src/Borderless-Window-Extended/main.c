@@ -42,7 +42,6 @@ struct WINDOW
     BOOL cds, fg;     // Toggle if ChangeDisplaySettingsEx should called or not & if the hooked process' window is the foreground window or not.
     int cx, cy;       // Hooked process' window client size.
 };
-DWORD pid;
 struct WINDOW wnd;
 
 void SetDM(DEVMODE *dm)
@@ -62,6 +61,7 @@ BOOL IsMinimized()
 
 BOOL IsProcWndForeground(HWND hwnd)
 {
+    DWORD pid;
     GetWindowThreadProcessId(hwnd, &pid);
     if (wnd.pid == pid && hwnd != NULL)
     {
