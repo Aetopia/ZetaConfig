@@ -1,6 +1,7 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
+#include <stdio.h>
 
 // Prototypes
 
@@ -37,14 +38,15 @@ void ForegroundWndDMProc();
 // Make this global structure so it can be easily accessed by functions.
 struct WINDOW
 {
-    HWND wnd, hwnd;         // HWND of the hooked process's window & reserved HWND variable.
-    HANDLE hproc;           // HANDLE to the hooked process.
-    DEVMODE dm;             // Display mode to be applied when the hooked process' window is in the foreground
-    DWORD process, ec, pid; // PID of the hooked process & reserved variables.
-    MONITORINFOEX mi;       // Info of the monitor, the hooked process' window is present on.
-    BOOL cds;
-    int cx, cy; // Hooked process' window client size.
+    HWND hwnd;        // HWND of the hooked process's window & reserved HWND variable.
+    HANDLE hproc;     // HANDLE to the hooked process.
+    DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
+    DWORD pid;        // PID of the hooked process & reserved variables.
+    MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
+    BOOL cds;         // Toggle if ChangeDisplaySettingsEx should called or not.
+    int cx, cy;       // Hooked process' window client size.
 };
+DWORD pid;
 struct WINDOW wnd;
 
 void SetDM(DEVMODE *dm)
@@ -64,8 +66,8 @@ BOOL IsMinimized()
 
 BOOL IsProcWndForeground(HWND hwnd)
 {
-    GetWindowThreadProcessId(hwnd, &wnd.pid);
-    if (wnd.process == wnd.pid && hwnd != NULL)
+    GetWindowThreadProcessId(hwnd, &pid);
+    if (wnd.pid == pid && hwnd != NULL)
     {
         if (wnd.hwnd != hwnd)
         {
@@ -78,7 +80,7 @@ BOOL IsProcWndForeground(HWND hwnd)
 
 void HookForegroundWndProc()
 {
-    wnd.hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, wnd.process);
+    wnd.hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, wnd.pid);
     if (!wnd.hproc)
     {
         CloseHandle(wnd.hproc);
@@ -93,7 +95,6 @@ DWORD SetWndPosThread()
 {
     while (TRUE)
     {
-        Sleep(1);
         SetWindowPos(wnd.hwnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
@@ -101,29 +102,16 @@ DWORD SetWndPosThread()
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
+        Sleep(1);
     };
     return TRUE;
 }
 
 DWORD IsProcAliveThread()
 {
-    DEVMODE dm;
-    dm.dmSize = sizeof(dm);
-    while (TRUE)
-    {
-        Sleep(1);
-        if (GetExitCodeProcess(wnd.hproc, &wnd.ec) &&
-            (wnd.ec != STILL_ACTIVE || IsHungAppWindow(wnd.hwnd)))
-        {
-            CloseHandle(wnd.hproc);
-            do
-            {
-                EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
-            } while (dm.dmPelsWidth == wnd.dm.dmPelsWidth &&
-                     dm.dmPelsHeight == wnd.dm.dmPelsHeight);
-            ExitProcess(0);
-        };
-    };
+    while (WaitForSingleObject(wnd.hproc, INFINITE) != WAIT_OBJECT_0)
+        ;
+    ExitProcess(0);
     return TRUE;
 }
 
@@ -165,8 +153,8 @@ int main(int argc, char *argv[])
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     wnd.cds = FALSE;
     HMONITOR hmon;
-    MSG msg;
     UINT dpi;
+    MSG msg;
     float scale;
     wnd.mi.cbSize = sizeof(wnd.mi);
     wnd.dm.dmSize = sizeof(wnd.dm);
@@ -199,7 +187,7 @@ int main(int argc, char *argv[])
     // Check if the <PID> argument contains only integers or not.
     if (strspn(argv[1], "0123456789") == strlen(argv[1]))
     {
-        wnd.process = atoi(argv[1]);
+        wnd.pid = atoi(argv[1]);
         HookForegroundWndProc(&wnd);
     }
     else
