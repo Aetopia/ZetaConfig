@@ -39,7 +39,7 @@ struct WINDOW
     DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
     DWORD pid;        // PID of the hooked process & reserved variables.
     MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
-    BOOL cds;         // Toggle if ChangeDisplaySettingsEx should called or not.
+    BOOL cds, fg;     // Toggle if ChangeDisplaySettingsEx should called or not & if the hooked process' window is the foreground window or not.
     int cx, cy;       // Hooked process' window client size.
 };
 DWORD pid;
@@ -109,26 +109,23 @@ void ForegroundWndDMProc(
 {
     if (event == EVENT_SYSTEM_FOREGROUND)
     {
-        if (IsProcWndForeground(hwnd))
+        wnd.fg = IsProcWndForeground(hwnd) && wnd.cds;
+        switch (wnd.fg)
         {
-            if (wnd.cds)
-            {
-                if (IsMinimized())
-                    ShowWindow(wnd.hwnd, SW_RESTORE);
-                SetDM(&wnd.dm);
-                wnd.cds = FALSE;
-                return;
-            };
-        };
-        if (!wnd.cds)
-        {
+        case TRUE:
+            if (IsMinimized())
+                ShowWindow(wnd.hwnd, SW_RESTORE);
+            SetDM(&wnd.dm);
+            wnd.cds = FALSE;
+            return;
+        case FALSE:
             if (!IsMinimized())
                 ShowWindow(wnd.hwnd, SW_MINIMIZE);
             SetDM(0);
             wnd.cds = TRUE;
-        };
+        }
     };
-};
+}
 
 int main(int argc, char *argv[])
 {
