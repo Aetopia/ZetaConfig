@@ -42,7 +42,7 @@ struct WINDOW
     BOOL cds, fg;     // Toggle if ChangeDisplaySettingsEx should called or not & if the hooked process' window is the foreground window or not.
     int cx, cy;       // Hooked process' window client size.
 };
-struct WINDOW wnd;
+struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi), .dm.dmSize = sizeof(wnd.dm), .cds = FALSE};
 
 void SetDM(DEVMODE *dm)
 {
@@ -131,13 +131,10 @@ int main(int argc, char *argv[])
 {
     CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
-    wnd.cds = FALSE;
     HMONITOR hmon;
     UINT dpi;
     MSG msg;
     float scale;
-    wnd.mi.cbSize = sizeof(wnd.mi);
-    wnd.dm.dmSize = sizeof(wnd.dm);
 
     if (argc != 4)
     {
