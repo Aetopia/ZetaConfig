@@ -31,7 +31,7 @@ DWORD IsProcAliveThread();
 // Hooked process' window's display mode apply and reset.
 void ForegroundWndDMProc();
 
-// Make this global structure so it can be easily accessed by functions.
+// Make this global variables so it can be easily accessed by functions.
 struct WINDOW
 {
     HWND hwnd;        // HWND of the hooked process's window & reserved HWND variable.
@@ -43,6 +43,7 @@ struct WINDOW
     int cx, cy;       // Hooked process' window client size.
 };
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi), .dm.dmSize = sizeof(wnd.dm), .cds = FALSE};
+DWORD pid;
 
 void SetDM(DEVMODE *dm)
 {
@@ -61,7 +62,6 @@ BOOL IsMinimized()
 
 BOOL IsProcWndForeground(HWND hwnd)
 {
-    DWORD pid;
     GetWindowThreadProcessId(hwnd, &pid);
     if (wnd.pid == pid && hwnd != NULL)
     {
