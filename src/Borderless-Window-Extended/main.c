@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
         do
         {
             ShowWindow(wnd.wnd, SW_MINIMIZE);
-        } while (!IsIconic(wnd.wnd));
+        } while (!IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
 
         // Switch to the desired display resolution.
         while (IsProcWndForeground())
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
         do
         {
             ShowWindow(wnd.wnd, SW_RESTORE);
-        } while (IsIconic(wnd.wnd));
+        } while (IsIconic(wnd.wnd) && IsWindow(wnd.wnd));
     } while (TRUE);
     return 0;
 }
