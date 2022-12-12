@@ -101,6 +101,8 @@ DWORD SetWndPosThread()
 
 DWORD IsProcAliveThread()
 {
+    DEVMODE dm;
+    dm.dmSize = sizeof(dm);
     while (TRUE)
     {
         Sleep(1);
@@ -110,6 +112,11 @@ DWORD IsProcAliveThread()
              IsHungAppWindow(wnd.wnd)))
         {
             CloseHandle(wnd.hproc);
+            do
+            {
+                EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+            } while (dm.dmPelsWidth == wnd.dm.dmPelsWidth &&
+                     dm.dmPelsHeight == wnd.dm.dmPelsHeight);
             ExitProcess(0);
         };
     };
