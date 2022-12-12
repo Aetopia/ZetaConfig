@@ -22,16 +22,13 @@ BOOL IsMinimized();
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground();
 
-// Check for a specific foreground window via its PID and get a handle to the process
-void HookForegroundWndProc();
-
 // Wrapper around SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
 DWORD SetWndPosThread();
 
 // Check if the hooked process is alive or not.
 DWORD IsProcAliveThread();
 
-// Hooked process' window's display mode apply and reset loop.
+// Hooked process' window's display mode apply and reset.
 void ForegroundWndDMProc();
 
 // Make this global structure so it can be easily accessed by functions.
@@ -75,19 +72,6 @@ BOOL IsProcWndForeground(HWND hwnd)
         return TRUE;
     };
     return FALSE;
-}
-
-void HookForegroundWndProc()
-{
-    wnd.hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, wnd.pid);
-    if (!wnd.hproc)
-    {
-        CloseHandle(wnd.hproc);
-        PIDErrorMsgBox();
-        ExitProcess(1);
-    }
-    while (!IsProcWndForeground(GetForegroundWindow()))
-        Sleep(1);
 }
 
 DWORD SetWndPosThread()
@@ -187,7 +171,15 @@ int main(int argc, char *argv[])
     if (strspn(argv[1], "0123456789") == strlen(argv[1]))
     {
         wnd.pid = atoi(argv[1]);
-        HookForegroundWndProc(&wnd);
+        wnd.hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, wnd.pid);
+        if (!wnd.hproc)
+        {
+            CloseHandle(wnd.hproc);
+            PIDErrorMsgBox();
+            ExitProcess(1);
+        }
+        while (!IsProcWndForeground(GetForegroundWindow()))
+            Sleep(1);
     }
     else
     {
@@ -214,6 +206,7 @@ int main(int argc, char *argv[])
     2. Get the DPI set for the monitor after the display resolution change.
     3. Find the scaling factor for sizing the window.
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
+    4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
     */
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
@@ -222,6 +215,7 @@ int main(int argc, char *argv[])
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
+
     SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
     {
