@@ -2,19 +2,13 @@
 A tool to optimize and fix performance issues with Halo Infinite.       
 **Note: ZetaConfig only supports the Steam release of Halo Infinite!**
 
-# Discussions
-I plan to use GitHub Discussions to provide various technical information on Halo Infinite & ZetaConfig!
-
-Check out **[ZetaConfig Discussions](https://github.com/Aetopia/ZetaConfig/discussions)**.
-
 ## What's ZetaConfig?
-ZetaConfig aims to fix the glaring issues with the Halo Infinite PC experience.               
+ZetaConfig aims to fix the glaring technical issues with the Halo Infinite PC experience.               
 This tool doesn't touch upon every single issue but focuses on the following:
 
 1. High CPU Usage.
 2. Window Scaling.
-3. Ability to play at low display resolutions/modes.
-2. Performance.
+3. Performance.
 3. NVIDIA Reflex Support.
 
 These are some of the core issues, you might have encountered while playing Halo Infinite on PC.
