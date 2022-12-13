@@ -19,11 +19,11 @@ void SetWndStyle(int nIndex, LONG_PTR Style);
 // Check if the window is minimized or not for a valid HWND.
 BOOL IsMinimized();
 
-// Check if the current foreground window is the hooked process' window.
+// Check if the current foreground window is the hooked process' window & also applies the borderless window style to any windows owned by hooked process.
 BOOL IsProcWndForeground();
 
-// A thread that maintains the hooked process' window's client size and position and borderless window style.
-DWORD SetWndStylePosSizeThread();
+// A thread that maintains the hooked process' window's client size and position.
+DWORD SetWndPosThread();
 
 // Check if the hooked process is alive or not.
 DWORD IsProcAliveThread();
@@ -68,18 +68,18 @@ BOOL IsProcWndForeground(HWND hwnd)
         if (wnd.hwnd != hwnd)
         {
             wnd.hwnd = hwnd;
+            SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
+            SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
         };
         return TRUE;
     };
     return FALSE;
 }
 
-DWORD SetWndStylePosSizeThread()
+DWORD SetWndPosThread()
 {
     while (TRUE)
     {
-        SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
-        SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
         SetWindowPos(wnd.hwnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
@@ -133,7 +133,7 @@ void ForegroundWndDMProc(
 int main(int argc, char *argv[])
 {
     CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-    CreateThread(0, 0, SetWndStylePosSizeThread, NULL, 0, 0);
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     HMONITOR hmon;
     UINT dpi;
     MSG msg;
