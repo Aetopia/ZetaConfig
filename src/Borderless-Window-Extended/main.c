@@ -1,6 +1,7 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
+#include <stdio.h>
 
 // Prototypes
 
@@ -39,7 +40,7 @@ struct WINDOW
     DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
     DWORD pid;        // PID of the hooked process & reserved variables.
     MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
-    BOOL cds, fg;     // Toggle if ChangeDisplaySettingsEx should called or not & if the hooked process' window is the foreground window or not.
+    BOOL cds;         // Toggle if ChangeDisplaySettingsEx should called or not.
     int cx, cy;       // Hooked process' window client size.
 };
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi), .dm.dmSize = sizeof(wnd.dm), .cds = FALSE};
@@ -112,20 +113,25 @@ void ForegroundWndDMProc(
 {
     if (event == EVENT_SYSTEM_FOREGROUND)
     {
-        wnd.fg = IsProcWndForeground(hwnd) && wnd.cds;
-        switch (wnd.fg)
+        switch (IsProcWndForeground(hwnd))
         {
         case TRUE:
-            if (IsMinimized())
-                ShowWindow(wnd.hwnd, SW_RESTORE);
-            SetDM(&wnd.dm);
-            wnd.cds = FALSE;
+            if (wnd.cds)
+            {
+                if (IsMinimized())
+                    ShowWindow(wnd.hwnd, SW_RESTORE);
+                SetDM(&wnd.dm);
+                wnd.cds = FALSE;
+            };
             return;
         case FALSE:
-            if (!IsMinimized())
-                ShowWindow(wnd.hwnd, SW_MINIMIZE);
-            SetDM(0);
-            wnd.cds = TRUE;
+            if (!wnd.cds)
+            {
+                if (!IsMinimized())
+                    ShowWindow(wnd.hwnd, SW_MINIMIZE);
+                SetDM(0);
+                wnd.cds = TRUE;
+            }
         }
     };
 }
