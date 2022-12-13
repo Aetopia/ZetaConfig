@@ -61,7 +61,7 @@ ZetaConfig utilizes the following features from the specified projects:
 
 ### From Borderless Window Extended
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
-2. Override a program 's borderless window implementation with a statically sized borderless window.
+2. Override a program's borderless window implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 # Does ZetaConfig alter any Halo Infinite settings?
