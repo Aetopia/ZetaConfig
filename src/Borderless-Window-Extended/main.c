@@ -135,8 +135,6 @@ void ForegroundWndDMProc(
 
 int main(int argc, char *argv[])
 {
-    CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     HMONITOR hmon;
     UINT dpi;
     MSG msg;
@@ -178,6 +176,7 @@ int main(int argc, char *argv[])
             PIDErrorMsgBox();
             ExitProcess(1);
         }
+        CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
         while (!IsProcWndForeground(GetForegroundWindow()))
             Sleep(1);
     }
@@ -211,6 +210,7 @@ int main(int argc, char *argv[])
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
 
     SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
