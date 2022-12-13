@@ -138,8 +138,6 @@ void ForegroundWndDMProc(
 
 int main(int argc, char *argv[])
 {
-    CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     HMONITOR hmon;
     UINT dpi;
     MSG msg;
@@ -181,8 +179,10 @@ int main(int argc, char *argv[])
             PIDErrorMsgBox();
             ExitProcess(1);
         }
+        CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
         while (!IsProcWndForeground(GetForegroundWindow()))
             Sleep(1);
+        CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     }
     else
     {
