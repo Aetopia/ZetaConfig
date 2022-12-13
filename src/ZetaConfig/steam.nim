@@ -11,8 +11,8 @@ proc getSteamPath* : string =
         protocol = execCmdEx("reg query \"HKEY_CLASSES_ROOT\\steam\\Shell\\Open\\Command\" /ve /s", options={poDaemon})
     var 
         n, d, l, p: string
-        output: seq[string]
-    
+        output: seq[string] 
+        
     if muicache.exitCode == 0:
         echo msg, " MUICache"
         output = muicache.output.strip(chars={'\n'}).splitlines()
@@ -25,8 +25,7 @@ proc getSteamPath* : string =
                     if d in ["Steam", "Valve Corporation"]:
                         p = splitPath(n.split(".FriendlyAppName")[0].split(".ApplicationCompany")[0].strip())[0]
                 except IndexDefect: discard
-
-    if protocol.exitCode == 0:
+    elif muicache.exitCode != 0 and protocol.exitCode == 0:
         echo msg, " Steam Browser Protocol"
         output = protocol.output.strip(chars={'\n'}).splitlines()
         for i in 0..len(output)-1:

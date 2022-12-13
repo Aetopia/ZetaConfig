@@ -17,7 +17,7 @@ proc isNVIDIA*: bool =
             msg = " detected."
             r = true
             break
-    echo "[Settings] NVIDIA GPU", msg
+    echo "[Hardware] NVIDIA GPU", msg
     return r
 
 proc getGameDisplay* =
@@ -28,7 +28,7 @@ proc getGameDisplay* =
         hwnd: HWND
     if not fileExists(gamedir/"ZetaConfig.txt"):
         echo "[Hardware] Detecting which monitor, Halo Infinite launches on..."
-        if fileExists(gamedir/"WDMT.dll"): moveFile(gamedir/"WDMT.dll", gamedir/"WDMT.dll.bak")
+        if fileExists(gamedir/"BWEx.dll"): moveFile(gamedir/"BWEx.dll", gamedir/"BWEx.dll.bak")
         discard execCmdEx("\"$1\" steam://rungameid/1240440" % steamclient, options={poDaemon})
         while true:
             exe = newString(MAX_PATH)
@@ -40,9 +40,10 @@ proc getGameDisplay* =
             if (extractFilename(exe).toLower().strip(chars={'\0'}) == "haloinfinite.exe"):
                 GetMonitorName(hwnd, cstring(gamedir/"ZetaConfig.txt"))
                 discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-                if fileExists(gamedir/"WDMT.dll.bak"): moveFile(gamedir/"WDMT.dll.bak", gamedir/"WDMT.dll")
+                if fileExists(gamedir/"BWEx.dll.bak"): moveFile(gamedir/"BWEx.dll.bak", gamedir/"BWEx.dll")
                 echo "[Hardware] Monitor detection success."
                 return
+            sleep(1)
 
 proc getDisplayModes*: seq[string] =
     var display = readFile(gamedir/"ZetaConfig.txt")
@@ -54,8 +55,8 @@ proc getDisplayModes*: seq[string] =
     devmode.dmSize = sizeof(DEVMODE).WORD
     
     while true:
-        if EnumDisplaySettingsEx(display, i, &devmode, 0) == 0:
-            echo "[Settings] Display Modes: ", dms
+        if EnumDisplaySettings(display, i, &devmode) == 0:
+            echo "[Hardware] Display Modes: ", dms
             return dms
         dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
         if not dms.contains(dm): dms.add(dm)
