@@ -138,13 +138,6 @@ void ForegroundWndDMProc(
 
 int main(int argc, char *argv[])
 {
-    CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
-    HMONITOR hmon;
-    UINT dpi;
-    MSG msg;
-    float scale;
-
     if (argc != 4)
     {
         MessageBox(0,
@@ -153,6 +146,13 @@ int main(int argc, char *argv[])
                    MB_ICONINFORMATION);
         return 0;
     };
+
+    CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
+    HMONITOR hmon;
+    UINT dpi;
+    MSG msg;
+    float scale;
 
     // Setup the DEVMODE structure.
     wnd.dm.dmPelsWidth = atoi(argv[2]);
