@@ -92,15 +92,9 @@ DWORD SetWndPosThread()
 
 DWORD IsProcAliveThread()
 {
-    DEVMODE dm;
     while (WaitForSingleObject(wnd.hproc, INFINITE) != WAIT_OBJECT_0)
         ;
     CloseHandle(wnd.hproc);
-    do
-    {
-        EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
-    } while (wnd.dm.dmPelsWidth == dm.dmPelsWidth ||
-             wnd.dm.dmPelsHeight == dm.dmPelsHeight);
     ExitProcess(0);
     return TRUE;
 }
