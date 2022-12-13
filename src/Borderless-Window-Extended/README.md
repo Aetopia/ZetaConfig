@@ -31,10 +31,6 @@ BWEx.exe <PID> <Width> <Height>
     ```
     BWEx.exe 1234 1280 720
     ```
-- Hook onto a process via its Process Name.
-    ```
-    BWEx.exe cmd.exe 1280 720
-    ```
 
 ## Borderless Window Extended Library
 **Intended to be used with [Special K](https://wiki.special-k.info).**            
