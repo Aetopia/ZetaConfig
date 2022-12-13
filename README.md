@@ -73,10 +73,10 @@ ZetaConfig alters a few ingame options:
 
 2. Ingame Sharpness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
 
-3. Borderless Fullscreen is disabled. This is intentionally done offload borderless window functionality to Borderless Window Extended.
+3. Borderless Fullscreen is disabled & game window size and position are set to `null`. This is intentionally done offload borderless window functionality to Borderless Window Extended.
 
->You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
-> https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
+> You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
+https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
 
 
 # Options
@@ -108,6 +108,9 @@ ZetaConfig offers the user with a multitude of options to configure, each of the
 6. `[🖥️]` Button:                        
         Pressing this button will make ZetaConfig redetect on which monitor, Halo Infinite is set to launch on.
 
+7. `[🗑️]` Button:   
+    Uninstall Special K & Borderless Window Extended.
+
 Click on the `[Save]` button to apply your settings.
 
 ## Accessing Special K Settings
@@ -121,9 +124,6 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 4. Once the ZetaConfig UI pops up, you are good to go!
 5. Configure your settings and then hit `[Save]` to save your settings.
 6. Launch your game!
-
-# Uninstallation
-Click on the `[🗑️]` button to uninstall Special K and Borderless Window Extended.
 
 # Building
 **Building Instructions:** https://github.com/Aetopia/ZetaConfig/blob/main/src/README.md
