@@ -214,7 +214,6 @@ int main(int argc, char *argv[])
     SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
     {
-
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     };
