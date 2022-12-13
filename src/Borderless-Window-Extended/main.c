@@ -29,9 +29,6 @@ DWORD SetWndPosThread();
 // Check if the hooked process is alive or not.
 DWORD IsProcAliveThread();
 
-// Hooked process' window's display mode apply and reset.
-void ForegroundWndDMProc();
-
 // Make this a global structure so it can be easily accessed by functions.
 struct WINDOW
 {
