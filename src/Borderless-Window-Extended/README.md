@@ -2,7 +2,7 @@
 A tool to extend the feature set of borderless windowed mode in programs.
 
 ## Features
-Borderless Window Extended implements these features externally to your game without triggering anticheats.           
+Borderless Window Extended implements these features externally to your game.         
 1. Use a specific display mode/resolution of your choice with a specific windowed program for better performance.
 2. Override a program's borderless window implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
@@ -18,7 +18,7 @@ Borderless Window Extended implements these features externally to your game wit
 
 Pass a process' PID or process name and the desired display resolution to be used with that process.
 ```
-BWEx.exe <PID/Process> <Width> <Height>
+BWEx.exe <PID> <Width> <Height>
 ```
 |Argument|Operation|
 |-|-|
