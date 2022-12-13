@@ -1,7 +1,7 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
-#include <stdio.h>
+
 // Prototypes
 
 // Structure that contains information on the hooked process' window.
