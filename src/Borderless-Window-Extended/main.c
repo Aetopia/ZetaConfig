@@ -1,7 +1,7 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
-
+#include <stdio.h>
 // Prototypes
 
 // Structure that contains information on the hooked process' window.
@@ -22,8 +22,8 @@ BOOL IsMinimized();
 // Check if the current foreground window is the hooked process' window.
 BOOL IsProcWndForeground();
 
-// Wrapper around SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags).
-DWORD SetWndPosThread();
+// A thread that maintains the borderless window style and hooked process' window's client size and position.
+DWORD WndStylePosThread();
 
 // Check if the hooked process is alive or not.
 DWORD IsProcAliveThread();
@@ -74,10 +74,12 @@ BOOL IsProcWndForeground(HWND hwnd)
     return FALSE;
 }
 
-DWORD SetWndPosThread()
+DWORD WndStylePosThread()
 {
     while (TRUE)
     {
+        SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
+        SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
         SetWindowPos(wnd.hwnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
@@ -131,7 +133,7 @@ void ForegroundWndDMProc(
 int main(int argc, char *argv[])
 {
     CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
+    CreateThread(0, 0, WndStylePosThread, NULL, 0, 0);
     HMONITOR hmon;
     UINT dpi;
     MSG msg;
