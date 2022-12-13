@@ -39,7 +39,10 @@ struct WINDOW
     BOOL cds, reset;  // CDS toggles between setting a resolution and resetting it & the RESET toggle is enabled if the hooked process' window isn't on the primary monitor.
     int cx, cy;       // Hooked process' window client size.
 };
-struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi), .dm.dmSize = sizeof(wnd.dm), .cds = FALSE, .reset = FALSE};
+struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
+                     .dm.dmSize = sizeof(wnd.dm),
+                     .cds = FALSE,
+                     .reset = FALSE};
 
 void SetDM(DEVMODE *dm)
 {
