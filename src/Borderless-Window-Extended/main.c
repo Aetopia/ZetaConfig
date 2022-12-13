@@ -1,7 +1,7 @@
 // Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
-#include <stdio.h>
+
 // Prototypes
 
 // Structure that contains information on the hooked process' window.
@@ -192,16 +192,13 @@ int main(int argc, char *argv[])
     if (IsZoomed(wnd.hwnd))
         ShowWindow(wnd.hwnd, SW_RESTORE);
 
-    // Set the window style to borderless.
-    SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
-    SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
-
     /*
     1. Get the monitor, the window is present on.
     2. Get the DPI set for the monitor after the display resolution change.
     3. Find the scaling factor for sizing the window.
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
+    5. Set the window style to borderless.
     */
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
