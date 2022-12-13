@@ -19,7 +19,7 @@ void SetWndStyle(int nIndex, LONG_PTR Style);
 // Check if the window is minimized or not for a valid HWND.
 BOOL IsMinimized();
 
-// Check if the current foreground window is the hooked process' window and borderless window style.
+// Check if the current foreground window is the hooked process' window & also applies the borderless window style to any windows owned by hooked process.
 BOOL IsProcWndForeground();
 
 // A thread that maintains the hooked process' window's client size and position.
