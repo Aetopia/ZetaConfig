@@ -15,5 +15,5 @@ let
 
 # This embeds Borderless Window Extended when compiling ZetaConfig.
 const
-  BWExexe* = staticRead("../BWEx.exe")
-  BWExdll* = staticRead("../BWEx.dll")
+  BWExexe* = staticRead"../BWEx.exe"
+  BWExdll* = staticRead"../BWEx.dll"

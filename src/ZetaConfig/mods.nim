@@ -67,4 +67,4 @@ proc installMods*: void =
 
 proc uninstallMods* = 
     for file in ["dxgi.dll", "dxgi.ini", "BWEx.exe", "BWEx.dll", "BWEx.txt", "ZetaConfig.txt"]: 
-        tryRemoveFile(gamedir/file)
+        discard tryRemoveFile(gamedir/file)
