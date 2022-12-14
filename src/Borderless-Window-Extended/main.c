@@ -20,7 +20,7 @@ void SetWndStyle(int nIndex, LONG_PTR Style);
 BOOL IsMinimized();
 
 // Check if the current foreground window is the hooked process' window & also applies the borderless window style to any windows owned by the hooked process.
-BOOL IsProcWndForeground(HWND hwnd);
+BOOL IsProcWndForeground(HWND hwnd, BOOL mon);
 
 // A thread that maintains the hooked process' window's client size and position.
 DWORD SetWndPosThread();
@@ -36,13 +36,14 @@ struct WINDOW
     DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
     DWORD pid;        // PID of the hooked process & reserved variables.
     MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
-    BOOL cds, reset;  // CDS toggles between setting a resolution and resetting it & the RESET toggle is enabled if the hooked process' window isn't on the primary monitor.
+    BOOL cds;         // CDS toggles between setting a resolution and resetting it.
     int cx, cy;       // Hooked process' window client size.
 };
+DWORD pid;
+MONITORINFOEX mi = {.cbSize = sizeof(mi)};
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
                      .dm.dmSize = sizeof(wnd.dm),
-                     .cds = FALSE,
-                     .reset = FALSE};
+                     .cds = FALSE};
 
 void SetDM(DEVMODE *dm)
 {
@@ -59,10 +60,15 @@ BOOL IsMinimized()
     return FALSE;
 }
 
-BOOL IsProcWndForeground(HWND hwnd)
+BOOL IsProcWndForeground(HWND hwnd, BOOL mon)
 {
-    DWORD pid;
     GetWindowThreadProcessId(hwnd, &pid);
+    if (mon)
+    {
+        GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), (MONITORINFO *)&mi);
+        if (strcmp(mi.szDevice, wnd.mi.szDevice) != 0)
+            return -1;
+    }
     if (wnd.pid == pid && hwnd != NULL)
     {
         if (wnd.hwnd != hwnd)
@@ -95,11 +101,9 @@ DWORD SetWndPosThread()
 
 DWORD IsProcAliveThread()
 {
-    while (WaitForSingleObject(wnd.hproc, INFINITE) != WAIT_OBJECT_0)
+    while (WaitForSingleObject(wnd.hproc, 1) != WAIT_OBJECT_0)
         ;
     CloseHandle(wnd.hproc);
-    if (wnd.reset)
-        SetDM(0);
     ExitProcess(0);
     return TRUE;
 }
@@ -115,7 +119,7 @@ void ForegroundWndDMProc(
 {
     if (event == EVENT_SYSTEM_FOREGROUND)
     {
-        switch (IsProcWndForeground(hwnd))
+        switch (IsProcWndForeground(hwnd, TRUE))
         {
         case TRUE:
             if (wnd.cds)
@@ -141,11 +145,9 @@ void ForegroundWndDMProc(
 int main(int argc, char *argv[])
 {
     HMONITOR hmon;
-    MONITORINFOEX pmi = {.cbSize = sizeof(pmi)};
     UINT dpi;
     MSG msg;
     float scale;
-    GetMonitorInfo(MonitorFromWindow(0, MONITORINFOF_PRIMARY), (MONITORINFO *)&pmi);
 
     if (argc != 4)
     {
@@ -184,7 +186,7 @@ int main(int argc, char *argv[])
             ExitProcess(1);
         }
         CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-        while (!IsProcWndForeground(GetForegroundWindow()))
+        while (!IsProcWndForeground(GetForegroundWindow(), FALSE))
             Sleep(1);
     }
     else
@@ -219,10 +221,7 @@ int main(int argc, char *argv[])
     wnd.cy = wnd.dm.dmPelsHeight * scale;
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
 
-    if (strcmp(wnd.mi.szDevice, pmi.szDevice) == 0)
-        SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
-    else
-        wnd.reset = TRUE;
+    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
