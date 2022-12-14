@@ -16,8 +16,6 @@ void PIDErrorMsgBox();
 // Set the window style by getting the current window style and adding additional styles to the current one.
 void SetWndStyle(int nIndex, LONG_PTR Style);
 
-// Check if the window is minimized or not for a valid HWND.
-BOOL IsMinimized();
 
 // Check if the current foreground window is the hooked process' window & also applies the borderless window style to any windows owned by the hooked process.
 BOOL IsProcWndForeground(HWND hwnd);
@@ -36,13 +34,12 @@ struct WINDOW
     DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
     DWORD pid;        // PID of the hooked process & reserved variables.
     MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
-    BOOL cds, reset;  // CDS toggles between setting a resolution and resetting it & the RESET toggle is enabled if the hooked process' window isn't on the primary monitor.
+    BOOL cds;         // CDS toggles between setting a resolution and resetting it.
     int cx, cy;       // Hooked process' window client size.
 };
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
                      .dm.dmSize = sizeof(wnd.dm),
-                     .cds = FALSE,
-                     .reset = FALSE};
+                     .cds = FALSE};
 
 void SetDM(DEVMODE *dm)
 {
@@ -52,12 +49,6 @@ void SetDM(DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.hwnd, nIndex, GetWindowLongPtr(wnd.hwnd, nIndex) & ~(Style)); }
-BOOL IsMinimized()
-{
-    if (IsWindow(wnd.hwnd))
-        return IsIconic(wnd.hwnd);
-    return FALSE;
-}
 
 BOOL IsProcWndForeground(HWND hwnd)
 {
@@ -98,8 +89,6 @@ DWORD IsProcAliveThread()
     while (WaitForSingleObject(wnd.hproc, INFINITE) != WAIT_OBJECT_0)
         ;
     CloseHandle(wnd.hproc);
-    if (wnd.reset)
-        SetDM(0);
     ExitProcess(0);
     return TRUE;
 }
@@ -120,7 +109,7 @@ void ForegroundWndDMProc(
         case TRUE:
             if (wnd.cds)
             {
-                if (IsMinimized())
+                if (IsIconic(wnd.hwnd))
                     ShowWindow(wnd.hwnd, SW_RESTORE);
                 SetDM(&wnd.dm);
                 wnd.cds = FALSE;
@@ -129,7 +118,7 @@ void ForegroundWndDMProc(
         case FALSE:
             if (!wnd.cds)
             {
-                if (!IsMinimized())
+                if (!IsIconic(wnd.hwnd))
                     ShowWindow(wnd.hwnd, SW_MINIMIZE);
                 SetDM(0);
                 wnd.cds = TRUE;
@@ -221,8 +210,6 @@ int main(int argc, char *argv[])
 
     if (strcmp(wnd.mi.szDevice, pmi.szDevice) == 0)
         SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
-    else
-        wnd.reset = TRUE;
     while (GetMessage(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
