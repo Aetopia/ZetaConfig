@@ -8,4 +8,6 @@ This project gets it name from Zeta Halo, the ring where Halo Infinite takes pla
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 To to use a specific display mode/resolution, simply change the window size option within Halo Infinite video's settings & restart the game.         
+
+> Watch on Youtube.
 [![Tutorial](https://img.youtube.com/vi/t-Ouup-RdKA/maxresdefault.jpg)](https://youtu.be/t-Ouup-RdKA)
