@@ -29,7 +29,7 @@ proc installSpecialK*: void =
     while true:
         if fileExists(dxgiini):
             discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-            writeFile(dxgiini, readFile(dxgiini) & BWExsk)
+            writeFile(dxgiini, readFile(dxgiini) & zetaimp)
             break
 
     # Remove Version Banner.
@@ -41,30 +41,24 @@ proc installSpecialK*: void =
 
     echo "[Mods] Special K has been installed!"
 
-proc installBWEx*: void =
-    writeFile(gamedir/"BWEx.exe", BWExexe)
-    writeFile(gamedir/"BWEx.dll", BWExdll)
-    writeFile(BWExtxt, "0 0")
-    echo "[Mods] Borderless Window Extended has been installed!"
+proc installZeta*: void =
+    writeFile(zetadll, zeta)
+    echo "[Mods] Zeta has been installed!"
 
 proc installMods*: void =
-    var (issk, isBWEx) = (false, false)
+    var (issk, iszeta) = (false, false)
     if not fileExists(gamedir/"dxgi.dll") or not fileExists(gamedir/"dxgi.ini"): 
         echo "[Mods] Special K is not installed."
         issk = true
     else: echo "[Mods] Special K is installed."
 
-    if not fileExists(gamedir/"BWEx.exe") or not fileExists(gamedir/"BWEx.dll"): 
-        echo "[Mods] Borderless Window Extended is not installed."
-        isBWEx = true
-    else: echo "[Mods] Borderless Window Extended is installed."
+    if not fileExists(gamedir/"Zeta.dll"): 
+        echo "[Mods] Zeta is not installed."
+        iszeta = true
+    else: echo "[Mods] Zeta is installed."
     
-    if issk and isBWEx: 
+    if issk and iszeta: 
         installSpecialK()
-        installBWEx()
+        installZeta()
     elif issk: installSpecialK()
-    elif isBWEx: installBWEx()
-
-proc uninstallMods* = 
-    for file in ["dxgi.dll", "dxgi.ini", "BWEx.exe", "BWEx.dll", "BWEx.txt", "ZetaConfig.txt"]: 
-        discard tryRemoveFile(gamedir/file)
+    elif iszeta: installZeta()

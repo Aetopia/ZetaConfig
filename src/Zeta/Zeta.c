@@ -2,32 +2,6 @@
 #include <windows.h>
 #include <shellscalingapi.h>
 
-// Prototypes
-
-// Structure that contains information on the hooked process' window.
-struct WINDOW;
-
-// Set the display mode.
-void SetDM(DEVMODE *dm);
-
-// Show a message box regarding about an invalid PID.
-void PIDErrorMsgBox();
-
-// Set the window style by getting the current window style and adding additional styles to the current one.
-void SetWndStyle(int nIndex, LONG_PTR Style);
-
-/*
-1. Check if the current foreground window is the hooked process' window
-2. Toggle for checking foreground windows on the monitor, the hooked process' window is present on.
-*/
-BOOL IsProcWndForeground(HWND hwnd);
-
-// A thread that maintains the hooked process' window's client size and position.
-DWORD SetWndPosThread();
-
-// Check if the hooked process is alive or not.
-DWORD IsProcAliveThread();
-
 // Make this a global structure so it can be easily accessed by functions.
 struct WINDOW
 {
@@ -49,8 +23,6 @@ void SetDM(DEVMODE *dm)
     if (dm == 0)
         ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
 }
-void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
-void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.hwnd, nIndex, GetWindowLongPtr(wnd.hwnd, nIndex) & ~(Style)); }
 
 BOOL IsProcWndForeground(HWND hwnd)
 {
@@ -61,8 +33,6 @@ BOOL IsProcWndForeground(HWND hwnd)
         if (wnd.hwnd != hwnd)
         {
             wnd.hwnd = hwnd;
-            SetWndStyle(GWL_STYLE, WS_OVERLAPPEDWINDOW);
-            SetWndStyle(GWL_EXSTYLE, WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED | WS_EX_OVERLAPPEDWINDOW | WS_EX_LAYERED | WS_EX_STATICEDGE | WS_EX_TOOLWINDOW | WS_EX_APPWINDOW | WS_EX_TOPMOST);
         };
         return TRUE;
     };
@@ -73,11 +43,10 @@ DWORD SetWndPosThread()
 {
     do
     {
-        SetWindowPos(wnd.hwnd, 0,
+        SetWindowPos(wnd.hwnd, HWND_TOPMOST,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
-                     SWP_ASYNCWINDOWPOS |
-                         SWP_NOACTIVATE |
+                     SWP_NOACTIVATE |
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
@@ -86,16 +55,7 @@ DWORD SetWndPosThread()
     return TRUE;
 }
 
-DWORD IsProcAliveThread()
-{
-    while (WaitForSingleObject(wnd.hproc, INFINITE) != WAIT_OBJECT_0)
-        ;
-    CloseHandle(wnd.hproc);
-    ExitProcess(0);
-    return TRUE;
-}
-
-void ForegroundWndDMProc(
+void WinEventProc(
     __attribute__((unused)) HWINEVENTHOOK hWinEventHook,
     DWORD event,
     HWND hwnd,
@@ -113,7 +73,8 @@ void ForegroundWndDMProc(
             {
                 if (IsIconic(wnd.hwnd))
                     ShowWindow(wnd.hwnd, SW_RESTORE);
-                SetDM(&wnd.dm);
+                if (!!wnd.dm.dmFields)
+                    SetDM(&wnd.dm);
                 wnd.cds = FALSE;
             };
             return;
@@ -122,65 +83,21 @@ void ForegroundWndDMProc(
             {
                 if (!IsIconic(wnd.hwnd))
                     ShowWindow(wnd.hwnd, SW_MINIMIZE);
-                SetDM(0);
+                if (!!wnd.dm.dmFields)
+                    SetDM(0);
                 wnd.cds = TRUE;
             }
         }
     };
 }
 
-int main(int argc, char *argv[])
+DWORD HaloInfWndDM()
 {
+    DEVMODE dm;
     HMONITOR hmon;
     UINT dpi;
     MSG msg;
     float scale;
-
-    if (argc != 4)
-    {
-        MessageBox(0,
-                   "BWEx.exe <PID> <Width> <Height>",
-                   "Borderless Windowed Extended",
-                   MB_ICONINFORMATION);
-        return 0;
-    };
-
-    // Setup the DEVMODE structure.
-    wnd.dm.dmPelsWidth = atoi(argv[2]);
-    wnd.dm.dmPelsHeight = atoi(argv[3]);
-    wnd.dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-
-    // Check if specified resolution is valid or not.
-    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
-        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
-    {
-        MessageBox(0,
-                   "Invaild Resolution!",
-                   "Borderless Windowed Extended",
-                   MB_ICONEXCLAMATION);
-        return 1;
-    }
-
-    // Check if the <PID> argument contains only integers or not.
-    if (strspn(argv[1], "0123456789") == strlen(argv[1]))
-    {
-        wnd.pid = atoi(argv[1]);
-        wnd.hproc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, wnd.pid);
-        if (!wnd.hproc)
-        {
-            CloseHandle(wnd.hproc);
-            PIDErrorMsgBox();
-            ExitProcess(1);
-        }
-        CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-        while (!IsProcWndForeground(GetForegroundWindow()))
-            Sleep(1);
-    }
-    else
-    {
-        PIDErrorMsgBox();
-        return 1;
-    };
 
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
@@ -195,24 +112,53 @@ int main(int argc, char *argv[])
     /*
     1. Get the monitor, the window is present on.
     2. Get the DPI set for the monitor after the display resolution change.
+    Prevent SetDM(DEVMODE *dm) from being called if window size is the same as the current display resolution.
     3. Find the scaling factor for sizing the window.
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
     */
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
-    SetDM(&wnd.dm);
+    EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+    if (dm.dmPelsWidth == wnd.dm.dmPelsWidth && dm.dmPelsHeight == wnd.dm.dmPelsHeight)
+        wnd.dm.dmFields = 0;
+    else
+        SetDM(&wnd.dm);
     GetDpiForMonitor(hmon, 0, &dpi, &dpi);
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
+    SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
+    SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
 
-    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     };
     return 0;
+}
+
+void Zeta(int width, int height)
+{
+    wnd.pid = GetCurrentProcessId();
+    wnd.dm.dmPelsWidth = width;
+    wnd.dm.dmPelsHeight = height;
+    wnd.dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+    while (!IsProcWndForeground(GetForegroundWindow()))
+        Sleep(0);
+
+    // Check if specified resolution is valid or not.
+    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
+        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
+    {
+        MessageBox(0,
+                   "Invaild Resolution!",
+                   "Halo Infinite",
+                   MB_ICONEXCLAMATION);
+        return 0;
+    }
+    CreateThread(0, 0, HaloInfWndDM, NULL, 0, 0);
 }

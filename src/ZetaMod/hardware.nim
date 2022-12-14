@@ -20,15 +20,15 @@ proc isNVIDIA*: bool =
     echo "[Hardware] NVIDIA GPU", msg
     return r
 
-proc getGameDisplay* =
+proc getGameMonitor* =
     var 
         pid: DWORD
         hproc: HANDLE
         exe: string
         hwnd: HWND
-    if not fileExists(gamedir/"ZetaConfig.txt"):
+    if not fileExists(temp/"ZetaMod.txt"):
         echo "[Hardware] Detecting which monitor, Halo Infinite launches on..."
-        if fileExists(gamedir/"BWEx.dll"): moveFile(gamedir/"BWEx.dll", gamedir/"BWEx.dll.bak")
+        if fileExists(gamedir/"Zeta.dll"): moveFile(gamedir/"Zeta.dll", gamedir/"Zeta.dll.bak")
         discard execCmdEx("\"$1\" steam://rungameid/1240440" % steamclient, options={poDaemon})
         while true:
             exe = newString(MAX_PATH)
@@ -38,26 +38,19 @@ proc getGameDisplay* =
             GetModuleFileNameExA(hProc, 0, exe, MAX_PATH)
             CloseHandle(hproc)
             if (extractFilename(exe).toLower().strip(chars={'\0'}) == "haloinfinite.exe"):
-                GetMonitorName(hwnd, cstring(gamedir/"ZetaConfig.txt"))
+                GetMonitorName(hwnd, cstring(temp/"ZetaMod.txt"))
                 discard execCmdEx("taskkill /f /im HaloInfinite.exe", options={poDaemon})
-                if fileExists(gamedir/"BWEx.dll.bak"): moveFile(gamedir/"BWEx.dll.bak", gamedir/"BWEx.dll")
+                if fileExists(gamedir/"Zeta.dll.bak"): moveFile(gamedir/"Zeta.dll.bak", gamedir/"Zeta.dll")
                 echo "[Hardware] Monitor detection success."
                 return
             sleep(1)
 
-proc getDisplayModes*: seq[string] =
-    var display = readFile(gamedir/"ZetaConfig.txt")
-    var 
-        i: int32 = 0
-        dms: seq[string]
-        dm: string
-        devmode: DEVMODE
-    devmode.dmSize = sizeof(DEVMODE).WORD
-    
-    while true:
-        if EnumDisplaySettings(display, i, &devmode) == 0:
-            echo "[Hardware] Display Modes: ", dms
-            return dms
-        dm = fmt"{$devmode.dmPelsWidth}x{$devmode.dmPelsHeight}"
-        if not dms.contains(dm): dms.add(dm)
-        inc(i)
+proc getCurrentDM*: (int, int) =
+    var dm: DEVMODE
+    dm.dmSize = sizeof(DEVMODE).WORD
+    while (EnumDisplaySettings(readFile(temp/"ZetaMod.txt"), ENUM_CURRENT_SETTINGS, &dm) == 0):
+        discard tryRemoveFile(temp/"ZetaMod.txt")
+        getGameMonitor()
+    return (dm.dmPelsWidth.int, dm.dmPelsHeight.int)
+
+            

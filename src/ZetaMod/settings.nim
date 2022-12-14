@@ -1,10 +1,9 @@
-import os
 import json
 import strutils, strformat
 import winim/lean
 import vars
 
-proc setGameSettings*(resscale: string): void =
+proc setGameSettings*(resscale: int, dm: (int, int)): void =
     var cfg = parseFile(gameconfig)
 
     for k in [
@@ -19,66 +18,18 @@ proc setGameSettings*(resscale: string): void =
         cfg[k].add("value", newJInt(0))
 
     cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
-    for k in ["spec_control_window_size", 
-    "spec_control_windowed_display_resolution_x", 
-    "spec_control_windowed_display_resolution_y",
+    for k in ["spec_control_window_size",
     "spec_control_window_position_x",
     "spec_control_window_position_y"]:
-        cfg[k].add("value", newJNull())
-    cfg["spec_control_resolution_scale"].add("value", newJInt(resscale.parseInt))
+        cfg[k].add("value", newJInt(0))
+    cfg["spec_control_windowed_display_resolution_x"].add("value", newJInt(dm[0]))
+    cfg["spec_control_windowed_display_resolution_y"].add("value", newJInt(dm[1]))
+    cfg["spec_control_resolution_scale"].add("value", newJInt(resscale))
     cfg["spec_control_sharpening"].add("value", newJInt(100))
     echo "[Settings] Saved Setting: spec_control_resolution_scale=", resscale
-    writeFile(gameconfig, cfg.pretty(indent=4))      
+    writeFile(gameconfig, cfg.pretty(indent=4))
 
-proc getGameSettings*: string =
-    var 
-        cfg = parseFile(gameconfig)
-        r: string
-    r = $(cfg["spec_control_resolution_scale"]["value"].getInt())
-    echo "[Settings] Loaded Setting: spec_control_resolution_scale=", r
-    return r
-
-proc getSettings*: (string, string, string, string) =   
-    let 
-        skc = readFile(dxgiini).splitLines()
-
-    if not fileExists(BWExtxt): writeFile(BWExtxt, "0 0") 
-    var dm = readFile(BWExtxt)
-    echo fmt"[Settings] Loaded Setting: Display Mode={dm}"
-    
-    var
-        l, k, v, reflex, cpus, fps: string
-        enable, lowlatency, boost, str, verbose: bool
-
-    for i in 0..skc.len-1:
-        l = skc[i].strip()
-        try: (k, v) = l.split("=")
-        except IndexDefect: discard
-        (k, v) = (k.strip(), v.strip().toLower())
-        if str:
-            case k:
-                of "Enable": enable = parseBool(v); verbose = true
-                of "LowLatency": lowlatency = parseBool(v); verbose = true
-                of "LowLatencyBoost": boost = parseBool(v); verbose = true
-        if l == "[NVIDIA.Reflex]": str = true
-
-        case k:
-            of "OverrideCPUCoreCount": 
-                cpus = v
-                verbose = true
-            of "TargetFPS":
-                fps = $(v.strip(chars={'-', ' '}).parseFloat.int)
-                verbose = true
-        if verbose: echo "[Settings] Loaded Setting: ", l; verbose = false
-
-    if enable:
-        if lowlatency and boost: reflex = "On + Boost"
-        elif lowlatency: reflex = "On"
-        elif boost: reflex = "Boost"
-    else: reflex = "Off"
-    return (dm.replace(" ", "x"), cpus, reflex, fps)
-
-proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
+proc setSettings*(reflex: string, cpus: string, fps: string): void =
     var 
         c = readFile(dxgiini).splitLines()
         k, v, l: string
@@ -86,10 +37,6 @@ proc setSettings*(dm: string, reflex: string, cpus: string, fps: string): void =
         enable  = "true"
         verbose: bool
         str: bool
-
-    if not fileExists(BWExtxt): writeFile(BWExtxt, "0 0") 
-    writeFile(BWExtxt, dm)
-    echo fmt"[Settings] Saved Setting: Display Mode={dm}"
 
     case reflex:
         of "Off": (enable, lowlatency, boost) = ("false", "false", "false")

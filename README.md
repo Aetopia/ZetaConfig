@@ -1,9 +1,9 @@
-# ZetaConfig 
+# ZetaMod 
 A tool to optimize and fix performance issues with Halo Infinite.       
-**Note: ZetaConfig only supports the Steam release of Halo Infinite!**
+**Note: ZetaMod only supports the Steam release of Halo Infinite!**
 
-## What's ZetaConfig?
-ZetaConfig aims to fix the glaring technical issues with the Halo Infinite PC experience.               
+## What's ZetaMod?
+ZetaMod aims to fix the glaring technical issues with the Halo Infinite PC experience.               
 This tool doesn't touch upon every single issue but focuses on the following:
 
 1. High CPU Usage.
@@ -13,15 +13,14 @@ This tool doesn't touch upon every single issue but focuses on the following:
 
 These are some of the core issues, you might have encountered while playing Halo Infinite on PC.
 
-But technically ZetaConfig is just a frontend for configuring specific settings within these 2 open source projects:
+ZetaMod utilizes the following features from the specified projects:        
+
 1. [Special K](https://wiki.special-k.info) | [GitHub](https://github.com/SpecialKO/SpecialK)
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Borderless Window Extended](https://github.com/Aetopia/ZetaConfig/tree/main/src/Borderless-Window-Extended/README.md)
-    > A tool to extend the feature set of borderless windowed mode in programs.
-
-ZetaConfig utilizes the following features from the specified projects:
+2. [Zeta](https://github.com/Aetopia/ZetaMod/tree/main/src/Zeta/README.md)
+    > A library that adds missing features into Halo Infinite.
 
 ### From Special K:
 1. Spoof CPU Core Count:     
@@ -59,77 +58,78 @@ ZetaConfig utilizes the following features from the specified projects:
     Special K offers a superior framelimiter as compared to the ingame framelimiter.      
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
-### From Borderless Window Extended
+### From Zeta
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
 2. Override a program's borderless window implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
-# Does ZetaConfig alter any Halo Infinite settings?
+# Does ZetaMod alter any Halo Infinite settings?
 
-ZetaConfig alters a few ingame options:
+ZetaMod alters a few ingame options:
 
 1. Minimum Framerate & Maximum Framerate are set to `960`.           
     Aggressive Dynamic Resolution Scaling is beneficial for improving performance.  
 
 2. Ingame Sharpness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
 
-3. Borderless Fullscreen is disabled & game window size and position are set to `null`. This is intentionally done offload borderless window functionality to Borderless Window Extended.
+3. Borderless Fullscreen is disabled. This is intentionally done offload borderless window functionality and allow for the use of user defined display modes/resolutions to Zeta.
 
 > You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
 https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
 
 
-# Options
-![ZetaConfig](images/ZetaConfig.png)        
-ZetaConfig offers the user with a multitude of options to configure, each of them are explained here.
+# Configure Special K and Zeta.
+           
+To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Special K Control Panel.
 
-1. `Resolution Scale`:       
-    Set the ingame render resolution. You can set any value between `50 ~ 100`.
+![SpecialK](res/SK.png)
 
-2. `Display Mode` (Provided by Borderless Window Extended.):        
-    Configure the display resolution and window size, the game will run at.    
+1. `Custom Display Resolution` (Provided by Zeta.):        
+    To to use a specific display mode/resolution, simply change the window size option within Halo Infinite video's settings & restart the game.         
+    Video: [How to configure display mode/resolution?](res/ResWndSize.mp4)
 
-3. `Spoof CPU Cores` (Provided by Special K.):                  
-    This option allows one to make their CPU core count to appear lower than actual.
-    Lower values can reduce CPU usage by a significant amount.   
+2. `Spoof CPU Cores` & `NVIDIA Driver Black Magic` (Provided by Special K.):   
+    Expand the Framerate Limiter tab and then click `Advanced` (Red).               
+    - `Spoof CPU Cores` (Yellow) Default: 4                
+        This option allows one to make their CPU core count to appear lower than actual.
+        Lower values can reduce CPU usage by a significant amount.       
+        Drag the slider to increase or decrease the Core count.    
 
-4. `NVIDIA Reflex` (Provided by Special K.):                       
-    Configure NVIDIA Reflex with this option.
+    - `NVIDIA Driver Black Magic` (Blue) Default: Nothing But Boost          
+        Configure NVIDIA Reflex with this option.
+    
+    ![CoresReflex](res/SKCoresReflex.png)
+  
+3. `FPS Limit` (Provided by Special K.): 
+    Expand the Framerate Limiter tab.                         
+    Enable the Framerate Limiter, `[Ctrl] + Click` on the textbox & enter your desired framerate limit.         
 
-    1. Off: NVIDIA Reflex is disabled.
-    2. On: Only Low Latency is enabled.
-    3. Boost: Only Boost is enabled.
-    4. On + Boost: Low Latency + Boost is enabled.
-   
-5. `FPS Limit` (Provided by Special K.):                          
-    Set a framelimit for the game.                              
-    (Due ZetaConfig setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.)
+    **Note: Due ZetaMod setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.**
 
-6. `[🖥️]` Button:                        
-        Pressing this button will make ZetaConfig redetect on which monitor, Halo Infinite is set to launch on.
+    ![SKFPS](res/SKFPS.png)
 
-7. `[🗑️]` Button:   
-    Uninstall Special K & Borderless Window Extended.
 
-Click on the `[Save]` button to apply your settings.
-
-## Accessing Special K Settings
-You can access the Special K Control Panel, by pressing Ctrl + Shift + Backspace ingame.               
+## Exploring Special K.     
 Check out the wiki for the all of the features of Special K: https://wiki.special-k.info
 
 # Installation
-1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaConfig/releases).
-2. Run `ZetaConfig.exe`.
-3. Let ZetaConfig finish its initialization process.
-4. Once the ZetaConfig UI pops up, you are good to go!
-5. Configure your settings and then hit `[Save]` to save your settings.
-6. Launch your game!
+1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaMod/releases).
+2. Run `ZetaMod.exe`.
+3. Let ZetaMod finish its initialization and optimization process.
+4. Launch your game!
+# Uninstallation
+1. Browse Halo Infinite local files.
+2. Delete the following files:
+    ```
+    dxgi.dll dxgi.ini Zeta.dll
+    ```
+3. Special K & Zeta are now uninstalled.
 
 # Building
-**Building Instructions:** https://github.com/Aetopia/ZetaConfig/blob/main/src/README.md
+**Building Instructions:** https://github.com/Aetopia/ZetaMod/blob/main/src/README.md
 
 # FAQ
-1. Why is Halo Infinite's launch after installing Special K + Borderless Window Extended slow?   
+1. Why is Halo Infinite's launch after installing Special K + Zeta slow?   
 
     The game is compiling shaders since Special K is loaded into the game.
     Once they compile, launches should be snappy and fast.
