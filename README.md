@@ -86,8 +86,9 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
 
 1. `Custom Display Resolution` (Provided by Zeta.):        
     To to use a specific display mode/resolution, simply change the window size option within Halo Infinite video's settings & restart the game.  
-           
+
     > Watch on Youtube.
+    
     [![Tutorial](https://img.youtube.com/vi/t-Ouup-RdKA/maxresdefault.jpg)](https://youtu.be/t-Ouup-RdKA)
 
 2. `Spoof CPU Cores` & `NVIDIA Driver Black Magic` (Provided by Special K.):   
