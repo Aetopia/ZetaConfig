@@ -6,15 +6,18 @@ Borderless Window Extended implements these features externally to your game.
 1. Use a specific display mode/resolution of your choice with a specific windowed program for better performance.
 2. Override a program's borderless window implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
+    **Note: Only useful if using a single monitor.**
 
 ## Usage
 
 ### Notes
 1. **Ensure your program is set in windowed mode.**
     **The window size is should be the same as the specified display resolution passed to Borderless Window Extended.**
+    **This is to avoid any program's client size not filling the actual window size correctly.**
 2. **Borderless Window Extended might not work properly with all programs.**
     **Feel free to make a issue on this repository to improve compatibility.**
 3. **Borderless Window Extended might not play well with multi monitor setups.**
+
 
 Pass a process' PID or process name and the desired display resolution to be used with that process.
 ```
