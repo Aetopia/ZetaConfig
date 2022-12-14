@@ -34,12 +34,14 @@ ZetaMod utilizes the following features from the specified projects:
 
     #### All Cores (i7-10700K with Hyper-Threading disabled.)
 
-    > **Image 1**:              
-    > ![AllCores](res/AllCores.png)
+    > **Image 1**:  
+
+    ![AllCores](res/AllCores.png)
 
     #### Spoofed 4 Cores (i7-10700K with Hyper-Threading disabled.)
-    > **Image 2**:                     
-    > ![4Cores](res/4Cores.png)
+    > **Image 2**:    
+
+    ![4Cores](res/4Cores.png)
 
     Spoofing the CPU core count seems to determine how many threads should be used for compute.      
 
@@ -88,7 +90,7 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
     To to use a specific display mode/resolution, simply change the window size option within Halo Infinite video's settings & restart the game.  
 
     > Watch on Youtube.
-    
+
     [![Tutorial](https://img.youtube.com/vi/t-Ouup-RdKA/maxresdefault.jpg)](https://youtu.be/t-Ouup-RdKA)
 
 2. `Spoof CPU Cores` & `NVIDIA Driver Black Magic` (Provided by Special K.):   
