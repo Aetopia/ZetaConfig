@@ -1,4 +1,3 @@
-// Borderless Window Extended
 #include <windows.h>
 #include <shellscalingapi.h>
 
@@ -6,7 +5,6 @@
 struct WINDOW
 {
     HWND hwnd;        // HWND of the hooked process's window & reserved HWND variable.
-    HANDLE hproc;     // HANDLE to the hooked process.
     DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
     DWORD pid;        // PID of the hooked process & reserved variables.
     MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
