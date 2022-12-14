@@ -35,11 +35,11 @@ ZetaMod utilizes the following features from the specified projects:
     #### All Cores (i7-10700K with Hyper-Threading disabled.)
 
     > **Image 1**:              
-    > ![AllCores](images/AllCores.png)
+    > ![AllCores](res/AllCores.png)
 
     #### Spoofed 4 Cores (i7-10700K with Hyper-Threading disabled.)
     > **Image 2**:                     
-    > ![4Cores](images/4Cores.png)
+    > ![4Cores](res/4Cores.png)
 
     Spoofing the CPU core count seems to determine how many threads should be used for compute.      
 
