@@ -17,11 +17,10 @@ void PIDErrorMsgBox();
 void SetWndStyle(int nIndex, LONG_PTR Style);
 
 /*
-1. Check if the current foreground window is the hooked process' window 
+1. Check if the current foreground window is the hooked process' window
 2. Toggle for checking foreground windows on the monitor, the hooked process' window is present on.
-3. Applies the borderless window style to any windows owned by the hooked process.
 */
-BOOL IsProcWndForeground(HWND hwnd, BOOL mon);
+BOOL IsProcWndForeground(HWND hwnd);
 
 // A thread that maintains the hooked process' window's client size and position.
 DWORD SetWndPosThread();
@@ -43,8 +42,6 @@ struct WINDOW
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
                      .dm.dmSize = sizeof(wnd.dm),
                      .cds = FALSE};
-MONITORINFOEX mi = {.cbSize = sizeof(mi)};
-DWORD pid;
 
 void SetDM(DEVMODE *dm)
 {
@@ -54,18 +51,12 @@ void SetDM(DEVMODE *dm)
 }
 void PIDErrorMsgBox() { MessageBox(0, "Invaild PID!", "Borderless Windowed Extended", MB_ICONEXCLAMATION); }
 void SetWndStyle(int nIndex, LONG_PTR Style) { SetWindowLongPtr(wnd.hwnd, nIndex, GetWindowLongPtr(wnd.hwnd, nIndex) & ~(Style)); }
-void GetWndMonitorInfo(HWND hwnd, DWORD dwFlags, MONITORINFOEX *mi) { GetMonitorInfo(MonitorFromWindow(hwnd, dwFlags), (MONITORINFO *)mi); };
 
-BOOL IsProcWndForeground(HWND hwnd, BOOL mon)
+BOOL IsProcWndForeground(HWND hwnd)
 {
+    DWORD pid;
     GetWindowThreadProcessId(hwnd, &pid);
-    if (mon)
-    {
-        GetWndMonitorInfo(hwnd, MONITOR_DEFAULTTONEAREST, &mi);
-        if (strcmp(mi.szDevice, wnd.mi.szDevice) != 0)
-            return -1;
-    };
-    if (wnd.pid == pid && hwnd != NULL)
+    if (wnd.pid == pid)
     {
         if (wnd.hwnd != hwnd)
         {
@@ -115,7 +106,7 @@ void ForegroundWndDMProc(
 {
     if (event == EVENT_SYSTEM_FOREGROUND)
     {
-        switch (IsProcWndForeground(hwnd, TRUE))
+        switch (IsProcWndForeground(hwnd))
         {
         case TRUE:
             if (wnd.cds)
@@ -144,9 +135,6 @@ int main(int argc, char *argv[])
     UINT dpi;
     MSG msg;
     float scale;
-    char mon[CCHDEVICENAME];
-    GetWndMonitorInfo(0, MONITORINFOF_PRIMARY, &wnd.mi);
-    strcpy(mon, wnd.mi.szDevice);
 
     if (argc != 4)
     {
@@ -185,7 +173,7 @@ int main(int argc, char *argv[])
             ExitProcess(1);
         }
         CreateThread(0, 0, IsProcAliveThread, NULL, 0, 0);
-        while (!IsProcWndForeground(GetForegroundWindow(), FALSE))
+        while (!IsProcWndForeground(GetForegroundWindow()))
             Sleep(1);
     }
     else
@@ -220,8 +208,7 @@ int main(int argc, char *argv[])
     wnd.cy = wnd.dm.dmPelsHeight * scale;
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
 
-    if (strcmp(wnd.mi.szDevice, mon) == 0)
-        SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, ForegroundWndDMProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
