@@ -100,8 +100,8 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
     
     ![CoresReflex](res/SKCoresReflex.png)
   
-3. `FPS Limit` (Provided by Special K.): 
-    Expand the Framerate Limiter tab.                         
+3. `FPS Limit` (Provided by Special K.):                  
+    Expand the Framerate Limiter tab.                            
     Enable the Framerate Limiter, `[Ctrl] + Click` on the textbox & enter your desired framerate limit.         
 
     **Note: Due ZetaMod setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.**
