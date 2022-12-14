@@ -98,7 +98,8 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
     - `Spoof CPU Cores` (Yellow) Default: 4                
         This option allows one to make their CPU core count to appear lower than actual.
         Lower values can reduce CPU usage by a significant amount.       
-        Drag the slider to increase or decrease the Core count.    
+        Drag the slider to increase or decrease the Core count.  
+        **Alter this option if necessary!**
 
     - `NVIDIA Driver Black Magic` (Blue) Default: Nothing But Boost          
         Configure NVIDIA Reflex with this option.
