@@ -142,6 +142,7 @@ DWORD HaloInfWndDM()
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
 
     SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
@@ -157,15 +158,11 @@ void Zeta(int width, int height)
     wnd.pid = GetCurrentProcessId();
     wnd.dm.dmPelsWidth = width;
     wnd.dm.dmPelsHeight = height;
-
     // Check if specified resolution is valid or not.
     if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
         (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
     {
         return 0;
     }
-
-    // Create threads.
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     CreateThread(0, 0, HaloInfWndDM, NULL, 0, 0);
 }
