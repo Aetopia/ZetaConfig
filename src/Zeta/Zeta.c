@@ -130,7 +130,7 @@ DWORD HaloInfWndDM()
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
-
+    
     SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
     {
