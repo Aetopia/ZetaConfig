@@ -137,7 +137,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 1. Browse Halo Infinite local files.
 2. Delete the following files:
     ```
-    dxgi.dll dxgi.ini Zeta.dll
+    dxgi.dll dxgi.ini Zeta.dll Zeta.txt
     ```
 3. Special K & Zeta are now uninstalled.
 
