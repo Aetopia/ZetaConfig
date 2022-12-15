@@ -127,7 +127,6 @@ void Zeta(int width, int height)
 
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
-    https://github.com/Codeusa/Borderless-Gaming/blob/master/BorderlessGaming.Logic/Windows/Manipulation.cs
     https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
     */
 
