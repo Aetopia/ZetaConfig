@@ -61,6 +61,8 @@ ZetaMod utilizes the following features from the specified projects:
     The Special K framelimiter is used since the ingame Min/Max FPS are set to 960 allow for aggressive dynamic resolution scaling for better performance.
 
 ### From Zeta
+>**Note: Zeta can loaded due to Special K's ability to load third party DLLs.**             
+**For more information: https://wiki.special-k.info/en/SpecialK/Tools#custom-plugin**
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
 2. Override a program's borderless window implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
