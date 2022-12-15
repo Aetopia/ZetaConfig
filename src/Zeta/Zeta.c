@@ -42,10 +42,11 @@ DWORD SetWndPosThread()
 {
     do
     {
-        SetWindowPos(wnd.hwnd, 0,
+        SetWindowPos(wnd.hwnd, HWND_TOPMOST,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
                      SWP_NOACTIVATE |
+                         SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
         Sleep(1);
