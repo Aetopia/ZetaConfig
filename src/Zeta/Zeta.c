@@ -51,7 +51,6 @@ DWORD SetWndPosThread()
                          SWP_NOSENDCHANGING |
                          SWP_NOOWNERZORDER |
                          SWP_NOZORDER);
-        Sleep(1);
     } while (TRUE);
     return TRUE;
 }
@@ -94,21 +93,43 @@ void WinEventProc(
 
 DWORD HaloInfWndDM()
 {
+    MSG msg;
+    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    };
+    return 0;
+}
+
+void Zeta(int width, int height)
+{
     DEVMODE dm;
     HMONITOR hmon;
     UINT dpi;
-    MSG msg;
     float scale;
+    wnd.pid = GetCurrentProcessId();
+    wnd.dm.dmPelsWidth = width;
+    wnd.dm.dmPelsHeight = height;
+
+    // Check if specified resolution is valid or not.
+    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
+        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
+    {
+        return 0;
+    }
+
+    // Get Halo Infinite's HWND and make the window borderless.
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
+    while (!IsProcWndForeground(GetForegroundWindow()))
+        ;
 
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     https://github.com/Codeusa/Borderless-Gaming/blob/master/BorderlessGaming.Logic/Windows/Manipulation.cs
     https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
     */
-
-    // Get Halo Infinite's HWND and make the window borderless.
-    while (!IsProcWndForeground(GetForegroundWindow()))
-        Sleep(0);
 
     /*
     1. Get the monitor, the window is present on.
@@ -130,27 +151,5 @@ DWORD HaloInfWndDM()
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
-
-    SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
-    while (GetMessage(&msg, NULL, 0, 0))
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    };
-    return 0;
-}
-
-void Zeta(int width, int height)
-{
-    wnd.pid = GetCurrentProcessId();
-    wnd.dm.dmPelsWidth = width;
-    wnd.dm.dmPelsHeight = height;
-    // Check if specified resolution is valid or not.
-    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
-        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
-    {
-        return 0;
-    }
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     CreateThread(0, 0, HaloInfWndDM, NULL, 0, 0);
 }
