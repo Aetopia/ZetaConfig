@@ -42,7 +42,7 @@ DWORD SetWndPosThread()
 {
     do
     {
-        SetWindowPos(wnd.hwnd, HWND_TOPMOST,
+        SetWindowPos(wnd.hwnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
                      SWP_NOACTIVATE |
@@ -107,8 +107,17 @@ DWORD HaloInfWndDM()
     // Get Halo Infinite's HWND and make the window borderless.
     while (!IsProcWndForeground(GetForegroundWindow()))
         Sleep(0);
-    SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
-    SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
+    SetWindowLongPtr(wnd.hwnd, GWL_STYLE,
+                     GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
+    SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE,
+                     GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_DLGMODALFRAME |
+                                                                 WS_EX_COMPOSITED |
+                                                                 WS_EX_OVERLAPPEDWINDOW |
+                                                                 WS_EX_LAYERED |
+                                                                 WS_EX_STATICEDGE |
+                                                                 WS_EX_TOOLWINDOW |
+                                                                 WS_EX_APPWINDOW |
+                                                                 WS_EX_TOPMOST));
 
     // Restore the window if its maximized.
     if (IsZoomed(wnd.hwnd))
