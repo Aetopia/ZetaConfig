@@ -13,17 +13,17 @@ proc setGameSettings*(resscale: int, dm: (int, int)): void =
 
     for k in [
         "spec_control_vsync", 
-        "spec_control_window_mode",
         "spec_control_use_cached_window_position"]: 
         cfg[k].add("value", newJInt(0))
 
-    cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
     for k in ["spec_control_window_size",
     "spec_control_window_position_x",
     "spec_control_window_position_y"]:
         cfg[k].add("value", newJInt(0))
     cfg["spec_control_windowed_display_resolution_x"].add("value", newJInt(dm[0]))
     cfg["spec_control_windowed_display_resolution_y"].add("value", newJInt(dm[1]))
+    cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
+    cfg["spec_control_window_mode"].add("value", newJInt(1))
     cfg["spec_control_resolution_scale"].add("value", newJInt(resscale))
     cfg["spec_control_sharpening"].add("value", newJInt(100))
     echo "[Settings] Saved Setting: spec_control_resolution_scale=", resscale
