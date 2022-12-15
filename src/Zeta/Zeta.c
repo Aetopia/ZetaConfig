@@ -13,6 +13,7 @@ struct WINDOW
 };
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
                      .dm.dmSize = sizeof(wnd.dm),
+                     .dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT,
                      .cds = FALSE};
 
 void SetDM(DEVMODE *dm)
@@ -41,6 +42,8 @@ DWORD SetWndPosThread()
 {
     do
     {
+        SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
+        SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
         SetWindowPos(wnd.hwnd, HWND_TOPMOST,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
@@ -97,9 +100,18 @@ DWORD HaloInfWndDM()
     MSG msg;
     float scale;
 
+    // Get Halo Infinite's HWND.
+    while (!IsProcWndForeground(GetForegroundWindow()))
+        Sleep(0);
+
+    // Check if specified resolution is valid or not.
+    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
+        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
+    {
+        return 0;
+    }
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
-    https://github.com/Codeusa/Borderless-Gaming/blob/master/BorderlessGaming.Logic/Windows/Manipulation.cs
     https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
     */
 
@@ -115,6 +127,7 @@ DWORD HaloInfWndDM()
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
     */
+
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
     EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
@@ -126,9 +139,6 @@ DWORD HaloInfWndDM()
     scale = dpi / 96;
     wnd.cx = wnd.dm.dmPelsWidth * scale;
     wnd.cy = wnd.dm.dmPelsHeight * scale;
-    SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
-    SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
-    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
 
     SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
     while (GetMessage(&msg, NULL, 0, 0))
@@ -144,19 +154,6 @@ void Zeta(int width, int height)
     wnd.pid = GetCurrentProcessId();
     wnd.dm.dmPelsWidth = width;
     wnd.dm.dmPelsHeight = height;
-    wnd.dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-    while (!IsProcWndForeground(GetForegroundWindow()))
-        Sleep(0);
-
-    // Check if specified resolution is valid or not.
-    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
-        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
-    {
-        MessageBox(0,
-                   "Invaild Resolution!",
-                   "Halo Infinite",
-                   MB_ICONEXCLAMATION);
-        return 0;
-    }
+    CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     CreateThread(0, 0, HaloInfWndDM, NULL, 0, 0);
 }
