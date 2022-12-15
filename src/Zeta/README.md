@@ -16,7 +16,7 @@ Filename=Zeta.dll
 Role=ThirdParty
 When=Late
 ```
-For more reference: https://wiki.special-k.info/en/SpecialK/Tools#custom-plugin
+> For more reference: https://wiki.special-k.info/en/SpecialK/Tools#custom-plugin
 
 To to use a specific display mode/resolution, simply change the window size option within Halo Infinite video's settings & restart the game.         
 
