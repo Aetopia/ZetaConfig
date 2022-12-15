@@ -110,10 +110,6 @@ DWORD HaloInfWndDM()
     SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
     SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
 
-    // Restore the window if its maximized.
-    if (IsZoomed(wnd.hwnd))
-        ShowWindow(wnd.hwnd, SW_RESTORE);
-
     /*
     1. Get the monitor, the window is present on.
     2. Get the DPI set for the monitor after the display resolution change.
@@ -122,6 +118,7 @@ DWORD HaloInfWndDM()
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
     */
+   
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
     EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
