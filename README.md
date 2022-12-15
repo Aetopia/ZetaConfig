@@ -100,8 +100,7 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
             "value": 1080
         }
         ```
-        &
-        ```
+
     3. Change these values to your desired resolution's height and weight:           
         Example: 
         > `1280` x `720`
