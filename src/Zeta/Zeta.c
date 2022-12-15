@@ -32,18 +32,18 @@ BOOL IsProcWndForeground(HWND hwnd)
         if (wnd.hwnd != hwnd)
         {
             wnd.hwnd = hwnd;
+            SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
+            SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
         };
         return TRUE;
     };
     return FALSE;
 }
 
-DWORD BorderlessWndThread()
+DWORD WndPosSizeThread()
 {
     do
     {
-        SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
-        SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
         SetWindowPos(wnd.hwnd, HWND_TOPMOST,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
@@ -121,7 +121,7 @@ void Zeta(int width, int height)
     }
 
     // Get Halo Infinite's HWND and make the window borderless.
-    CreateThread(0, 0, BorderlessWndThread, NULL, 0, 0);
+    CreateThread(0, 0, WndPosSizeThread, NULL, 0, 0);
     while (!IsProcWndForeground(GetForegroundWindow()))
         ;
 
