@@ -42,9 +42,7 @@ DWORD SetWndPosThread()
 {
     do
     {
-        SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
-        SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
-        SetWindowPos(wnd.hwnd, HWND_TOPMOST,
+        SetWindowPos(wnd.hwnd, 0,
                      wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
                      SWP_NOACTIVATE |
@@ -100,14 +98,26 @@ DWORD HaloInfWndDM()
     MSG msg;
     float scale;
 
-    // Get Halo Infinite's HWND.
-    while (!IsProcWndForeground(GetForegroundWindow()))
-        Sleep(0);
-
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
+    https://github.com/Codeusa/Borderless-Gaming/blob/master/BorderlessGaming.Logic/Windows/Manipulation.cs
     https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
     */
+
+    // Get Halo Infinite's HWND and make the window borderless.
+    while (!IsProcWndForeground(GetForegroundWindow()))
+        Sleep(0);
+    SetWindowLongPtr(wnd.hwnd, GWL_STYLE,
+                     GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
+    SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE,
+                     GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_DLGMODALFRAME |
+                                                                 WS_EX_COMPOSITED |
+                                                                 WS_EX_OVERLAPPEDWINDOW |
+                                                                 WS_EX_LAYERED |
+                                                                 WS_EX_STATICEDGE |
+                                                                 WS_EX_TOOLWINDOW |
+                                                                 WS_EX_APPWINDOW |
+                                                                 WS_EX_TOPMOST));
 
     // Restore the window if its maximized.
     if (IsZoomed(wnd.hwnd))
@@ -121,7 +131,6 @@ DWORD HaloInfWndDM()
     Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
     4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
     */
-
     hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
     GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
     EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
@@ -148,12 +157,15 @@ void Zeta(int width, int height)
     wnd.pid = GetCurrentProcessId();
     wnd.dm.dmPelsWidth = width;
     wnd.dm.dmPelsHeight = height;
+
     // Check if specified resolution is valid or not.
     if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
         (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
     {
         return 0;
     }
+
+    // Create threads.
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     CreateThread(0, 0, HaloInfWndDM, NULL, 0, 0);
 }
