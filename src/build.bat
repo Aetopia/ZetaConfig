@@ -1,7 +1,7 @@
 @echo off
 cd %~dp0
 
-nim c -d:release -d:strip --app:lib -o:Zeta.dll Zeta/Zeta.nim
+gcc -Wall -Wextra -Ofast -shared -s Zeta\Zeta.c -lshcore -o Zeta.dll
 upx --best Zeta.dll >nul 2>&1 
 
 :: Compile ZetaConfig.

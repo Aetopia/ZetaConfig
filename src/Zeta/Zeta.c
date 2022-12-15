@@ -1,15 +1,15 @@
 #include <windows.h>
 #include <shellscalingapi.h>
+#include <stdio.h>
 
-// Make this a global structure so it can be easily accessed by functions.
 struct WINDOW
 {
-    HWND hwnd;        // HWND of the hooked process's window & reserved HWND variable.
-    DEVMODE dm;       // Display mode to be applied when the hooked process' window is in the foreground
-    DWORD pid;        // PID of the hooked process & reserved variables.
-    MONITORINFOEX mi; // Info of the monitor, the hooked process' window is present on.
-    BOOL cds;         // CDS toggles between setting a resolution and resetting it.
-    int cx, cy;       // Hooked process' window client size.
+    HWND hwnd;
+    DEVMODE dm;
+    DWORD pid;
+    MONITORINFOEX mi;
+    BOOL cds;
+    int cx, cy;
 };
 struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
                      .dm.dmSize = sizeof(wnd.dm),
@@ -32,25 +32,20 @@ BOOL IsProcWndForeground(HWND hwnd)
         if (wnd.hwnd != hwnd)
         {
             wnd.hwnd = hwnd;
-            SetWindowLongPtr(wnd.hwnd, GWL_STYLE, GetWindowLongPtr(wnd.hwnd, GWL_STYLE) & ~(WS_OVERLAPPEDWINDOW));
-            SetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE, GetWindowLongPtr(wnd.hwnd, GWL_EXSTYLE) & ~(WS_EX_OVERLAPPEDWINDOW));
         };
         return TRUE;
     };
     return FALSE;
 }
 
-DWORD WndPosSizeThread()
+DWORD WndSizeThread()
 {
     do
     {
         SetWindowPos(wnd.hwnd, HWND_TOPMOST,
-                     wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
+                     0, 0,
                      wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE |
-                         SWP_NOSENDCHANGING |
-                         SWP_NOOWNERZORDER |
-                         SWP_NOZORDER);
+                     SWP_NOACTIVATE | SWP_NOREPOSITION | SWP_NOSENDCHANGING);
     } while (TRUE);
     return TRUE;
 }
@@ -103,52 +98,60 @@ DWORD WndDMThread()
     return 0;
 }
 
-void Zeta(int width, int height)
+BOOL WINAPI DllMain(__attribute__((unused)) HINSTANCE hInstDll, DWORD fwdreason, __attribute__((unused)) LPVOID lpReserved)
 {
-    DEVMODE dm;
-    HMONITOR hmon;
-    UINT dpi;
-    float scale;
-    wnd.pid = GetCurrentProcessId();
-    wnd.dm.dmPelsWidth = width;
-    wnd.dm.dmPelsHeight = height;
-
-    // Check if specified resolution is valid or not.
-    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
-        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
+    // Reference: https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
+    if (fwdreason == DLL_PROCESS_ATTACH)
     {
-        return 0;
+        FILE *f;
+        int sz;
+        char *c;
+        DEVMODE dm;
+        HMONITOR hmon;
+        UINT dpi;
+        float scale;
+        wnd.pid = GetCurrentProcessId();
+        CreateThread(0, 0, WndSizeThread, NULL, 0, 0);
+        while (!IsProcWndForeground(GetForegroundWindow()))
+            ;
+        hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
+        GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
+        EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+        if (GetFileAttributes("Zeta.txt") == INVALID_FILE_ATTRIBUTES)
+        {
+            f = fopen("Zeta.txt", "w");
+            fprintf(f, "%ld\n%ld", dm.dmPelsWidth, dm.dmPelsHeight);
+            fclose(f);
+            wnd.dm.dmPelsWidth = dm.dmPelsWidth;
+            wnd.dm.dmPelsHeight = dm.dmPelsHeight;
+        }
+        else
+        {
+            f = fopen("Zeta.txt", "r");
+            fseek(f, 0, SEEK_END);
+            sz = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            c = malloc(sz);
+            fread(c, 1, sz, f);
+            fclose(f);
+            wnd.dm.dmPelsWidth = atoi(strtok(c, "\n"));
+            wnd.dm.dmPelsHeight = atoi(strtok(NULL, "\n"));
+            free(c);
+        };
+        if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
+            (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
+        {
+            return 0;
+        }
+        if (dm.dmPelsWidth == wnd.dm.dmPelsWidth && dm.dmPelsHeight == wnd.dm.dmPelsHeight)
+            wnd.dm.dmFields = 0;
+        else
+            SetDM(&wnd.dm);
+        GetDpiForMonitor(hmon, 0, &dpi, &dpi);
+        scale = dpi / 96;
+        wnd.cx = wnd.dm.dmPelsWidth * scale;
+        wnd.cy = wnd.dm.dmPelsHeight * scale;
+        CreateThread(0, 0, WndDMThread, NULL, 0, 0);
     }
-
-    // Get Halo Infinite's HWND and make the window borderless.
-    CreateThread(0, 0, WndPosSizeThread, NULL, 0, 0);
-    while (!IsProcWndForeground(GetForegroundWindow()))
-        ;
-
-    /* References:
-    https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
-    https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
-    */
-
-    /*
-    1. Get the monitor, the window is present on.
-    2. Get the DPI set for the monitor after the display resolution change.
-    Prevent SetDM(DEVMODE *dm) from being called if window size is the same as the current display resolution.
-    3. Find the scaling factor for sizing the window.
-    Scaling Factor: `[DPI of the monitor after the resolution change.) / 96]`.
-    4. Set a event hook for EVENT_SYSTEM_FOREGROUND.
-    */
-
-    hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
-    GetMonitorInfo(hmon, (MONITORINFO *)&wnd.mi);
-    EnumDisplaySettings(wnd.mi.szDevice, ENUM_CURRENT_SETTINGS, &dm);
-    if (dm.dmPelsWidth == wnd.dm.dmPelsWidth && dm.dmPelsHeight == wnd.dm.dmPelsHeight)
-        wnd.dm.dmFields = 0;
-    else
-        SetDM(&wnd.dm);
-    GetDpiForMonitor(hmon, 0, &dpi, &dpi);
-    scale = dpi / 96;
-    wnd.cx = wnd.dm.dmPelsWidth * scale;
-    wnd.cy = wnd.dm.dmPelsHeight * scale;
-    CreateThread(0, 0, WndDMThread, NULL, 0, 0);
+    return TRUE;
 }

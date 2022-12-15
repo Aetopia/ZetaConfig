@@ -88,34 +88,20 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
 
 1. `Custom Display Resolution` (Provided by Zeta.):  
     **Note: Ensure Borderless Fullscreen is enabled!**
-    1. Open `"%LOCALAPPDATA%\HaloInfinite\Settings\SpecControlSettings.json"`
-    2. Find the following entries:
-        ```json
-        "spec_control_windowed_display_resolution_x": {
-            "version": 0,
-            "value": 1920
-        },
-        "spec_control_windowed_display_resolution_y": {
-            "version": 0,
-            "value": 1080
-        }
+    1. Browse Halo Infinite's local files.
+    2. Find `Zeta.txt` and open it.
+    3. It should look like this:
         ```
-
-    3. Change these values to your desired resolution's height and weight:           
-        Example: 
-        > `1280` x `720`
-
-        ```json
-        "spec_control_windowed_display_resolution_x": {
-            "version": 0,
-            "value": 1280
-        },
-        "spec_control_windowed_display_resolution_y": {
-            "version": 0,
-            "value": 720
-        }
+        1920
+        1080
         ```
-    4. Save the file.
+        By default, these values should the width and height of your monitor's native resolution.
+    4. Set a custom display mode/resolution like this:
+        ```
+        1280
+        720
+        ```
+    5. Save the file.
 
 2. `Spoof CPU Cores` & `NVIDIA Driver Black Magic` (Provided by Special K.):   
     Expand the Framerate Limiter tab and then click `Advanced` (Red).               

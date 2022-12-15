@@ -2,8 +2,23 @@ import json
 import strutils, strformat
 import winim/lean
 import vars
+import osproc
 
-proc setGameSettings*(resscale: int, dm: (int, int)): void =
+proc isNVIDIA*: bool = 
+    const key = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum\\PCI"
+    var
+        msg = " not detected."
+        r = false
+        keys = execCmdEx(&"reg query \"{key}\"").output.strip(chars={'\n'}).splitLines()
+    for l in keys:
+        if l.contains("VEN_10DE"):
+            msg = " detected."
+            r = true
+            break
+    echo "[Hardware] NVIDIA GPU", msg
+    return r
+
+proc setGameSettings*(): void =
     var cfg = parseFile(gameconfig)
 
     for k in [
@@ -20,13 +35,11 @@ proc setGameSettings*(resscale: int, dm: (int, int)): void =
     "spec_control_window_position_x",
     "spec_control_window_position_y"]:
         cfg[k].add("value", newJInt(0))
-    cfg["spec_control_windowed_display_resolution_x"].add("value", newJInt(dm[0]))
-    cfg["spec_control_windowed_display_resolution_y"].add("value", newJInt(dm[1]))
     cfg["spec_control_use_cached_window_position"].add("value", newJInt(0))
     cfg["spec_control_window_mode"].add("value", newJInt(1))
-    cfg["spec_control_resolution_scale"].add("value", newJInt(resscale))
+    cfg["spec_control_resolution_scale"].add("value", newJInt(100))
     cfg["spec_control_sharpening"].add("value", newJInt(100))
-    echo "[Settings] Saved Setting: spec_control_resolution_scale=", resscale
+    echo "[Settings] Saved Setting: spec_control_resolution_scale=", 100
     writeFile(gameconfig, cfg.pretty(indent=4))
 
 proc setSettings*(reflex: string, cpus: string, fps: string): void =
