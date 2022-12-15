@@ -64,7 +64,7 @@ ZetaMod utilizes the following features from the specified projects:
 >**Note: Zeta can loaded due to Special K's ability to load third party DLLs.**             
 **For more information: https://wiki.special-k.info/en/SpecialK/Tools#custom-plugin**
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
-2. Override a program's borderless window implementation with a statically sized borderless window.
+2. Overrides a program's borderless windowed mode implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 # Does ZetaMod alter any Halo Infinite settings?
@@ -76,8 +76,6 @@ ZetaMod alters a few ingame options:
 
 2. Ingame Sharpness is set to Max when Minimum Framerate set to `960` the option is set to max to compensate for this for any quality/sharpness lost due to aggressive dynamic resolution scaling.
 
-3. Borderless Fullscreen is disabled. This is intentionally done offload borderless window functionality and allow for the use of user defined display modes/resolutions to Zeta.
-
 > You see the Pros and Cons of the Minimium Framerate setting can be seen here:     
 https://github.com/Aetopia/Minimum-Framerate-Halo-Infinite
 
@@ -88,12 +86,37 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
 
 ![SpecialK](res/SK.png)
 
-1. `Custom Display Resolution` (Provided by Zeta.):        
-    To to use a specific display mode/resolution, simply change the window size option within Halo Infinite video's settings & restart the game.  
+1. `Custom Display Resolution` (Provided by Zeta.):  
+    **Note: Ensure Borderless Fullscreen is enabled!**
+    1. Open `"%LOCALAPPDATA%\HaloInfinite\Settings\SpecControlSettings.json"`
+    2. Find the following entries:
+        ```json
+        "spec_control_windowed_display_resolution_x": {
+            "version": 0,
+            "value": 1920
+        },
+        "spec_control_windowed_display_resolution_y": {
+            "version": 0,
+            "value": 1080
+        }
+        ```
+        &
+        ```
+    3. Change these values to your desired resolution's height and weight:           
+        Example: 
+        > `1280` x `720`
 
-    > Watch on Youtube.
-
-    [![Tutorial](https://img.youtube.com/vi/t-Ouup-RdKA/maxresdefault.jpg)](https://youtu.be/t-Ouup-RdKA)
+        ```json
+        "spec_control_windowed_display_resolution_x": {
+            "version": 0,
+            "value": 1280
+        },
+        "spec_control_windowed_display_resolution_y": {
+            "version": 0,
+            "value": 720
+        }
+        ```
+    4. Save the file.
 
 2. `Spoof CPU Cores` & `NVIDIA Driver Black Magic` (Provided by Special K.):   
     Expand the Framerate Limiter tab and then click `Advanced` (Red).               
