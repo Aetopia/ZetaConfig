@@ -104,12 +104,6 @@ DWORD HaloInfWndDM()
     while (!IsProcWndForeground(GetForegroundWindow()))
         Sleep(0);
 
-    // Check if specified resolution is valid or not.
-    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
-        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
-    {
-        return 0;
-    }
     /* References:
     https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
     https://learn.microsoft.com/en-us/windows/win32/direct2d/how-to--size-a-window-properly-for-high-dpi-displays
@@ -154,6 +148,12 @@ void Zeta(int width, int height)
     wnd.pid = GetCurrentProcessId();
     wnd.dm.dmPelsWidth = width;
     wnd.dm.dmPelsHeight = height;
+    // Check if specified resolution is valid or not.
+    if (ChangeDisplaySettings(&wnd.dm, CDS_TEST) != DISP_CHANGE_SUCCESSFUL ||
+        (wnd.dm.dmPelsWidth || wnd.dm.dmPelsHeight) == 0)
+    {
+        return 0;
+    }
     CreateThread(0, 0, SetWndPosThread, NULL, 0, 0);
     CreateThread(0, 0, HaloInfWndDM, NULL, 0, 0);
 }
