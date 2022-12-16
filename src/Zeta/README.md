@@ -1,10 +1,12 @@
 # Zeta
 This project gets it name from Zeta Halo, the ring where Halo Infinite takes place.
-
+This library aims to fix and add missing technical features into Halo Infinite.
 ## Features
 **Note: Zeta's aims to reintroduce missing features into Halo Infinite.**
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
-2. Overrides a program's borderless windowed mode implementation with a statically sized borderless window.
+    > Adds a Fullscreen Exclusive feature back into the game.
+2. Fix for Halo Infinite's Borderless Fullscreen not scaling correctly for resolutions below `1440x810` for `16:9` monitors.
+    > Fixes an issue where Halo Infinite's Borderless Fullscreen doesn't fill `1360x768` correctly.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 ## How to load Zeta via Special K?
