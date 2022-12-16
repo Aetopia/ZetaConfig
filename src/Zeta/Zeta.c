@@ -18,7 +18,7 @@ struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
 
 void SetDM(DEVMODE *dm)
 {
-    ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, 0, NULL);
+    ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, CDS_FULLSCREEN, NULL);
 }
 
 BOOL IsProcWndForeground(HWND hwnd)
@@ -41,9 +41,9 @@ DWORD WndSizeThread()
     do
     {
         SetWindowPos(wnd.hwnd, HWND_TOPMOST,
-                     0, 0,
+                     wnd.mi.rcMonitor.left, wnd.mi.rcMonitor.top,
                      wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSENDCHANGING | SWP_NOOWNERZORDER | SWP_NOZORDER);
+                     SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_NOOWNERZORDER | SWP_NOZORDER);
     } while (TRUE);
     return TRUE;
 }
