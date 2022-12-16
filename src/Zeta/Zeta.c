@@ -18,9 +18,7 @@ struct WINDOW wnd = {.mi.cbSize = sizeof(wnd.mi),
 
 void SetDM(DEVMODE *dm)
 {
-    ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, CDS_FULLSCREEN, NULL);
-    if (dm == 0)
-        ChangeDisplaySettingsEx(wnd.mi.szDevice, 0, NULL, 0, NULL);
+    ChangeDisplaySettingsEx(wnd.mi.szDevice, dm, NULL, 0, NULL);
 }
 
 BOOL IsProcWndForeground(HWND hwnd)
@@ -111,7 +109,6 @@ BOOL WINAPI DllMain(__attribute__((unused)) HINSTANCE hInstDll, DWORD fwdreason,
         UINT dpi;
         float scale;
         wnd.pid = GetCurrentProcessId();
-        CreateThread(0, 0, WndSizeThread, NULL, 0, 0);
         while (!IsProcWndForeground(GetForegroundWindow()))
             ;
         hmon = MonitorFromWindow(wnd.hwnd, MONITOR_DEFAULTTONEAREST);
@@ -151,6 +148,7 @@ BOOL WINAPI DllMain(__attribute__((unused)) HINSTANCE hInstDll, DWORD fwdreason,
         scale = dpi / 96;
         wnd.cx = wnd.dm.dmPelsWidth * scale;
         wnd.cy = wnd.dm.dmPelsHeight * scale;
+        CreateThread(0, 0, WndSizeThread, NULL, 0, 0);
         CreateThread(0, 0, WndDMThread, NULL, 0, 0);
     }
     return TRUE;
