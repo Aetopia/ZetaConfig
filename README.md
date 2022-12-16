@@ -20,7 +20,7 @@ ZetaPatcher utilizes the following features from the specified projects:
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
 2. [Zeta](https://github.com/Aetopia/ZetaPatcher/tree/main/src/Zeta/README.md)
-    > A library that adds missing features into Halo Infinite.
+    > A library that aims to fix and add missing technical features into Halo Infinite.
 
 ### From Special K:
 1. Spoof CPU Core Count:     
@@ -64,7 +64,9 @@ ZetaPatcher utilizes the following features from the specified projects:
 >**Note: Zeta can loaded due to Special K's ability to load third party DLLs.**             
 **For more information: https://wiki.special-k.info/en/SpecialK/Tools#custom-plugin**
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
-2. Overrides a program's borderless windowed mode implementation with a statically sized borderless window.
+    > Adds a Fullscreen Exclusive feature back into the game.
+2. Fix for Halo Infinite's Borderless Fullscreen not scaling correctly for resolutions below `1440x810` for `16:9` monitors.
+    > Fixes an issue where Halo Infinite's Borderless Fullscreen doesn't fill `1360x768` correctly.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
 # Does ZetaPatcher alter any Halo Infinite settings?

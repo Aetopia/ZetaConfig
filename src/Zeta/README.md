@@ -1,8 +1,7 @@
 # Zeta
 This project gets it name from Zeta Halo, the ring where Halo Infinite takes place.
-This library aims to fix and add missing technical features into Halo Infinite.
+A library that aims to fix and add missing technical features into Halo Infinite.
 ## Features
-**Note: Zeta's aims to reintroduce missing features into Halo Infinite.**
 1. Use a specific display mode/display resolution of your choice with a specific windowed program for better performance.
     > Adds a Fullscreen Exclusive feature back into the game.
 2. Fix for Halo Infinite's Borderless Fullscreen not scaling correctly for resolutions below `1440x810` for `16:9` monitors.
