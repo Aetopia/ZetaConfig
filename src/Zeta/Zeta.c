@@ -43,7 +43,7 @@ DWORD WndSizeThread()
         SetWindowPos(wnd.hwnd, HWND_TOPMOST,
                      0, 0,
                      wnd.cx, wnd.cy,
-                     SWP_NOACTIVATE | SWP_NOREPOSITION | SWP_NOSENDCHANGING);
+                     SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSENDCHANGING | SWP_NOOWNERZORDER | SWP_NOZORDER);
     } while (TRUE);
     return TRUE;
 }
