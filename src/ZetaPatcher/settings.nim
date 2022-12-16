@@ -76,6 +76,6 @@ proc setSettings*(reflex: string, cpus: string, fps: string): void =
             of "TargetFPS": c[i] = fmt"{k}={fps}"; verbose = true
             of "AlwaysOnTop": c[i] = &"{k}=1"
             of "PresentationInterval": c[i] = &"{k}=-1"
-            of "RenderInBackground", "DisableAlpha", "BypassAltF4Handler": c[i]= &"{k}=true"
+            of "RenderInBackground", "DisableAlpha", "BypassAltF4Handler", "Borderless", "Fullscreen": c[i]= &"{k}=true"
         if verbose: echo "[Settings] Saved Setting: ", c[i]; verbose = false
     writeFile(dxgiini, c.join("\n"))
