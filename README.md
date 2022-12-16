@@ -1,9 +1,9 @@
-# ZetaMod 
+# ZetaPatcher 
 A tool to optimize and fix performance issues with Halo Infinite.       
-**Note: ZetaMod only supports the Steam release of Halo Infinite!**
+**Note: ZetaPatcher only supports the Steam release of Halo Infinite!**
 
-## What's ZetaMod?
-ZetaMod aims to fix the glaring technical issues with the Halo Infinite PC experience.               
+## What's ZetaPatcher?
+ZetaPatcher aims to fix the glaring technical issues with the Halo Infinite PC experience.               
 This tool doesn't touch upon every single issue but focuses on the following:
 
 1. High CPU Usage.
@@ -13,13 +13,13 @@ This tool doesn't touch upon every single issue but focuses on the following:
 
 These are some of the core issues, you might have encountered while playing Halo Infinite on PC.
 
-ZetaMod utilizes the following features from the specified projects:        
+ZetaPatcher utilizes the following features from the specified projects:        
 
 1. [Special K](https://wiki.special-k.info) | [GitHub](https://github.com/SpecialKO/SpecialK)
 
    > An extensive game modifying framework allowing for various forms of in-depth tweaking of a game. The focus is primarily on the graphics pipeline but the tool also includes features such as input device blocking/configuring, window and volume management, enhancements for some of the in-game functionality of Steam, and more.
 
-2. [Zeta](https://github.com/Aetopia/ZetaMod/tree/main/src/Zeta/README.md)
+2. [Zeta](https://github.com/Aetopia/ZetaPatcher/tree/main/src/Zeta/README.md)
     > A library that adds missing features into Halo Infinite.
 
 ### From Special K:
@@ -67,9 +67,9 @@ ZetaMod utilizes the following features from the specified projects:
 2. Overrides a program's borderless windowed mode implementation with a statically sized borderless window.
 3. Automatically minimize a borderless window when its not the foreground window for better multitasking.
 
-# Does ZetaMod alter any Halo Infinite settings?
+# Does ZetaPatcher alter any Halo Infinite settings?
 
-ZetaMod alters a few ingame options:
+ZetaPatcher alters a few ingame options:
 
 1. Minimum Framerate & Maximum Framerate are set to `960`.           
     Aggressive Dynamic Resolution Scaling is beneficial for improving performance.  
@@ -120,7 +120,7 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
     Expand the Framerate Limiter tab.                            
     Enable the Framerate Limiter, `[Ctrl] + Click` on the textbox & enter your desired framerate limit.         
 
-    **Note: Due ZetaMod setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.**
+    **Note: Due ZetaPatcher setting the ingame minimum and maximum framerate to 960, we cannot use the ingame framelimiter.**
 
     ![SKFPS](res/SKFPS.png)
 
@@ -129,9 +129,9 @@ To configure Special K, press `[Ctrl] + [Shift] + [Backspace]` to open the Speci
 Check out the wiki for the all of the features of Special K: https://wiki.special-k.info
 
 # Installation
-1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaMod/releases).
-2. Run `ZetaMod.exe`.
-3. Let ZetaMod finish its initialization and optimization process.
+1. Fetch the latest release from [GitHub Releases](https://github.com/Aetopia/ZetaPatcher/releases).
+2. Run `ZetaPatcher.exe`.
+3. Let ZetaPatcher finish its initialization and optimization process.
 4. Launch your game!
 # Uninstallation
 1. Browse Halo Infinite local files.
@@ -142,7 +142,7 @@ Check out the wiki for the all of the features of Special K: https://wiki.specia
 3. Special K & Zeta are now uninstalled.
 
 # Building
-**Building Instructions:** https://github.com/Aetopia/ZetaMod/blob/main/src/README.md
+**Building Instructions:** https://github.com/Aetopia/ZetaPatcher/blob/main/src/README.md
 
 # FAQ
 1. Why is Halo Infinite's launch after installing Special K + Zeta slow?   
