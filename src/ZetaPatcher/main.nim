@@ -8,4 +8,4 @@ if isMainModule:
     setGameSettings()
     installMods()
     setSettings(reflex, "4", "0")
-    MessageBox(GetConsoleWindow(), "Special K & Zeta have configured and installed!", "ZetaMod", MB_ICONINFORMATION)
+    MessageBox(GetConsoleWindow(), "Special K & Zeta have configured and installed!", "ZetaPatcher", MB_ICONINFORMATION)
