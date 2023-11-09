@@ -1,3 +1,7 @@
+> [!WARNING]
+> This project has been deprecated and abandoned.
+> For a project which offers the same aim of this project as well as functionality see [ZetaLoader](https://github.com/Aetopia/Zetaloader).
+
 # ZetaPatcher 
 A tool to optimize and fix performance issues with Halo Infinite.       
 **Note: ZetaPatcher only supports the Steam release of Halo Infinite!**
