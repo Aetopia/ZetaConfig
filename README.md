@@ -1,5 +1,5 @@
 > [!WARNING]
-> This project has been deprecated and abandoned.
+> This project has been deprecated and abandoned.<br>
 > For a project which offers the same aim of this project as well as functionality see [ZetaLoader](https://github.com/Aetopia/Zetaloader).
 
 # ZetaPatcher 
